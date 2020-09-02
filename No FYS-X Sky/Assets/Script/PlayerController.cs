@@ -9,8 +9,9 @@ public class PlayerController : MonoBehaviour
     private float speed = 5f;
 
     [SerializeField]
-    private float mouseSensitivity = 7f;
+    private float mouseSensitivity = 100f;
 
+    public GameObject plane;
 
 
 
@@ -20,6 +21,9 @@ public class PlayerController : MonoBehaviour
     {
       
         motor = GetComponent<PlayerMotor>();
+        Cursor.lockState = CursorLockMode.Locked;
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
 
 
     }
@@ -47,7 +51,7 @@ public class PlayerController : MonoBehaviour
 
         //Apply rotation
 
-        motor.Rotate(_rotation);
+        motor.Rotate(_rotation); 
 
 
         //Calculate Camera rotation as a 3D vector (turning around)
@@ -58,6 +62,8 @@ public class PlayerController : MonoBehaviour
         //Apply rotation
 
         motor.CameraRotate(_CameraRotation);
+
+ 
 
         
 
