@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Schema;
+using UnityEngine;
 
 namespace Assets.World 
 {
@@ -11,11 +14,11 @@ namespace Assets.World
 
         private Vector3 currentChunkPosition;
 
+        private Dictionary<Vector3, GameObject> tileDict = new Dictionary<Vector3, GameObject>();
+
         void Start()
         {
 
-            currentChunkPosition = new Vector3(0,0,0);
-           
         }
 
         void Update()
@@ -26,16 +29,56 @@ namespace Assets.World
         public void loadTiles(Vector3 position)
         {
             terrainGenerator = GameObject.Find("Level").GetComponent<LevelGenerator>();
-            Vector3 newChunkPosition = new Vector3(Mathf.FloorToInt(position.x / 10) * 100, 0, Mathf.FloorToInt(position.z / 10) * 100);
-            //if(currentChunkPosition.x != newChunkPosition.x && currentChunkPosition.z != newChunkPosition.z)
-            //{
-                
-            //}
+            
+            // x-, x+, z-, z+
+            int bounds = 50;
+            int xMin = calcChunkCoord(position.x - bounds);
+            int xMax = calcChunkCoord(position.x + bounds);
+            int zMin = calcChunkCoord(position.z - bounds);
+            int zMax = calcChunkCoord(position.z + bounds);
+
+            for (int i = xMin; i < xMax; i += 10)
+            {
+                for (int j = zMin; j < zMax; j += 10)
+                {
+                    Debug.Log(i + "-" + j);
+                    Vector3 newChunkPosition = new Vector3(calcChunkCoord(i), 0, calcChunkCoord(j));
+                    if (!tileDict.ContainsKey(newChunkPosition))
+                    {
+                        tileDict.Add(newChunkPosition, terrainGenerator.GenerateTile(newChunkPosition));
+                        currentChunkPosition = newChunkPosition;
+                    }
+                }
+            }
 
 
-            terrainGenerator.GenerateTile(newChunkPosition);
         }
 
+        public void unloadTiles(Vector3 position)
+        {
+            int bounds = 50;
+            int xMin = calcChunkCoord(position.x - bounds);
+            int xMax = calcChunkCoord(position.x + bounds);
+            int zMin = calcChunkCoord(position.z - bounds);
+            int zMax = calcChunkCoord(position.z + bounds);
+
+            foreach (KeyValuePair<Vector3, GameObject> tile in tileDict.ToList())
+            {
+                if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
+                {
+                    
+                   
+                    Destroy(tile.Value);
+                    tileDict.Remove(tile.Key);
+                    
+                }
+            }
+        }
+
+        private int calcChunkCoord(float coordinate)
+        {
+            return Mathf.FloorToInt(coordinate / 10) * 10;
+        }
 
     }
 }
