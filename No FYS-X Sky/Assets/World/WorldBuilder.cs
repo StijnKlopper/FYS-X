@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.World 
 {
@@ -11,11 +12,11 @@ namespace Assets.World
 
         private Vector3 currentChunkPosition;
 
+        private Dictionary<Vector3, GameObject> tileDict = new Dictionary<Vector3, GameObject>();
+
         void Start()
         {
-
-            currentChunkPosition = new Vector3(0,0,0);
-           
+            startTile(new Vector3(0, 0, 0));
         }
 
         void Update()
@@ -26,16 +27,21 @@ namespace Assets.World
         public void loadTiles(Vector3 position)
         {
             terrainGenerator = GameObject.Find("Level").GetComponent<LevelGenerator>();
-            Vector3 newChunkPosition = new Vector3(Mathf.FloorToInt(position.x / 10) * 100, 0, Mathf.FloorToInt(position.z / 10) * 100);
-            //if(currentChunkPosition.x != newChunkPosition.x && currentChunkPosition.z != newChunkPosition.z)
-            //{
-                
-            //}
 
 
-            terrainGenerator.GenerateTile(newChunkPosition);
+            Vector3 newChunkPosition = new Vector3(Mathf.FloorToInt(position.x / 10) * 10, 0, Mathf.FloorToInt(position.z / 10) * 10);
+            if((currentChunkPosition.x != newChunkPosition.x || currentChunkPosition.z != newChunkPosition.z) && tileDict.ContainsKey(newChunkPosition))
+            {
+                tileDict.Add(newChunkPosition, terrainGenerator.GenerateTile(newChunkPosition));
+                currentChunkPosition = newChunkPosition;
+            }
         }
 
-
+        private void startTile(Vector3 position)
+        {
+            currentChunkPosition = position;
+            terrainGenerator = GameObject.Find("Level").GetComponent<LevelGenerator>();
+            tileDict.Add(position, terrainGenerator.GenerateTile(position));
+        }
     }
 }

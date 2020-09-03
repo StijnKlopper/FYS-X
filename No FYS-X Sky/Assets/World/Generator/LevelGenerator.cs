@@ -21,7 +21,7 @@ public class LevelGenerator : MonoBehaviour
 
     }
 
-    public void GenerateTile(Vector3 position)
+    public GameObject GenerateTile(Vector3 position)
     {
         
         Vector3 tileSize = tilePrefab.GetComponent<MeshRenderer>().bounds.size;
@@ -30,14 +30,13 @@ public class LevelGenerator : MonoBehaviour
         int tileDepth = (int)tileSize.z;
 
 
-        Vector3 tilePosition = new Vector3(position.x,
+        Vector3 tilePosition = new Vector3(position.x + 5,
                 this.gameObject.transform.position.y,
-                position.z);
+                position.z + 5);
         Debug.Log(tilePosition);
         GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
 
-
-
+        return tile;
     }
 
     private void GenerateMap()
