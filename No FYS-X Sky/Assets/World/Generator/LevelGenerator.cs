@@ -5,16 +5,41 @@ using UnityEngine;
 public class LevelGenerator : MonoBehaviour
 {
 
+
     [SerializeField]
     private int mapWidthInTiles, mapDepthInTiles;
 
     [SerializeField]
     private GameObject tilePrefab;
+    private Vector3 tileSize;
+
+    private GameObject tile;
     // Start is called before the first frame update
     void Start()
     {
-        GenerateMap();
+       
+
     }
+
+    public void GenerateTile(Vector3 position)
+    {
+        
+        Vector3 tileSize = tilePrefab.GetComponent<MeshRenderer>().bounds.size;
+        //Vector3 tileSize = new Vector3(10, 10, 10);
+        int tileWidth = (int)tileSize.x;
+        int tileDepth = (int)tileSize.z;
+
+
+        Vector3 tilePosition = new Vector3(position.x,
+                this.gameObject.transform.position.y,
+                position.z);
+        Debug.Log(tilePosition);
+        GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
+
+
+
+    }
+
     private void GenerateMap()
     {
         Vector3 tileSize = tilePrefab.GetComponent<MeshRenderer>().bounds.size;
@@ -25,10 +50,14 @@ public class LevelGenerator : MonoBehaviour
         {
             for (int zTileIndex = 0; zTileIndex < mapDepthInTiles; zTileIndex++)
             {
-                Vector3 tilePosition = new Vector3(this.gameObject.transform.position.x + xTileIndex * tileWidth,
+
+
+                Vector3 tilePosition = new Vector3(this.gameObject.transform.position.x + xTileIndex * tileWidth + 5,
                     this.gameObject.transform.position.y,
-                    this.gameObject.transform.position.z + zTileIndex * tileDepth);
+                    this.gameObject.transform.position.z + zTileIndex * tileDepth + 5);
                 GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
+
+
             }
         }
     }

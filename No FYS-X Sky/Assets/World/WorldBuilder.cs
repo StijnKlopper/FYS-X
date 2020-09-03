@@ -1,48 +1,40 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.World 
 {
     class WorldBuilder : MonoBehaviour
     {
-        public GameObject plane;
+        
         private int seed;
-        private List<GameObject> planeList;
+       
+        private LevelGenerator terrainGenerator;
 
-        private void GenerateWorld()
-        {
-
-        }
+        private Vector3 currentChunkPosition;
 
         void Start()
-        { 
-            //plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            //plane.transform.position = new Vector3(0, 0, 0);
-            //planeList = new List<GameObject>();
-            //planeList.Add(plane);
+        {
+
+            currentChunkPosition = new Vector3(0,0,0);
+           
         }
 
         void Update()
         {
-
+           
         }
 
-        private void GenerateWorld(Vector3 position) 
+        public void loadTiles(Vector3 position)
         {
-            GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            plane.transform.position = position;
-            planeList.Add(plane);
+            terrainGenerator = GameObject.Find("Level").GetComponent<LevelGenerator>();
+            Vector3 newChunkPosition = new Vector3(Mathf.FloorToInt(position.x / 10) * 100, 0, Mathf.FloorToInt(position.z / 10) * 100);
+            //if(currentChunkPosition.x != newChunkPosition.x && currentChunkPosition.z != newChunkPosition.z)
+            //{
+                
+            //}
+
+
+            terrainGenerator.GenerateTile(newChunkPosition);
         }
-
-
-
-
-
-
-
-
-
-
 
 
     }

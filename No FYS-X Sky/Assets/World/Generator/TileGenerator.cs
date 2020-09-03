@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TileGenerator : MonoBehaviour
 {
+
     [SerializeField]
     private MeshRenderer tileRenderer;
 
@@ -21,6 +22,9 @@ public class TileGenerator : MonoBehaviour
 
     [SerializeField]
     private AnimationCurve heightCurve;
+
+    [SerializeField]
+    private Vector3 postid;
 
     [System.Serializable]
     public class TerrainType
@@ -47,6 +51,9 @@ public class TileGenerator : MonoBehaviour
 
         float offsetX = -this.gameObject.transform.position.x;
         float offsetZ = -this.gameObject.transform.position.z;
+
+        postid = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
+       
 
         float[,] heightMap = GenerateNoiseMap(tileDepth, tileWidth, this.mapScale, offsetX, offsetZ);
 

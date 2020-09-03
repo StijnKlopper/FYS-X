@@ -112,7 +112,7 @@ MonoBehaviour:
   tileRenderer: {fileID: 5520266623367027304}
   meshFilter: {fileID: 5520266623367027305}
   meshCollider: {fileID: 5520266623367027307}
-  mapScale: 3
+  mapScale: 10
   heightMultiplier: 3
   heightCurve:
     serializedVersion: 2
