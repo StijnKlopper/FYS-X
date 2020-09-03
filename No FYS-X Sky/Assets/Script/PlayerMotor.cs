@@ -26,6 +26,7 @@ public class PlayerMotor : MonoBehaviour
     public void Move(Vector3 _Velocity)
     {
         velocity = _Velocity;
+        
     }
 
     public void Rotate(Vector3 _Rotate)

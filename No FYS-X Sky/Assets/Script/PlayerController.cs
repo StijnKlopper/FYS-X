@@ -44,6 +44,7 @@ public class PlayerController : MonoBehaviour
         // Apply Movement
         motor.Move(_velocity);
 
+
         //Calculate Rotation as a 3D vector (turning around)
         float _yRot = Input.GetAxis("Mouse X");
 
