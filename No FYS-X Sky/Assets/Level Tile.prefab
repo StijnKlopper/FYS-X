@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5520266623367027305}
   - component: {fileID: 5520266623367027304}
   - component: {fileID: 5520266623367027307}
-  - component: {fileID: 5520266623367027306}
+  - component: {fileID: -697355809770347597}
   m_Layer: 0
   m_Name: Level Tile
   m_TagString: Untagged
@@ -97,7 +97,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
---- !u!114 &5520266623367027306
+--- !u!114 &-697355809770347597
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,41 +106,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 5520266623367027301}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5d99efb76463e54e93edc037f826df3, type: 3}
+  m_Script: {fileID: 11500000, guid: 2567748ade6485549b90943e549d318a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane: {fileID: 5520266623367027301}
   tileRenderer: {fileID: 5520266623367027304}
   meshFilter: {fileID: 5520266623367027305}
   meshCollider: {fileID: 5520266623367027307}
-  mapScale: 5
-  heightMultiplier: 10
+  mapScale: 3
+  heightMultiplier: 3
   heightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.016451353
-      outSlope: 0.016451353
+      inSlope: -0.004561366
+      outSlope: -0.004561366
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.3120016
-      value: 0.0051328484
-      inSlope: 0.021638116
-      outSlope: 0.021638116
+      time: 0.38855556
+      value: -0.0017723441
+      inSlope: -0.0066885035
+      outSlope: -0.0066885035
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.18402976
+      outWeight: 0.14332442
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 1.4460312
-      outSlope: 1.4460312
+      inSlope: 1.6383702
+      outSlope: 1.6383702
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -151,10 +150,10 @@ MonoBehaviour:
   terrainTypes:
   - name: water
     height: 0.4
-    color: {r: 0, g: 0.7846358, b: 0.9339623, a: 0}
+    color: {r: 0.23113209, g: 0.7447188, b: 1, a: 0}
   - name: grass
     height: 0.7
-    color: {r: 0.008009953, g: 0.5660378, b: 0.1120444, a: 0}
+    color: {r: 0.069115125, g: 0.6509434, b: 0, a: 0}
   - name: mountain
     height: 1
-    color: {r: 0.4339623, g: 0.19122037, b: 0, a: 0}
+    color: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 0}
