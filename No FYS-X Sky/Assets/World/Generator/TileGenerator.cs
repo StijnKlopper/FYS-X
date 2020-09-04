@@ -50,7 +50,7 @@ public class TileGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GenerateTile(0, 10);
+        GenerateTile(50, 100);
     }
 
     private void GenerateTile(float centerVertexZ, float maxDistanceZ)
@@ -71,7 +71,21 @@ public class TileGenerator : MonoBehaviour
         float distanceBetweenVertices = tileDimensions.z / (float)tileDepth;
         float vertexOffsetZ = this.gameObject.transform.position.z / distanceBetweenVertices;
 
-        float[,] heatMap = this.GenerateUniformNoiseMap(tileDepth, tileWidth, centerVertexZ, maxDistanceZ, vertexOffsetZ);
+        float[,] uniformHeatMap = this.GenerateUniformNoiseMap(tileDepth, tileWidth, centerVertexZ, maxDistanceZ, vertexOffsetZ);
+
+        float[,] randomHeatMap = this.GeneratePerlinNoiseMap(tileDepth, tileWidth, this.mapScale, offsetX, offsetZ);
+
+        float[,] heatMap = new float[tileDepth, tileWidth];
+        for (int zIndex = 0; zIndex < tileDepth; zIndex++)
+        {
+            for (int xIndex = 0; xIndex < tileWidth; xIndex++)
+            {
+                // mix both heat maps together by multiplying their values
+                heatMap[zIndex, xIndex] = uniformHeatMap[zIndex, xIndex] * randomHeatMap[zIndex, xIndex];
+                // makes higher regions colder, by adding the height value to the heat map
+                heatMap[zIndex, xIndex] += heightMap[zIndex, xIndex] * heightMap[zIndex, xIndex];
+            }
+        }
 
         Texture2D heightTexture = BuildTexture(heightMap, this.heightTerrainTypes);
         Texture2D heatTexture = BuildTexture(heatMap, this.heatTerrainTypes);
@@ -105,8 +119,6 @@ public class TileGenerator : MonoBehaviour
 
                 float noise = Mathf.PerlinNoise(sampleX, sampleZ);
 
-                Debug.Log(noise);
-
                 noiseMap[zIndex, xIndex] = noise;
             }
         }
@@ -122,6 +134,8 @@ public class TileGenerator : MonoBehaviour
             float sampleZ = zIndex + offsetZ;
 
             float noise = Mathf.Abs(sampleZ - centerVertexZ) / maxDistanceZ;
+
+            Debug.Log(noise);
 
             for (int xIndex = 0; xIndex < mapWidth; xIndex++)
             {

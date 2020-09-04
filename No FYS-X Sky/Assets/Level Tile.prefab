@@ -181,4 +181,4 @@ MonoBehaviour:
   - name: coldest
     threshold: 1
     color: {r: 0.5566038, g: 0.09189212, b: 0.5351386, a: 0}
-  visualizationMode: 0
+  visualizationMode: 1
