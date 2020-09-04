@@ -10,7 +10,7 @@ namespace Assets.World
         
         private int seed;
        
-        private LevelGenerator terrainGenerator;
+        private TerrainGenerator terrainGenerator;
 
         private Vector3 currentChunkPosition;
 
@@ -28,7 +28,7 @@ namespace Assets.World
 
         public void loadTiles(Vector3 position)
         {
-            terrainGenerator = GameObject.Find("Level").GetComponent<LevelGenerator>();
+            terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
             
             // x-, x+, z-, z+
             int bounds = 50;
@@ -41,7 +41,6 @@ namespace Assets.World
             {
                 for (int j = zMin; j < zMax; j += 10)
                 {
-                    Debug.Log(i + "-" + j);
                     Vector3 newChunkPosition = new Vector3(calcChunkCoord(i), 0, calcChunkCoord(j));
                     if (!tileDict.ContainsKey(newChunkPosition))
                     {
@@ -50,6 +49,8 @@ namespace Assets.World
                     }
                 }
             }
+
+
 
 
         }
@@ -66,11 +67,8 @@ namespace Assets.World
             {
                 if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
                 {
-                    
-                   
                     Destroy(tile.Value);
-                    tileDict.Remove(tile.Key);
-                    
+                    tileDict.Remove(tile.Key);   
                 }
             }
         }
