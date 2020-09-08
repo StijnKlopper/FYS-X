@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Schema;
 using UnityEngine;
 
-namespace Assets.World 
+namespace Assets.World
 {
     class WorldBuilder : MonoBehaviour
     {
-        
+
         private int seed;
-       
+
         private TerrainGenerator terrainGenerator;
 
         private Vector3 currentChunkPosition;
@@ -16,18 +18,18 @@ namespace Assets.World
 
         void Start()
         {
-            startTile(new Vector3(0, 0, 0));
+
         }
 
         void Update()
         {
-           
+
         }
 
         public void loadTiles(Vector3 position)
         {
             terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-            
+
             // x-, x+, z-, z+
             int bounds = 50;
             int xMin = calcChunkCoord(position.x - bounds);
@@ -47,10 +49,6 @@ namespace Assets.World
                     }
                 }
             }
-
-
-
-
         }
 
         public void unloadTiles(Vector3 position)
@@ -61,22 +59,20 @@ namespace Assets.World
             int zMin = calcChunkCoord(position.z - bounds);
             int zMax = calcChunkCoord(position.z + bounds);
 
-            Vector3 newChunkPosition = new Vector3(Mathf.FloorToInt(position.x / 10) * 10, 0, Mathf.FloorToInt(position.z / 10) * 10);
-            if((currentChunkPosition.x != newChunkPosition.x || currentChunkPosition.z != newChunkPosition.z) && tileDict.ContainsKey(newChunkPosition))
+            foreach (KeyValuePair<Vector3, GameObject> tile in tileDict.ToList())
             {
                 if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
                 {
                     Destroy(tile.Value);
-                    tileDict.Remove(tile.Key);   
+                    tileDict.Remove(tile.Key);
                 }
             }
         }
 
-        private void startTile(Vector3 position)
+        private int calcChunkCoord(float coordinate)
         {
-            currentChunkPosition = position;
-            terrainGenerator = GameObject.Find("Level").GetComponent<LevelGenerator>();
-            tileDict.Add(position, terrainGenerator.GenerateTile(position));
+            return Mathf.FloorToInt(coordinate / 10) * 10;
         }
+
     }
 }

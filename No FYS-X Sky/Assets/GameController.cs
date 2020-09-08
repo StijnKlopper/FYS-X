@@ -13,18 +13,15 @@ public class GameController : MonoBehaviour
     void Start()
     {
         worldBuilder = new WorldBuilder();
-
     }
 
     // Update is called once per frame
     void Update()
     {
-        
         //Debug.Log("PLAYERPOSITION : " + player.transform.position +  "This is X: " + Mathf.FloorToInt(player.transform.position.x/10)+ " This is Z : " + Mathf.FloorToInt(player.transform.position.z / 10));
         worldBuilder.loadTiles(player.transform.position);
+        worldBuilder.unloadTiles(player.transform.position);
 
     }
 
-
 }
- 
