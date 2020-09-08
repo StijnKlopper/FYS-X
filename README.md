@@ -22,13 +22,13 @@ New functionality will start on the dev branch. The project member will create a
 git checkout -b dev-{issue number}:{issue description}
 
 Example for a pull request that changes the README.md:
-git checkout -b dev-12:update-readme
+git checkout -b dev-12
 
 Example for a pull request that fixes a bug about chunks not generating:
-git checkout -b dev-1:chunks-not-generating
+git checkout -b dev-1
 
 Example for a pull request that adds new functionality, adding biomes:
-git checkout -b dev-2:biome-generation
+git checkout -b dev-2
 ```
 
 After creating this branch and finishing the functionality, the project member will do the following to push the changes to the branch:
@@ -44,7 +44,13 @@ git push --set-upstream origin {branch name}
 git push
 ```
 
-Then, the project member will go to GitHub, go to their branch in the branch selector and open a merge request. To solve a connected issue, make sure that '{closes/fixes/resolves} #{issue number}' is in the comment, like:
+Then, the project member will go to GitHub, go to their branch in the branch selector and open a merge request.
+The name of the pull request must look like:
+```
+{branchname}:{issue description}
+```
+
+To solve a connected issue, make sure that '{closes/fixes/resolves} #{issue number}' is in the comment, like:
 ```
 Fixes #12
 ``` 
