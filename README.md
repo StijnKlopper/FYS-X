@@ -11,10 +11,7 @@ Stan van Weringh <br>
 Under this header, the best practices to ensure good teamwork will be explained.
 
 ### GIT/GitHub
-There are two main branches:
-
-- master, to keep the main code, updated the least often and code changes must be approved by all other team members.
-- dev, to develop on, for every change made to the project.
+The master branch is the main branch, the main code is kept up to date here. Changes to the master branch must be done through temporary branches starting with 'dev', as explained now:
 
 #### Developing new functionality
 New functionality will start on the dev branch. The project member will create a branch using the following naming scheme:
