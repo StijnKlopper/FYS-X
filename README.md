@@ -47,7 +47,7 @@ git push
 Then, the project member will go to GitHub, go to their branch in the branch selector and open a merge request.
 The name of the pull request must look like:
 ```
-{branchname}:{issue description}
+{branchname}: {issue description}
 ```
 
 To solve a connected issue, make sure that '{closes/fixes/resolves} #{issue number}' is in the comment, like:
