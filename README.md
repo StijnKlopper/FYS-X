@@ -11,23 +11,42 @@ Stan van Weringh <br>
 Under this header, the best practices to ensure good teamwork will be explained.
 
 ### GIT/GitHub
-There are three main branches:
+There are two main branches:
 
 - master, to keep the main code, updated the least often and code changes must be approved by all other team members.
 - dev, to develop on, for every change made to the project.
-- experiment, to do experimental stuff on, branch rules apply more loosely and most stuff developed here will likely not make it into the final product.
 
 #### Developing new functionality
-New functionality will start on the dev branch. The programmer will create a branch using the following naming scheme:
+New functionality will start on the dev branch. The project member will create a branch using the following naming scheme:
 ```
-dev/{new/doc/fix/misc}/issue
+git checkout -b dev-{issue number}:{issue description}
 
 Example for a pull request that changes the README.md:
-dev/doc/update-readme
+git checkout -b dev-12:update-readme
 
 Example for a pull request that fixes a bug about chunks not generating:
-dev/fix/chunks-not-generating
+git checkout -b dev-1:chunks-not-generating
 
 Example for a pull request that adds new functionality, adding biomes:
-dev/new/biome-generation
+git checkout -b dev-2:biome-generation
 ```
+
+After creating this branch and finishing the functionality, the project member will do the following to push the changes to the branch:
+```
+git add .
+
+git commit -m {commit message}
+
+(if branch is new)
+git push --set-upstream origin {branch name}
+
+(else)
+git push
+```
+
+Then, the project member will go to GitHub, go to their branch in the branch selector and open a merge request. To solve a connected issue, make sure that '{closes/fixes/resolves} #{issue number}' is in the comment, like:
+```
+Fixes #12
+``` 
+
+Afterwards, the other three project members will add their comments and approve of the merge request.
