@@ -7,7 +7,7 @@ Stijn Klopper <br>
 Rick den Otter <br>
 Stan van Weringh <br>
 
-## Best Practices
+## Best practices
 Under this header, the best practices to ensure good teamwork will be explained.
 
 ### GIT/GitHub
