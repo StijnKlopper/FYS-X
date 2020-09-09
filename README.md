@@ -16,7 +16,7 @@ The master branch is the main branch, the main code is kept up to date here. Cha
 #### Developing new functionality
 New functionality will start on the dev branch. The project member will create a branch using the following naming scheme:
 ```
-git checkout -b dev-{issue number}:{issue description}
+git checkout -b dev-{issue number}
 
 Example for a pull request that changes the README.md:
 git checkout -b dev-12
