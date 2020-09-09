@@ -47,11 +47,65 @@ public class TileGenerator : MonoBehaviour
     [SerializeField]
     private VisualizationMode visualizationMode;
 
+    Renderer Renderer;
+
     // Start is called before the first frame update
     void Start()
     {
+        GameObject gaiobject = GameObject.Find("Quad");
+        Renderer = gaiobject.GetComponent<Renderer>();
         GenerateTile(50, 100);
     }
+
+
+    public static float[,] generateNoiseMapNew(int mapWidth, int mapHeight, float scale)
+    {
+        float[,] noisemap = new float[mapWidth, mapHeight];
+        for(int y = 0; y < mapHeight; y++)
+        {
+            for(int x= 0; x < mapWidth; x++)
+            {
+                float sampleX = x / scale;
+                float sampleY = y/ scale;
+
+                float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
+                noisemap[x, y] = perlinValue;
+            }
+        }
+        return noisemap;
+
+    }
+
+    
+
+
+    private void drawNoiseMap(float[,] noiseMap) 
+    {
+        int width = noiseMap.GetLength(0);
+        int height = noiseMap.GetLength(1);
+
+        Texture2D texture = new Texture2D(width, height);
+
+        Color[] colorMap = new Color[width * height];
+        for (int y = 0; y < height; y++) {
+
+            for (int x = 0; x < width; x++) {
+                //Debug.Log(noiseMap[x, y]);
+                //texture.SetPixel(x, y, Color.Lerp(Color.black, Color.white,(noiseMap[x, y] + noiseMap [x,y] * noiseMap[x,y])));
+                colorMap[y * width + x] = Color.Lerp(Color.black, Color.white, noiseMap[x,y]);
+            }
+        }
+
+        Debug.Log(colorMap);
+
+        texture.SetPixels(colorMap);
+        //texture.wrapMode = TextureWrapMode.Clamp;
+        texture.Apply();
+
+        Renderer.material.mainTexture = texture;
+        Renderer.transform.localScale = new Vector3(width, 1, height);
+    }
+
 
     private void GenerateTile(float centerVertexZ, float maxDistanceZ)
     {
@@ -66,6 +120,9 @@ public class TileGenerator : MonoBehaviour
        
 
         float[,] heightMap = GeneratePerlinNoiseMap(tileDepth, tileWidth, this.mapScale, offsetX, offsetZ);
+
+        drawNoiseMap(heightMap);
+
 
         Vector3 tileDimensions = this.meshFilter.mesh.bounds.size;
         float distanceBetweenVertices = tileDimensions.z / (float)tileDepth;
@@ -84,6 +141,8 @@ public class TileGenerator : MonoBehaviour
                 heatMap[zIndex, xIndex] = uniformHeatMap[zIndex, xIndex] * randomHeatMap[zIndex, xIndex];
                 // makes higher regions colder, by adding the height value to the heat map
                 heatMap[zIndex, xIndex] += heightMap[zIndex, xIndex] * heightMap[zIndex, xIndex];
+
+
             }
         }
 
@@ -117,6 +176,10 @@ public class TileGenerator : MonoBehaviour
                 float sampleX = (xIndex + offsetX) / scale;
                 float sampleZ = (zIndex + offsetZ) / scale;
 
+
+                //float noise =   1f * Mathf.PerlinNoise(1 * sampleX, 1 * sampleZ)
+                //                + 0.5f * Mathf.PerlinNoise(2 * sampleX, 2 * sampleZ)
+                //                + 0.25f * Mathf.PerlinNoise(7 * sampleX, 7 * sampleZ);
                 float noise = Mathf.PerlinNoise(sampleX, sampleZ);
 
                 noiseMap[zIndex, xIndex] = noise;
@@ -135,7 +198,6 @@ public class TileGenerator : MonoBehaviour
 
             float noise = Mathf.Abs(sampleZ - centerVertexZ) / maxDistanceZ;
 
-            Debug.Log(noise);
 
             for (int xIndex = 0; xIndex < mapWidth; xIndex++)
             {
@@ -145,6 +207,7 @@ public class TileGenerator : MonoBehaviour
 
         return noiseMap;
     }
+
 
     private Texture2D BuildTexture(float[,] heightMap, TerrainType[] terrainTypes)
     {
