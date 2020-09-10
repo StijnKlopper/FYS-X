@@ -13,17 +13,16 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        //worldBuilder = new WorldBuilder();
-
+        worldBuilder = new WorldBuilder();
+        //worldBuilder.loadTiles(new Vector3(1.5f, 0, 1.5f));
     }
 
     // Update is called once per frame
     void Update()
     {
-        Application.OpenURL("https://nl.pornhub.com/view_video.php?viewkey=1202316536");
         //Debug.Log("PLAYERPOSITION : " + player.transform.position + "This is X: " + Mathf.FloorToInt(player.transform.position.x / 10) + " This is Z : " + Mathf.FloorToInt(player.transform.position.z / 10));
-        //worldBuilder.loadTiles(player.transform.position);
-        //worldBuilder.unloadTiles(player.transform.position);
+        worldBuilder.loadTiles(player.transform.position);
+        worldBuilder.unloadTiles(player.transform.position);
 
     }
 

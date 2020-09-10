@@ -10,16 +10,13 @@ namespace Assets.World
 
         private TerrainGenerator terrainGenerator;
 
-        private Vector3 currentChunkPosition;
+        //private Vector3 currentChunkPosition;
 
         private Dictionary<Vector3, GameObject> tileDict = new Dictionary<Vector3, GameObject>();
 
-
-        TileGenerator tile;
-
         void Start()
         {
-            tile = new TileGenerator();
+            //currentChunkPosition = new Vector3(0, 0, 0);
         }
 
         void Update()
@@ -45,8 +42,9 @@ namespace Assets.World
                     Vector3 newChunkPosition = new Vector3(calcChunkCoord(i), 0, calcChunkCoord(j));
                     if (!tileDict.ContainsKey(newChunkPosition))
                     {
-                        tileDict.Add(newChunkPosition, terrainGenerator.GenerateTile(newChunkPosition));
-                        currentChunkPosition = newChunkPosition;
+                        GameObject tile = terrainGenerator.GenerateTile(newChunkPosition);
+                        tileDict.Add(newChunkPosition, tile);
+                        //currentChunkPosition = newChunkPosition;
                     }
                 }
             }

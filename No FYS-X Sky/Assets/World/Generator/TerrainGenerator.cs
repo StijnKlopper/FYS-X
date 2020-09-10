@@ -7,8 +7,10 @@ public class TerrainGenerator : MonoBehaviour
     [Header("Tile settings")]
     [SerializeField]
     private int mapWidthInTiles;
+
     [SerializeField]
     private int mapDepthInTiles;
+
     [SerializeField]
     private GameObject tilePrefab;
 
@@ -17,16 +19,22 @@ public class TerrainGenerator : MonoBehaviour
     private int tileOffset = 5;
 
     private GameObject tile;
+
     [Header("Noisemap Settings")]
     public int mapWidth;
+
     public int mapHeight;
+
     public float noiseScale;
+
     public int octaves;
+
     [Range(0, 1)]
     public float persistance;
+
     public float lacunarity;
+
     public int seed;
-    public Vector2 offsets;
 
     // Start is called before the first frame update
     void Start()
@@ -43,7 +51,7 @@ public class TerrainGenerator : MonoBehaviour
     public GameObject GenerateTile(Vector3 position)
     {
         Vector3 tileSize = tilePrefab.GetComponent<MeshRenderer>().bounds.size;
-
+        Debug.Log(tileSize);
         int tileWidth = (int)tileSize.x;
         int tileDepth = (int)tileSize.z;
 

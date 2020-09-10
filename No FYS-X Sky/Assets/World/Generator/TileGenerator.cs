@@ -53,11 +53,85 @@ public class TileGenerator : MonoBehaviour
     void Start()
     {
         variables = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        Debug.Log(variables.mapHeight + " - " +variables.mapWidth);
+        GenerateTileNew();
     }
 
+    private void GenerateTileNew()
+    {
+        Vector3[] meshVertices = this.meshFilter.mesh.vertices;
+        int tileDepth = (int)Mathf.Sqrt(meshVertices.Length);
+        int tileWidth = tileDepth;
 
-    public float[,] generateNoiseMapNew(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
+        //float offsetX = -this.gameObject.transform.position.x;
+        //float offsetZ = -this.gameObject.transform.position.z;
+        Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
+
+        float[,] heightMap = GenerateNoiseMapNew(variables.mapWidth, variables.mapHeight, variables.seed, variables.noiseScale, variables.octaves, variables.persistance, variables.lacunarity, offsets);
+
+        Vector3 tileDimensions = this.meshFilter.mesh.bounds.size;
+        float distanceBetweenVertices = tileDimensions.z / (float)tileDepth;
+        float vertexOffsetZ = this.gameObject.transform.position.z / distanceBetweenVertices;
+
+        Texture2D heightTexture = BuildTexture(heightMap, this.heightTerrainTypes);
+        
+        this.tileRenderer.material.mainTexture = heightTexture;
+
+        UpdateMeshVertices(heightMap);
+    }
+
+    // Deprecated, kept in for viewing
+    private void GenerateTile(float centerVertexZ, float maxDistanceZ)
+    {
+        Vector3[] meshVertices = this.meshFilter.mesh.vertices;
+        int tileDepth = (int)Mathf.Sqrt(meshVertices.Length);
+        int tileWidth = tileDepth;
+
+        float offsetX = -this.gameObject.transform.position.x;
+        float offsetZ = -this.gameObject.transform.position.z;
+
+        float[,] heightMap = GeneratePerlinNoiseMap(tileDepth, tileWidth, this.mapScale, offsetX, offsetZ);
+
+        Vector3 tileDimensions = this.meshFilter.mesh.bounds.size;
+        float distanceBetweenVertices = tileDimensions.z / (float)tileDepth;
+        float vertexOffsetZ = this.gameObject.transform.position.z / distanceBetweenVertices;
+
+        //float[,] 
+
+        float[,] uniformHeatMap = this.GenerateUniformNoiseMap(tileDepth, tileWidth, centerVertexZ, maxDistanceZ, vertexOffsetZ);
+
+        float[,] randomHeatMap = this.GeneratePerlinNoiseMap(tileDepth, tileWidth, this.mapScale, offsetX, offsetZ);
+
+        float[,] heatMap = new float[tileDepth, tileWidth];
+        for (int zIndex = 0; zIndex < tileDepth; zIndex++)
+        {
+            for (int xIndex = 0; xIndex < tileWidth; xIndex++)
+            {
+                // mix both heat maps together by multiplying their values
+                heatMap[zIndex, xIndex] = uniformHeatMap[zIndex, xIndex] * randomHeatMap[zIndex, xIndex];
+                // makes higher regions colder, by adding the height value to the heat map
+                heatMap[zIndex, xIndex] += heightMap[zIndex, xIndex] * heightMap[zIndex, xIndex];
+
+
+            }
+        }
+
+        Texture2D heightTexture = BuildTexture(heightMap, this.heightTerrainTypes);
+        Texture2D heatTexture = BuildTexture(heatMap, this.heatTerrainTypes);
+
+        switch (this.visualizationMode)
+        {
+            case VisualizationMode.Height:
+                this.tileRenderer.material.mainTexture = heightTexture;
+                break;
+            case VisualizationMode.Heat:
+                this.tileRenderer.material.mainTexture = heatTexture;
+                break;
+
+        }
+
+        UpdateMeshVertices(heightMap);
+    }
+    public float[,] GenerateNoiseMapNew(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
     {
         float[,] noisemap = new float[mapWidth, mapHeight];
 
@@ -120,60 +194,6 @@ public class TileGenerator : MonoBehaviour
         return noisemap;
     }
 
-
-    // Deprecated, kept in for viewing
-    private void GenerateTile(float centerVertexZ, float maxDistanceZ)
-    {
-        Vector3[] meshVertices = this.meshFilter.mesh.vertices;
-        int tileDepth = (int)Mathf.Sqrt(meshVertices.Length);
-        int tileWidth = tileDepth;
-
-        float offsetX = -this.gameObject.transform.position.x;
-        float offsetZ = -this.gameObject.transform.position.z;       
-
-        float[,] heightMap = GeneratePerlinNoiseMap(tileDepth, tileWidth, this.mapScale, offsetX, offsetZ);
-
-        Vector3 tileDimensions = this.meshFilter.mesh.bounds.size;
-        float distanceBetweenVertices = tileDimensions.z / (float)tileDepth;
-        float vertexOffsetZ = this.gameObject.transform.position.z / distanceBetweenVertices;
-
-        //float[,] 
-
-        float[,] uniformHeatMap = this.GenerateUniformNoiseMap(tileDepth, tileWidth, centerVertexZ, maxDistanceZ, vertexOffsetZ);
-
-        float[,] randomHeatMap = this.GeneratePerlinNoiseMap(tileDepth, tileWidth, this.mapScale, offsetX, offsetZ);
-
-        float[,] heatMap = new float[tileDepth, tileWidth];
-        for (int zIndex = 0; zIndex < tileDepth; zIndex++)
-        {
-            for (int xIndex = 0; xIndex < tileWidth; xIndex++)
-            {
-                // mix both heat maps together by multiplying their values
-                heatMap[zIndex, xIndex] = uniformHeatMap[zIndex, xIndex] * randomHeatMap[zIndex, xIndex];
-                // makes higher regions colder, by adding the height value to the heat map
-                heatMap[zIndex, xIndex] += heightMap[zIndex, xIndex] * heightMap[zIndex, xIndex];
-
-
-            }
-        }
-
-        Texture2D heightTexture = BuildTexture(heightMap, this.heightTerrainTypes);
-        Texture2D heatTexture = BuildTexture(heatMap, this.heatTerrainTypes);
-
-        switch (this.visualizationMode)
-        {
-            case VisualizationMode.Height:
-                this.tileRenderer.material.mainTexture = heightTexture;
-                break;
-            case VisualizationMode.Heat:
-                this.tileRenderer.material.mainTexture = heatTexture;
-                break;
-
-        }
-
-        UpdateMeshVertices(heightMap);
-    }
-
     private float[,] GeneratePerlinNoiseMap(int mapDepth, int mapWidth, float scale, float offsetX, float offsetZ)
     {
         float[,] noiseMap = new float[mapDepth, mapWidth];
@@ -216,7 +236,6 @@ public class TileGenerator : MonoBehaviour
 
         return noiseMap;
     }
-
 
     private Texture2D BuildTexture(float[,] heightMap, TerrainType[] terrainTypes)
     {
