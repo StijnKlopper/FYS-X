@@ -8,17 +8,18 @@ namespace Assets.World
     class WorldBuilder : MonoBehaviour
     {
 
-        private int seed;
-
         private TerrainGenerator terrainGenerator;
 
         private Vector3 currentChunkPosition;
 
         private Dictionary<Vector3, GameObject> tileDict = new Dictionary<Vector3, GameObject>();
 
+
+        TileGenerator tile;
+
         void Start()
         {
-
+            tile = new TileGenerator();
         }
 
         void Update()
@@ -73,6 +74,8 @@ namespace Assets.World
         {
             return Mathf.FloorToInt(coordinate / 10) * 10;
         }
+
+    
 
     }
 }

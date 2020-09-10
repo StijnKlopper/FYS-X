@@ -18,47 +18,35 @@ public class MapDisplay : MonoBehaviour
 
     public Renderer textureRender;
 
+   
+
     public void GenerateMap()
     {
-        float[,] noiseMap = TileGenerator.generateNoiseMapNew(mapWidth, mapHeight,seed, noiseScale,octaves , persistance,lacunarity, offsets);
+        TileGenerator tile = new TileGenerator();
+        float[,] noiseMap = tile.generateNoiseMapNew(mapWidth, mapHeight, seed, noiseScale, octaves, persistance, lacunarity, offsets);
 
         Texture2D texture = new Texture2D(mapWidth, mapHeight);
 
         Color[] colorMap = new Color[mapWidth * mapHeight];
         for (int y = 0; y < mapHeight; y++)
         {
-
             for (int x = 0; x < mapWidth; x++)
             {
-                //Debug.Log(noiseMap[x, y]);
-                //texture.SetPixel(x, y, Color.Lerp(Color.black, Color.white,(noiseMap[x, y] + noiseMap [x,y] * noiseMap[x,y])));
                 colorMap[y * mapWidth + x] = Color.Lerp(Color.black, Color.white, noiseMap[x, y]);
             }
         }
-
 
         texture.SetPixels(colorMap);
         texture.wrapMode = TextureWrapMode.Clamp;
         texture.Apply();
         textureRender.sharedMaterial.mainTexture = texture;
         textureRender.transform.localScale = new Vector3(mapWidth, 1, mapHeight);
-
     }
 
     private void OnValidate()
     {
-        if(mapWidth < 1)
-        {
-            mapWidth = 1;
-        }
-        if(mapHeight < 1)
-        {
-            mapHeight = 1;
-        }
-
-        if(octaves < 0)
-        {
-            octaves = 1;
-        }
+        if (mapWidth < 1) mapWidth = 1;
+        if (mapHeight < 1) mapHeight = 1;
+        if (octaves < 0) octaves = 1;
     }
 }

@@ -10,9 +10,11 @@ public class GameController : MonoBehaviour
     public GameObject player;
     WorldBuilder worldBuilder;
     public float Seerange = 100f;
+
     void Start()
     {
         //worldBuilder = new WorldBuilder();
+
     }
 
     // Update is called once per frame

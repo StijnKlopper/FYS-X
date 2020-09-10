@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.World;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,17 +47,21 @@ public class TileGenerator : MonoBehaviour
     [SerializeField]
     private VisualizationMode visualizationMode;
 
+    TerrainGenerator variables;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        variables = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        Debug.Log(variables.mapHeight + " - " +variables.mapWidth);
     }
 
 
-    public static float[,] generateNoiseMapNew(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
+    public float[,] generateNoiseMapNew(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
     {
         float[,] noisemap = new float[mapWidth, mapHeight];
 
+        //Systeem variable which can be used as a seed
         System.Random prng = new System.Random(seed);
 
         Vector2[] octaveOffsets = new Vector2[octaves];
@@ -115,6 +120,7 @@ public class TileGenerator : MonoBehaviour
         return noisemap;
     }
 
+
     // Deprecated, kept in for viewing
     private void GenerateTile(float centerVertexZ, float maxDistanceZ)
     {
@@ -130,6 +136,8 @@ public class TileGenerator : MonoBehaviour
         Vector3 tileDimensions = this.meshFilter.mesh.bounds.size;
         float distanceBetweenVertices = tileDimensions.z / (float)tileDepth;
         float vertexOffsetZ = this.gameObject.transform.position.z / distanceBetweenVertices;
+
+        //float[,] 
 
         float[,] uniformHeatMap = this.GenerateUniformNoiseMap(tileDepth, tileWidth, centerVertexZ, maxDistanceZ, vertexOffsetZ);
 
