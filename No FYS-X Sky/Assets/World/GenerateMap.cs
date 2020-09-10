@@ -20,8 +20,6 @@ public class GenerateMap : Editor
         }
 
 
-
-
     }
 
 }

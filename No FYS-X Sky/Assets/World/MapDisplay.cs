@@ -18,8 +18,6 @@ public class MapDisplay : MonoBehaviour
 
     public Renderer textureRender;
 
-   
-
     public void GenerateMap()
     {
         TileGenerator tile = new TileGenerator();

@@ -7,7 +7,6 @@ namespace Assets.World
 {
     class WorldBuilder : MonoBehaviour
     {
-
         private TerrainGenerator terrainGenerator;
 
         //private Vector3 currentChunkPosition;

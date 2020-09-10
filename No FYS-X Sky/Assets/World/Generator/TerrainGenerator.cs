@@ -6,12 +6,6 @@ public class TerrainGenerator : MonoBehaviour
 {
     [Header("Tile settings")]
     [SerializeField]
-    private int mapWidthInTiles;
-
-    [SerializeField]
-    private int mapDepthInTiles;
-
-    [SerializeField]
     private GameObject tilePrefab;
 
     private Vector3 tileSize;
@@ -21,16 +15,13 @@ public class TerrainGenerator : MonoBehaviour
     private GameObject tile;
 
     [Header("Noisemap Settings")]
-    public int mapWidth;
 
-    public int mapHeight;
+    public float noiseScale = 10f;
 
-    public float noiseScale;
-
-    public int octaves;
+    public int octaves = 9;
 
     [Range(0, 1)]
-    public float persistance;
+    public float persistance = 0.5f;
 
     public float lacunarity;
 
@@ -48,10 +39,14 @@ public class TerrainGenerator : MonoBehaviour
         
     }
 
+    private void OnValidate()
+    {
+        if (octaves < 0) octaves = 1;
+    }
+
     public GameObject GenerateTile(Vector3 position)
     {
         Vector3 tileSize = tilePrefab.GetComponent<MeshRenderer>().bounds.size;
-        Debug.Log(tileSize);
         int tileWidth = (int)tileSize.x;
         int tileDepth = (int)tileSize.z;
 
@@ -61,12 +56,6 @@ public class TerrainGenerator : MonoBehaviour
         GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
 
         return tile;
-    }
-    private void OnValidate()
-    {
-        if (mapWidth < 1) mapWidth = 1;
-        if (mapHeight < 1) mapHeight = 1;
-        if (octaves < 0) octaves = 1;
     }
 
 }

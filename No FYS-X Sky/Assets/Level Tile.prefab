@@ -113,42 +113,33 @@ MonoBehaviour:
   meshFilter: {fileID: 5520266623367027305}
   meshCollider: {fileID: 5520266623367027307}
   mapScale: 10
-  heightMultiplier: 10
+  heightMultiplier: 1
   heightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.008489612
-      outSlope: 0.008489612
+      inSlope: -0.00044120985
+      outSlope: -0.00044120985
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.40616912
-      value: 0.003448218
-      inSlope: 0.092098266
-      outSlope: 0.092098266
+      time: 0.359881
+      value: -0.00015878305
+      inSlope: -0.012555844
+      outSlope: -0.012555844
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.28662008
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.78227407
-      value: 0.5544265
-      inSlope: 2.201586
-      outSlope: 2.201586
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0.15591212
+      outWeight: 0.13883588
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 2.046488
-      outSlope: 2.046488
+      inSlope: 1.5624577
+      outSlope: 1.5624577
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -156,7 +147,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  postid: {x: 0, y: 0, z: 0}
   terrainTypes:
   - name: water
     threshold: 0
