@@ -24,9 +24,6 @@ public class TileGenerator : MonoBehaviour
     [SerializeField]
     private AnimationCurve heightCurve;
 
-    [SerializeField]
-    private Vector3 postid;
-
     [System.Serializable]
     public class TerrainType
     {
@@ -44,37 +41,34 @@ public class TileGenerator : MonoBehaviour
     [SerializeField]
     private TerrainType[] heatTerrainTypes;
 
+    enum VisualizationMode { Height, Heat }
+
     [SerializeField]
     private VisualizationMode visualizationMode;
-
-    Renderer Renderer;
 
     // Start is called before the first frame update
     void Start()
     {
-        GameObject gaiobject = GameObject.Find("Quad");
-        Renderer = gaiobject.GetComponent<Renderer>();
-        GenerateTile(50, 100);
+
     }
 
 
-    public static float[,] generateNoiseMapNew(int mapWidth, int mapHeight, int seed, float scale, int octaves,float persistance, float lacunarity, Vector2 offset)
+    public static float[,] generateNoiseMapNew(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
     {
         float[,] noisemap = new float[mapWidth, mapHeight];
 
         System.Random prng = new System.Random(seed);
+
         Vector2[] octaveOffsets = new Vector2[octaves];
 
-        for(int i=0; i< octaves; i++)
+        for (int i = 0; i < octaves; i++)
         {
             float offsetX = prng.Next(-100000, 100000) + offset.x;
             float offsetY = prng.Next(-100000, 100000) + offset.y;
             octaveOffsets[i] = new Vector2(offsetX, offsetY);
         }
 
-       
-
-        if(scale <= 0)
+        if (scale <= 0)
         {
             scale = 0.0001f;
         }
@@ -85,7 +79,7 @@ public class TileGenerator : MonoBehaviour
 
         for(int y = 0; y < mapHeight; y++)
         {
-            for(int x= 0; x < mapWidth; x++)
+            for(int x = 0; x < mapWidth; x++)
             {
                 float amplitude = 1;
                 float frequency = 1;
@@ -100,14 +94,9 @@ public class TileGenerator : MonoBehaviour
                     amplitude *= persistance;
                     frequency *= lacunarity;
                 }
-                if(noiseHeight > maxNoiseHeight)
-                {
-                    maxNoiseHeight = noiseHeight;
-                }
-                else if(noiseHeight < minNoiseHeight)
-                {
-                    minNoiseHeight = noiseHeight;
-                }
+
+                if(noiseHeight > maxNoiseHeight) maxNoiseHeight = noiseHeight;
+                if(noiseHeight < minNoiseHeight) minNoiseHeight = noiseHeight;
 
                 noisemap[x, y] = noiseHeight;
             }
@@ -123,41 +112,10 @@ public class TileGenerator : MonoBehaviour
 
         }
 
-                return noisemap;
-
+        return noisemap;
     }
 
-    
-
-
-    private void drawNoiseMap(float[,] noiseMap) 
-    {
-        int width = noiseMap.GetLength(0);
-        int height = noiseMap.GetLength(1);
-
-        Texture2D texture = new Texture2D(width, height);
-
-        Color[] colorMap = new Color[width * height];
-        for (int y = 0; y < height; y++) {
-
-            for (int x = 0; x < width; x++) {
-                //Debug.Log(noiseMap[x, y]);
-                //texture.SetPixel(x, y, Color.Lerp(Color.black, Color.white,(noiseMap[x, y] + noiseMap [x,y] * noiseMap[x,y])));
-                colorMap[y * width + x] = Color.Lerp(Color.black, Color.white, noiseMap[x,y]);
-            }
-        }
-
-        Debug.Log(colorMap);
-
-        texture.SetPixels(colorMap);
-        //texture.wrapMode = TextureWrapMode.Clamp;
-        texture.Apply();
-
-        Renderer.material.mainTexture = texture;
-        Renderer.transform.localScale = new Vector3(width, 1, height);
-    }
-
-
+    // Deprecated, kept in for viewing
     private void GenerateTile(float centerVertexZ, float maxDistanceZ)
     {
         Vector3[] meshVertices = this.meshFilter.mesh.vertices;
@@ -165,15 +123,9 @@ public class TileGenerator : MonoBehaviour
         int tileWidth = tileDepth;
 
         float offsetX = -this.gameObject.transform.position.x;
-        float offsetZ = -this.gameObject.transform.position.z;
-
-        postid = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
-       
+        float offsetZ = -this.gameObject.transform.position.z;       
 
         float[,] heightMap = GeneratePerlinNoiseMap(tileDepth, tileWidth, this.mapScale, offsetX, offsetZ);
-
-        drawNoiseMap(heightMap);
-
 
         Vector3 tileDimensions = this.meshFilter.mesh.bounds.size;
         float distanceBetweenVertices = tileDimensions.z / (float)tileDepth;
@@ -213,8 +165,6 @@ public class TileGenerator : MonoBehaviour
 
         UpdateMeshVertices(heightMap);
     }
-
-    enum VisualizationMode { Height, Heat }
 
     private float[,] GeneratePerlinNoiseMap(int mapDepth, int mapWidth, float scale, float offsetX, float offsetZ)
     {

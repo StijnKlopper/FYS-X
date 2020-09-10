@@ -4,6 +4,7 @@ public class MapDisplay : MonoBehaviour
 {
     public int mapWidth;
     public int mapHeight;
+
     public float noiseScale;
     public int octaves;
     [Range(0,1)]
@@ -15,11 +16,7 @@ public class MapDisplay : MonoBehaviour
 
     public bool autoUpdate;
 
-
     public Renderer textureRender;
-
-
-
 
     public void GenerateMap()
     {
