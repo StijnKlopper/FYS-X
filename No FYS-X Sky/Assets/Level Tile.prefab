@@ -113,33 +113,42 @@ MonoBehaviour:
   meshFilter: {fileID: 5520266623367027305}
   meshCollider: {fileID: 5520266623367027307}
   mapScale: 10
-  heightMultiplier: 1
+  heightMultiplier: 10
   heightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: -0.00044120985
-      outSlope: -0.00044120985
+      inSlope: 0.016174613
+      outSlope: 0.016174613
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.359881
-      value: -0.00015878305
-      inSlope: -0.012555844
-      outSlope: -0.012555844
+      time: 0.36112806
+      value: 0.005841106
+      inSlope: 0.045464154
+      outSlope: 0.045464154
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.15591212
-      outWeight: 0.13883588
+      inWeight: 0.33333334
+      outWeight: 0.40679145
+    - serializedVersion: 3
+      time: 0.6055964
+      value: 0.30170235
+      inSlope: 1.4903693
+      outSlope: 1.4903693
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 1.5624577
-      outSlope: 1.5624577
+      inSlope: 1.7705154
+      outSlope: 1.7705154
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334

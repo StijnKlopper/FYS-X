@@ -42,6 +42,8 @@ public class TerrainGenerator : MonoBehaviour
     private void OnValidate()
     {
         if (octaves < 0) octaves = 1;
+        if (lacunarity < 1) lacunarity = 1;
+
     }
 
     public GameObject GenerateTile(Vector3 position)

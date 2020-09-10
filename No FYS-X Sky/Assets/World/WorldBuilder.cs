@@ -28,7 +28,7 @@ namespace Assets.World
             terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
 
             // x-, x+, z-, z+
-            int bounds = 50;
+            int bounds = 100;
             int xMin = calcChunkCoord(position.x - bounds);
             int xMax = calcChunkCoord(position.x + bounds);
             int zMin = calcChunkCoord(position.z - bounds);
@@ -51,7 +51,7 @@ namespace Assets.World
 
         public void unloadTiles(Vector3 position)
         {
-            int bounds = 50;
+            int bounds = 100;
             int xMin = calcChunkCoord(position.x - bounds);
             int xMax = calcChunkCoord(position.x + bounds);
             int zMin = calcChunkCoord(position.z - bounds);
