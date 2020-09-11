@@ -8,29 +8,30 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField]
     private GameObject tilePrefab;
 
-    private Vector3 tileSize;
-
     private int tileOffset = 5;
 
-    private GameObject tile;
-
-    [Header("Noisemap Settings")]
-
-    public float noiseScale = 10f;
-
-    public int octaves = 9;
-
-    [Range(0, 1)]
-    public float persistance = 0.5f;
-
-    public float lacunarity;
-
     public int seed;
+
+    [System.NonSerialized]
+    public float minNoiseHeight;
+
+    [System.NonSerialized]
+    public float maxNoiseHeight;
+
+    [System.NonSerialized]
+    public int[] randomNumbers;
 
     // Start is called before the first frame update
     void Start()
     {
-       
+        System.Random random = new System.Random(seed);
+        this.randomNumbers = new int[20];
+        for (int i = 0; i < this.randomNumbers.Length; i++)
+        {
+            this.randomNumbers[i] = random.Next(10000, 100000);
+        }
+        this.minNoiseHeight = float.MaxValue;
+        this.maxNoiseHeight = float.MinValue;
     }
 
     // Update is called once per frame
@@ -39,19 +40,8 @@ public class TerrainGenerator : MonoBehaviour
         
     }
 
-    private void OnValidate()
-    {
-        if (octaves < 0) octaves = 1;
-        if (lacunarity < 1) lacunarity = 1;
-
-    }
-
     public GameObject GenerateTile(Vector3 position)
     {
-        Vector3 tileSize = tilePrefab.GetComponent<MeshRenderer>().bounds.size;
-        int tileWidth = (int)tileSize.x;
-        int tileDepth = (int)tileSize.z;
-
         Vector3 tilePosition = new Vector3(position.x + tileOffset,
                 this.gameObject.transform.position.y,
                 position.z + tileOffset);

@@ -14,7 +14,6 @@ public class GameController : MonoBehaviour
     void Start()
     {
         worldBuilder = new WorldBuilder();
-        //worldBuilder.loadTiles(new Vector3(1.5f, 0, 1.5f));
     }
 
     // Update is called once per frame

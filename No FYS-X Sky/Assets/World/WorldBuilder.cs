@@ -39,11 +39,11 @@ namespace Assets.World
                 for (int j = zMin; j < zMax; j += 10)
                 {
                     Vector3 newChunkPosition = new Vector3(calcChunkCoord(i), 0, calcChunkCoord(j));
+                    //Debug.Log(newChunkPosition);
                     if (!tileDict.ContainsKey(newChunkPosition))
                     {
                         GameObject tile = terrainGenerator.GenerateTile(newChunkPosition);
                         tileDict.Add(newChunkPosition, tile);
-                        //currentChunkPosition = newChunkPosition;
                     }
                 }
             }

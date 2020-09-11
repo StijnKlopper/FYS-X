@@ -60,8 +60,7 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
+  m_Materials: []
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -112,43 +111,37 @@ MonoBehaviour:
   tileRenderer: {fileID: 5520266623367027304}
   meshFilter: {fileID: 5520266623367027305}
   meshCollider: {fileID: 5520266623367027307}
-  mapScale: 10
-  heightMultiplier: 10
+  noiseScale: 50
+  octaves: 6
+  persistance: 0.5
+  lacunarity: 2
+  heightMultiplier: 30
   heightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.016174613
-      outSlope: 0.016174613
+      inSlope: 0.021605575
+      outSlope: 0.021605575
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.36112806
-      value: 0.005841106
-      inSlope: 0.045464154
-      outSlope: 0.045464154
+      time: 0.20213312
+      value: 0.0043672025
+      inSlope: 0.019797107
+      outSlope: 0.019797107
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.40679145
-    - serializedVersion: 3
-      time: 0.6055964
-      value: 0.30170235
-      inSlope: 1.4903693
-      outSlope: 1.4903693
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      outWeight: 0.13050258
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 1.7705154
-      outSlope: 1.7705154
+      inSlope: 1.2478683
+      outSlope: 1.2478683
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -158,13 +151,13 @@ MonoBehaviour:
     m_RotationOrder: 4
   terrainTypes:
   - name: water
-    threshold: 0
+    threshold: 0.2
     color: {r: 0.23113209, g: 0.7447188, b: 1, a: 0}
   - name: grass
     threshold: 0.4
     color: {r: 0.069115125, g: 0.6509434, b: 0, a: 0}
   - name: mountain
-    threshold: 0.7
+    threshold: 0.8
     color: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 0}
   heightTerrainTypes:
   - name: water

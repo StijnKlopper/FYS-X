@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class TileGenerator : MonoBehaviour
 {
-
+    // Configurable fields (in Unity)
     [SerializeField]
     private MeshRenderer tileRenderer;
 
@@ -16,14 +16,20 @@ public class TileGenerator : MonoBehaviour
     [SerializeField]
     private MeshCollider meshCollider;
 
-    [SerializeField]
-    private float mapScale;
+    [Header("Noisemap Settings")]
+    public float noiseScale = 10f;
 
-    [SerializeField]
-    private float heightMultiplier;
+    [Range (0, 20)]
+    public int octaves = 3;
 
-    [SerializeField]
-    private AnimationCurve heightCurve;
+    [Range(0, 1)]
+    public float persistance = 0.5f;
+
+    public float lacunarity = 2f;
+
+    public float heightMultiplier;
+
+    public AnimationCurve heightCurve;
 
     [System.Serializable]
     public class TerrainType
@@ -47,12 +53,12 @@ public class TileGenerator : MonoBehaviour
     [SerializeField]
     private VisualizationMode visualizationMode;
 
-    TerrainGenerator variables;
+    TerrainGenerator terrainGenerator;
 
     // Start is called before the first frame update
     void Start()
     {
-        variables = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         GenerateTileNew();
     }
 
@@ -62,185 +68,89 @@ public class TileGenerator : MonoBehaviour
         int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
         int tileWidth = tileHeight;
       
-
-        //float offsetX = -this.gameObject.transform.position.x;
-        //float offsetZ = -this.gameObject.transform.position.z;
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
-        //Vector2 offsets = new Vector2(0, 0);
 
-
-        float[,] heightMap = GenerateNoiseMapNew(tileWidth, tileHeight, variables.seed, variables.noiseScale , variables.octaves, variables.persistance, variables.lacunarity, offsets);
-
-        //Vector3 tileDimensions = this.meshFilter.mesh.bounds.size;
-        //float distanceBetweenVertices = tileDimensions.z / (float)tileHeight;
-        //float vertexOffsetZ = this.gameObject.transform.position.z / distanceBetweenVertices;
+        float[,] heightMap = GenerateNoiseMapNew(tileWidth, tileHeight, noiseScale , octaves, persistance, lacunarity, offsets);
 
         Texture2D heightTexture = BuildTexture(heightMap, this.terrainTypes);
     
         this.tileRenderer.material.mainTexture = heightTexture;
         UpdateMeshVertices(heightMap);
-
     }
 
-    // Deprecated, kept in for viewing
-    private void GenerateTile(float centerVertexZ, float maxDistanceZ)
+    public float[,] GenerateNoiseMapNew(int width, int height, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
     {
-        Vector3[] meshVertices = this.meshFilter.mesh.vertices;
-        int tileDepth = (int)Mathf.Sqrt(meshVertices.Length);
-        int tileWidth = tileDepth;
+        float[,] noisemap = new float[width, height];
 
-        float offsetX = -this.gameObject.transform.position.x;
-        float offsetZ = -this.gameObject.transform.position.z;
+        Vector2[] octaveValues = new Vector2[octaves];
 
-     
-        float[,] heightMap = GeneratePerlinNoiseMap(tileDepth, tileWidth, this.mapScale, offsetX, offsetZ);
-
-        Vector3 tileDimensions = this.meshFilter.mesh.bounds.size;
-        float distanceBetweenVertices = tileDimensions.z / (float)tileDepth;
-        float vertexOffsetZ = this.gameObject.transform.position.z / distanceBetweenVertices;
-
-        //float[,] 
-
-        float[,] uniformHeatMap = this.GenerateUniformNoiseMap(tileDepth, tileWidth, centerVertexZ, maxDistanceZ, vertexOffsetZ);
-
-        float[,] randomHeatMap = this.GeneratePerlinNoiseMap(tileDepth, tileWidth, this.mapScale, offsetX, offsetZ);
-
-        float[,] heatMap = new float[tileDepth, tileWidth];
-        for (int zIndex = 0; zIndex < tileDepth; zIndex++)
-        {
-            for (int xIndex = 0; xIndex < tileWidth; xIndex++)
-            {
-                // mix both heat maps together by multiplying their values
-                heatMap[zIndex, xIndex] = uniformHeatMap[zIndex, xIndex] * randomHeatMap[zIndex, xIndex];
-                // makes higher regions colder, by adding the height value to the heat map
-                heatMap[zIndex, xIndex] += heightMap[zIndex, xIndex] * heightMap[zIndex, xIndex];
-
-
-            }
-        }
-
-        Texture2D heightTexture = BuildTexture(heightMap, this.heightTerrainTypes);
-        Texture2D heatTexture = BuildTexture(heatMap, this.heatTerrainTypes);
-
-        switch (this.visualizationMode)
-        {
-            case VisualizationMode.Height:
-                this.tileRenderer.material.mainTexture = heightTexture;
-                break;
-            case VisualizationMode.Heat:
-                this.tileRenderer.material.mainTexture = heatTexture;
-                break;
-
-        }
-
-        UpdateMeshVertices(heightMap);
-    }
-
-    public float[,] GenerateNoiseMapNew(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
-    {
-        //Debug.Log(offset);
-
-        float[,] noisemap = new float[mapWidth, mapHeight];
-
-        //Systeem variable which can be used as a seed
-        System.Random prng = new System.Random(seed);
-
-        Vector2[] octaveOffsets = new Vector2[octaves];
-
+        // Use pregenerated random numbers to populate octaveValues array so the random numbers used are the same for each tile
         for (int i = 0; i < octaves; i++)
         {
-            float offsetX = prng.Next(-100000, 100000) + offset.x;
-            float offsetY = prng.Next(-100000, 100000) + offset.y;
-            octaveOffsets[i] = new Vector2(offsetX, offsetY);
+            float valueX = terrainGenerator.randomNumbers[i];
+            float valueY = terrainGenerator.randomNumbers[i];
+            octaveValues[i] = new Vector2(valueX, valueY);
         }
 
+        // Scale can not be negative, using range is not great because it can be a large number
         if (scale <= 0)
         {
             scale = 0.0001f;
         }
-        float halfwidth = mapWidth / 2;
-        float halfheight = mapHeight / 2;
-        float maxNoiseHeight = float.MinValue;
-        float minNoiseHeight = float.MaxValue;
 
-        for(int y = 0; y < mapHeight; y++)
+        // Loop through all coordinates on the tile, for every coordinate calculate a height value using octaves
+        for(int y = 0; y < height; y++)
         {
-            for(int x = 0; x < mapWidth; x++)
+            for(int x = 0; x < width; x++)
             {
                 float amplitude = 1;
                 float frequency = 1;
-                float noiseHeight = 1;
+                float noiseHeight = 0;
+
                 for (int i = 0; i < octaves; i++)
                 {
-                    float sampleX = (x - halfwidth) / scale * frequency + + octaveOffsets[i].x;
-                    float sampleY = (y - halfheight) / scale * frequency +  + octaveOffsets[i].y;
+                    // Add 10000 to the sample coordinates to prevent feeding negative numbers into the Perlin Noise function
+                    // Prevents the mandela effect around (0,0)
+                    float sampleX = (x + offset.x) / scale * frequency + octaveValues[i].x;
+                    float sampleY = (y + offset.y) / scale * frequency + octaveValues[i].y;
 
+                    // Because we * 2 - 1 this value, we stretch out the noise from [0,1] to [-1,1]
                     float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
+
+                    // Add octave value to the perlin noise once for every octave
                     noiseHeight += perlinValue * amplitude;
+
+                    // Amplitude decreases every octave
                     amplitude *= persistance;
+
+                    // Frequency increases every octave
                     frequency *= lacunarity;
                 }
+                
+                // Set max and min noise height if changed
+                if (noiseHeight > terrainGenerator.maxNoiseHeight)
+                {
+                    terrainGenerator.maxNoiseHeight = noiseHeight;
+                }
+                else if (noiseHeight < terrainGenerator.minNoiseHeight)
+                {
+                    terrainGenerator.minNoiseHeight = noiseHeight;
+                }
 
-                if (noiseHeight > maxNoiseHeight) maxNoiseHeight = noiseHeight;
-                if(noiseHeight < minNoiseHeight) minNoiseHeight = noiseHeight;
-
-                noisemap[y, x] = noiseHeight;
+                noisemap[x, y] = noiseHeight;
             }
         }
 
-        for (int y = 0; y < mapHeight; y++)
+        for (int y = 0; y < height; y++)
         {
-            for (int x = 0; x < mapWidth; x++)
+            for (int x = 0; x < width; x++)
             {
-                //Normalise noise map
-                noisemap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noisemap[x, y]);
+                //Normalise noise map between current minimum and maximum noise heights
+                noisemap[x, y] = Mathf.InverseLerp(terrainGenerator.minNoiseHeight, terrainGenerator.maxNoiseHeight, noisemap[x, y]);
             }
         }
 
         return noisemap;
-    }
-
-    private float[,] GeneratePerlinNoiseMap(int mapDepth, int mapWidth, float scale, float offsetX, float offsetZ)
-    {
-        float[,] noiseMap = new float[mapDepth, mapWidth];
-
-        for (int zIndex = 0; zIndex < mapDepth; zIndex++)
-        {
-            for (int xIndex = 0; xIndex < mapWidth; xIndex++)
-            {
-                float sampleX = (xIndex + offsetX) / scale;
-                float sampleZ = (zIndex + offsetZ) / scale;
-
-
-                //float noise =   1f * Mathf.PerlinNoise(1 * sampleX, 1 * sampleZ)
-                //                + 0.5f * Mathf.PerlinNoise(2 * sampleX, 2 * sampleZ)
-                //                + 0.25f * Mathf.PerlinNoise(7 * sampleX, 7 * sampleZ);
-                float noise = Mathf.PerlinNoise(sampleX, sampleZ);
-
-                noiseMap[zIndex, xIndex] = noise;
-            }
-        }
-        return noiseMap;
-    }
-
-    private float[,] GenerateUniformNoiseMap(int mapDepth, int mapWidth, float maxDistanceZ, float centerVertexZ, float offsetZ)
-    {
-        float[,] noiseMap = new float[mapDepth, mapWidth];
-
-        for (int zIndex = 0; zIndex < mapDepth; zIndex++)
-        {
-            float sampleZ = zIndex + offsetZ;
-
-            float noise = Mathf.Abs(sampleZ - centerVertexZ) / maxDistanceZ;
-
-
-            for (int xIndex = 0; xIndex < mapWidth; xIndex++)
-            {
-                noiseMap[mapDepth - zIndex - 1, xIndex] = noise;
-            }
-        }
-
-        return noiseMap;
     }
 
     private Texture2D BuildTexture(float[,] heightMap, TerrainType[] terrainTypes)
@@ -254,7 +164,7 @@ public class TileGenerator : MonoBehaviour
             for (int xIndex = 0; xIndex < tileWidth; xIndex++)
             {
                 int colorIndex = zIndex * tileWidth + xIndex;
-                float height = heightMap[zIndex, xIndex];
+                float height = heightMap[xIndex, zIndex];
                 TerrainType terrainType = ChooseTerrainType(height, terrainTypes);
                 colorMap[colorIndex] = terrainType.color;
             }
@@ -293,7 +203,7 @@ public class TileGenerator : MonoBehaviour
         {
             for (int xIndex = 0; xIndex < tileWidth; xIndex++)
             {
-                float height = heightMap[zIndex, xIndex];
+                float height = heightMap[xIndex, zIndex];
                 Vector3 vertex = meshVertices[vertexIndex];
                 float terrainHeight = this.heightCurve.Evaluate(height) * this.heightMultiplier;
 
@@ -308,6 +218,12 @@ public class TileGenerator : MonoBehaviour
         this.meshFilter.mesh.RecalculateNormals();
 
         this.meshCollider.sharedMesh = this.meshFilter.mesh;
+    }
+
+    private void OnValidate()
+    {
+        if (octaves < 0) octaves = 1;
+        if (lacunarity < 1) lacunarity = 1;
     }
 
 }
