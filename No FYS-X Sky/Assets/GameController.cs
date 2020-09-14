@@ -9,7 +9,6 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     public GameObject player;
     WorldBuilder worldBuilder;
-    public float Seerange = 100f;
 
     void Start()
     {

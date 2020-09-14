@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using Assets.World.Generator;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TerrainGenerator : MonoBehaviour
+public class TerrainGenerator : MonoBehaviour, Generator
 {
     [Header("Tile settings")]
     [SerializeField]

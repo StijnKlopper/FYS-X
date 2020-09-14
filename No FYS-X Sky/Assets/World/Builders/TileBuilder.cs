@@ -1,10 +1,11 @@
 ﻿using Assets.World;
+using Assets.World.Generator;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TileGenerator : MonoBehaviour
+public class TileBuilder : MonoBehaviour
 {
     // Configurable fields (in Unity)
     [SerializeField]
@@ -19,7 +20,7 @@ public class TileGenerator : MonoBehaviour
     [Header("Noisemap Settings")]
     public float noiseScale = 10f;
 
-    [Range (0, 20)]
+    [Range(0, 20)]
     public int octaves = 3;
 
     [Range(0, 1)]
@@ -30,6 +31,9 @@ public class TileGenerator : MonoBehaviour
     public float heightMultiplier;
 
     public AnimationCurve heightCurve;
+
+    [System.NonSerialized]
+    public float[,] heightMap;
 
     [System.Serializable]
     public class TerrainType
@@ -59,10 +63,10 @@ public class TileGenerator : MonoBehaviour
     void Start()
     {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        GenerateTileNew();
+        GenerateTile();
     }
 
-    private void GenerateTileNew()
+    private void GenerateTile()
     {
         Vector3[] meshVertices = this.meshFilter.mesh.vertices;
         int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
@@ -70,15 +74,15 @@ public class TileGenerator : MonoBehaviour
       
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
 
-        float[,] heightMap = GenerateNoiseMap(tileWidth, tileHeight, noiseScale , octaves, persistance, lacunarity, offsets);
+        GenerateNoiseMap(tileWidth, tileHeight, noiseScale, octaves, persistance, lacunarity, offsets);
 
-        Texture2D heightTexture = BuildTexture(heightMap, this.terrainTypes);
+        Texture2D heightTexture = BuildTexture(this.terrainTypes);
     
         this.tileRenderer.material.mainTexture = heightTexture;
         UpdateMeshVertices(heightMap);
     }
 
-    public float[,] GenerateNoiseMap(int width, int height, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
+    public void GenerateNoiseMap(int width, int height, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
     {
         float[,] noisemap = new float[width, height];
 
@@ -146,6 +150,8 @@ public class TileGenerator : MonoBehaviour
 
                 noisemap[x, y] = noiseHeight;
             }
+
+
         }
 
         for (int y = 0; y < height; y++)
@@ -158,13 +164,13 @@ public class TileGenerator : MonoBehaviour
             }
         }
 
-        return noisemap;
+        this.heightMap = noisemap;
     }
 
-    private Texture2D BuildTexture(float[,] heightMap, TerrainType[] terrainTypes)
+    private Texture2D BuildTexture(TerrainType[] terrainTypes)
     {
-        int tileDepth = heightMap.GetLength(0);
-        int tileWidth = heightMap.GetLength(1);
+        int tileDepth = this.heightMap.GetLength(0);
+        int tileWidth = this.heightMap.GetLength(1);
 
         Color[] colorMap = new Color[tileDepth * tileWidth];
         for (int zIndex = 0; zIndex < tileDepth; zIndex++)
@@ -172,7 +178,7 @@ public class TileGenerator : MonoBehaviour
             for (int xIndex = 0; xIndex < tileWidth; xIndex++)
             {
                 int colorIndex = zIndex * tileWidth + xIndex;
-                float height = heightMap[xIndex, zIndex];
+                float height = this.heightMap[xIndex, zIndex];
                 TerrainType terrainType = ChooseTerrainType(height, terrainTypes);
                 colorMap[colorIndex] = terrainType.color;
             }

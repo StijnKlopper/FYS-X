@@ -24,8 +24,9 @@ public class MapDisplay : MonoBehaviour
 
     public void GenerateMap()
     {
-        TileGenerator tile = new TileGenerator();
-        float[,] noiseMap = tile.GenerateNoiseMap(mapWidth, mapHeight, noiseScale, octaves, persistance, lacunarity, offsets);
+        TileBuilder tile = new TileBuilder();
+        tile.GenerateNoiseMap(mapWidth, mapHeight, noiseScale, octaves, persistance, lacunarity, offsets);
+        float[,] noiseMap = tile.heightMap;
 
         Texture2D texture = new Texture2D(mapWidth, mapHeight);
 

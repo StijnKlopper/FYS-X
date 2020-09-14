@@ -9,13 +9,11 @@ namespace Assets.World
     {
         private TerrainGenerator terrainGenerator;
 
-        //private Vector3 currentChunkPosition;
-
         private Dictionary<Vector3, GameObject> tileDict = new Dictionary<Vector3, GameObject>();
 
         void Start()
         {
-            //currentChunkPosition = new Vector3(0, 0, 0);
+
         }
 
         void Update()
@@ -71,8 +69,5 @@ namespace Assets.World
         {
             return Mathf.FloorToInt(coordinate / 10) * 10;
         }
-
-    
-
     }
 }
