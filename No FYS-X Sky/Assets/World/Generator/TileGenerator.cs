@@ -70,7 +70,7 @@ public class TileGenerator : MonoBehaviour
       
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
 
-        float[,] heightMap = GenerateNoiseMapNew(tileWidth, tileHeight, noiseScale , octaves, persistance, lacunarity, offsets);
+        float[,] heightMap = GenerateNoiseMap(tileWidth, tileHeight, noiseScale , octaves, persistance, lacunarity, offsets);
 
         Texture2D heightTexture = BuildTexture(heightMap, this.terrainTypes);
     
@@ -78,11 +78,15 @@ public class TileGenerator : MonoBehaviour
         UpdateMeshVertices(heightMap);
     }
 
-    public float[,] GenerateNoiseMapNew(int width, int height, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
+    public float[,] GenerateNoiseMap(int width, int height, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
     {
         float[,] noisemap = new float[width, height];
 
         Vector2[] octaveValues = new Vector2[octaves];
+
+        float maxPossibleHeight = 0;
+        float amplitude = 1;
+        float frequency = 1;
 
         // Use pregenerated random numbers to populate octaveValues array so the random numbers used are the same for each tile
         for (int i = 0; i < octaves; i++)
@@ -90,6 +94,9 @@ public class TileGenerator : MonoBehaviour
             float valueX = terrainGenerator.randomNumbers[i];
             float valueY = terrainGenerator.randomNumbers[i];
             octaveValues[i] = new Vector2(valueX, valueY);
+
+            maxPossibleHeight += amplitude;
+            amplitude *= persistance;
         }
 
         // Scale can not be negative, using range is not great because it can be a large number
@@ -103,8 +110,8 @@ public class TileGenerator : MonoBehaviour
         {
             for(int x = 0; x < width; x++)
             {
-                float amplitude = 1;
-                float frequency = 1;
+                amplitude = 1;
+                frequency = 1;
                 float noiseHeight = 0;
 
                 for (int i = 0; i < octaves; i++)
@@ -146,7 +153,8 @@ public class TileGenerator : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 //Normalise noise map between current minimum and maximum noise heights
-                noisemap[x, y] = Mathf.InverseLerp(terrainGenerator.minNoiseHeight, terrainGenerator.maxNoiseHeight, noisemap[x, y]);
+                float normalizedHeight =(noisemap[x,y] + 1) / (2f * maxPossibleHeight / 1.75f);
+                noisemap[x, y] = normalizedHeight;
             }
         }
 
