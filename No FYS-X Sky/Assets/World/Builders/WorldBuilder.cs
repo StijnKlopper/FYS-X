@@ -24,6 +24,8 @@ namespace Assets.World
         public void loadTiles(Vector3 position)
         {
             terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+            //t = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+            //tG = new TerrainGenerator(t);
 
             // x-, x+, z-, z+
             int bounds = 100;

@@ -3,11 +3,11 @@ using Assets.World.Generator;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
 {
-    // Configurable fields (in Unity)
     [SerializeField]
     private MeshRenderer tileRenderer;
 
@@ -17,23 +17,13 @@ public class TileBuilder : MonoBehaviour
     [SerializeField]
     private MeshCollider meshCollider;
 
-    [Header("Noisemap Settings")]
-    public float noiseScale = 10f;
-
-    [Range(0, 20)]
-    public int octaves = 3;
-
-    [Range(0, 1)]
-    public float persistance = 0.5f;
-
-    public float lacunarity = 2f;
-
-    public float heightMultiplier;
-
     public AnimationCurve heightCurve;
 
     [System.NonSerialized]
     public float[,] heightMap;
+
+    [System.NonSerialized]
+    public float[,] biomeMap;
 
     [System.Serializable]
     public class TerrainType
@@ -73,8 +63,8 @@ public class TileBuilder : MonoBehaviour
         int tileWidth = tileHeight;
       
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
-
-        GenerateNoiseMap(tileWidth, tileHeight, noiseScale, octaves, persistance, lacunarity, offsets);
+        GenerateBiomeMap(tileWidth, tileHeight, offsets);
+        GenerateNoiseMap(tileWidth, tileHeight, offsets);
 
         Texture2D heightTexture = BuildTexture(this.terrainTypes);
     
@@ -82,48 +72,34 @@ public class TileBuilder : MonoBehaviour
         UpdateMeshVertices(heightMap);
     }
 
-    public void GenerateNoiseMap(int width, int height, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
+    public void GenerateNoiseMap(int width, int height, Vector2 offset)
     {
         float[,] noisemap = new float[width, height];
 
-        Vector2[] octaveValues = new Vector2[octaves];
-
-        float maxPossibleHeight = 0;
-        float amplitude = 1;
-        float frequency = 1;
-
-        // Use pregenerated random numbers to populate octaveValues array so the random numbers used are the same for each tile
-        for (int i = 0; i < octaves; i++)
-        {
-            float valueX = terrainGenerator.randomNumbers[i];
-            float valueY = terrainGenerator.randomNumbers[i];
-            octaveValues[i] = new Vector2(valueX, valueY);
-
-            maxPossibleHeight += amplitude;
-            amplitude *= persistance;
-        }
-
         // Scale can not be negative, using range is not great because it can be a large number
-        if (scale <= 0)
-        {
-            scale = 0.0001f;
-        }
+        // Not needed because biomes are predefined
+        //if (biome.noiseScale <= 0)
+        //{
+        //    biome.noiseScale = 0.0001f;
+        //}
 
         // Loop through all coordinates on the tile, for every coordinate calculate a height value using octaves
         for(int y = 0; y < height; y++)
         {
             for(int x = 0; x < width; x++)
             {
-                amplitude = 1;
-                frequency = 1;
+                float amplitude = 1;
+                float frequency = 1;
                 float noiseHeight = 0;
 
-                for (int i = 0; i < octaves; i++)
+                Biome biome = GetBiomeByBiomeValue(this.biomeMap[x, y]);
+
+                for (int i = 0; i < biome.octaves; i++)
                 {
                     // Add 10000 to the sample coordinates to prevent feeding negative numbers into the Perlin Noise function
                     // Prevents the mandela effect around (0,0)
-                    float sampleX = (x + offset.x) / scale * frequency + octaveValues[i].x;
-                    float sampleY = (y + offset.y) / scale * frequency + octaveValues[i].y;
+                    float sampleX = (x + offset.x) / biome.noiseScale * frequency + terrainGenerator.randomNumbers[i];
+                    float sampleY = (y + offset.y) / biome.noiseScale * frequency + terrainGenerator.randomNumbers[i];
 
                     // Because we * 2 - 1 this value, we stretch out the noise from [0,1] to [-1,1]
                     float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
@@ -132,55 +108,63 @@ public class TileBuilder : MonoBehaviour
                     noiseHeight += perlinValue * amplitude;
 
                     // Amplitude decreases every octave
-                    amplitude *= persistance;
+                    amplitude *= biome.persistance;
 
                     // Frequency increases every octave
-                    frequency *= lacunarity;
-                }
-                
-                // Set max and min noise height if changed
-                if (noiseHeight > terrainGenerator.maxNoiseHeight)
-                {
-                    terrainGenerator.maxNoiseHeight = noiseHeight;
-                }
-                else if (noiseHeight < terrainGenerator.minNoiseHeight)
-                {
-                    terrainGenerator.minNoiseHeight = noiseHeight;
+                    frequency *= biome.lacunarity;
                 }
 
-                noisemap[x, y] = noiseHeight;
-            }
-
-
-        }
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
                 //Normalise noise map between current minimum and maximum noise heights
-                float normalizedHeight =(noisemap[x,y] + 1) / (2f * maxPossibleHeight / 1.75f);
-                noisemap[x, y] = normalizedHeight;
+                noisemap[x, y] = (noiseHeight + 1) / (2f * biome.GetMaxPossibleHeight() / 1.75f);
             }
+
+
         }
+
+        //for (int y = 0; y < height; y++)
+        //{
+        //    for (int x = 0; x < width; x++)
+        //    {
+        //        float normalizedHeight = (noisemap[x,y] + 1) / (2f * maxPossibleHeight / 1.75f);
+        //        noisemap[x, y] = normalizedHeight;
+        //    }
+        //}
 
         this.heightMap = noisemap;
     }
 
+    private void GenerateBiomeMap(int width, int height, Vector2 offsets)
+    {
+        float[,] biomeMap = new float[width, height];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                float sampleX = (x + offsets.x) / 50 + 10000;
+                float sampleY = (y + offsets.y) / 50 + 10000;
+                float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
+                biomeMap[x, y] = perlinValue;
+            }
+        }
+        this.biomeMap = biomeMap;
+    }
+
     private Texture2D BuildTexture(TerrainType[] terrainTypes)
     {
-        int tileDepth = this.heightMap.GetLength(0);
-        int tileWidth = this.heightMap.GetLength(1);
+        int tileDepth = this.biomeMap.GetLength(0);
+        int tileWidth = this.biomeMap.GetLength(1);
 
         Color[] colorMap = new Color[tileDepth * tileWidth];
         for (int zIndex = 0; zIndex < tileDepth; zIndex++)
         {
             for (int xIndex = 0; xIndex < tileWidth; xIndex++)
             {
+                Biome biome = GetBiomeByBiomeValue(this.biomeMap[xIndex,zIndex]);
                 int colorIndex = zIndex * tileWidth + xIndex;
+
+                 // TODO: Klopt niet
                 float height = this.heightMap[xIndex, zIndex];
-                TerrainType terrainType = ChooseTerrainType(height, terrainTypes);
-                colorMap[colorIndex] = terrainType.color;
+                colorMap[colorIndex] = ChooseTerrainType(height, biome);
             }
         }
 
@@ -192,17 +176,17 @@ public class TileBuilder : MonoBehaviour
         return tileTexture;
     }
 
-    TerrainType ChooseTerrainType(float noise, TerrainType[] terrainTypes)
+    Color ChooseTerrainType(float noise, Biome biome)
     {
-        foreach (TerrainType terrainType in terrainTypes)
+        foreach (var terrainTypes in biome.terrainThreshold)
         {
-            
-            if (noise < terrainType.threshold)
+            if (noise < terrainTypes.Key)
             {
-                return terrainType;
+                return terrainTypes.Value;
             }
         }
-        return terrainTypes[terrainTypes.Length - 1];
+
+        return Color.white;
     }
 
     private void UpdateMeshVertices(float[,] heightMap)
@@ -219,7 +203,7 @@ public class TileBuilder : MonoBehaviour
             {
                 float height = heightMap[xIndex, zIndex];
                 Vector3 vertex = meshVertices[vertexIndex];
-                float terrainHeight = this.heightCurve.Evaluate(height) * this.heightMultiplier;
+                float terrainHeight = this.heightCurve.Evaluate(height) * 50; // TODO heightmultiplier
 
                 meshVertices[vertexIndex] = new Vector3(vertex.x, terrainHeight, vertex.z);
 
@@ -234,10 +218,24 @@ public class TileBuilder : MonoBehaviour
         this.meshCollider.sharedMesh = this.meshFilter.mesh;
     }
 
-    private void OnValidate()
-    {
-        if (octaves < 0) octaves = 1;
-        if (lacunarity < 1) lacunarity = 1;
-    }
 
+
+    private Biome GetBiomeByBiomeValue(float biomeValue)
+    {
+        // TODO: expand with more biomes
+        if (biomeValue <= 0.2)
+        {
+            //Debug.Log("Plains " + biomeValue);
+            return new PlainsBiome();
+        } 
+        else if (biomeValue > 0.2) 
+        {
+            //Debug.Log("Mountain " + biomeValue);
+            return new MountainBiome();
+        } 
+        else
+        {
+            throw new Exception("GetBiomeByBiomeValue shouldn't happen");
+        }
+    }
 }

@@ -111,11 +111,6 @@ MonoBehaviour:
   tileRenderer: {fileID: 5520266623367027304}
   meshFilter: {fileID: 5520266623367027305}
   meshCollider: {fileID: 5520266623367027307}
-  noiseScale: 50
-  octaves: 6
-  persistance: 0.5
-  lacunarity: 2
-  heightMultiplier: 30
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -138,10 +133,10 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.13050258
     - serializedVersion: 3
-      time: 1.0162385
-      value: 1.0014032
-      inSlope: 1.2247014
-      outSlope: 1.2247014
+      time: 1.1439768
+      value: 1.4218023
+      inSlope: 1.5049578
+      outSlope: 1.5049578
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
