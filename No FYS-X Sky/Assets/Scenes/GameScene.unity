@@ -1808,10 +1808,10 @@ MonoBehaviour:
   lookSmoother: 3
   useCurves: 1
   useCurvesHeight: 0.5
-  forwardSpeed: 5
-  backwardSpeed: 2
-  rotateSpeed: 2
-  jumpPower: 2
+  forwardSpeed: 20
+  backwardSpeed: 10
+  rotateSpeed: 5
+  jumpPower: 10
 --- !u!54 &496637523
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2346,12 +2346,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawMode: 0
-  mapWidth: 103
+  mapWidth: 122
   mapHeight: 100
-  noiseScale: 4
-  octaves: 1
-  persistance: 0.378
-  lacunarity: 2
+  noiseScale: 5.62
+  octaves: 40
+  persistance: 0.688
+  lacunarity: 1.61
   seed: 82
   offsets: {x: 0, y: 0}
   autoUpdate: 0
@@ -2554,6 +2554,22 @@ PrefabInstance:
     - target: {fileID: 400076, guid: 69c3ed15e9d13481e8f7dc4db5532fb6, type: 3}
       propertyPath: m_RootOrder
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 69c3ed15e9d13481e8f7dc4db5532fb6, type: 3}
+      propertyPath: forwardSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 69c3ed15e9d13481e8f7dc4db5532fb6, type: 3}
+      propertyPath: backwardSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 69c3ed15e9d13481e8f7dc4db5532fb6, type: 3}
+      propertyPath: rotateSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400022, guid: 69c3ed15e9d13481e8f7dc4db5532fb6, type: 3}
+      propertyPath: jumpPower
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 11400026, guid: 69c3ed15e9d13481e8f7dc4db5532fb6, type: 3}
       propertyPath: m_Enabled
@@ -4573,7 +4589,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 496637520}
-  Seerange: 100
 --- !u!114 &1157197607
 MonoBehaviour:
   m_ObjectHideFlags: 0
