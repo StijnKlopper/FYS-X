@@ -47,7 +47,6 @@ public class TerrainGenerator : MonoBehaviour, Generator
                 this.gameObject.transform.position.y,
                 position.z + tileOffset);
         GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
-
         return tile;
     }
 

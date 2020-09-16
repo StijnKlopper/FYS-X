@@ -12,9 +12,8 @@ public class MountainBiome : Biome
         this.lacunarity = 2f;
         this.heightMultiplier = 30f;
 
-        //this.terrainThreshold.Add(0.2f, Color.blue);
-        //this.terrainThreshold.Add(0.4f, Color.green);
-        //this.terrainThreshold.Add(1f, new Color(139,69,19));
-        this.terrainThreshold.Add(1f, Color.green);
+        this.terrainThreshold.Add(0.2f, Color.blue);
+        this.terrainThreshold.Add(0.4f, Color.green);
+        this.terrainThreshold.Add(1f, Color.gray);
     }
 }

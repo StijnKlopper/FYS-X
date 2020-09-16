@@ -3,6 +3,7 @@ using Assets.World.Generator;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -136,16 +137,21 @@ public class TileBuilder : MonoBehaviour
     private void GenerateBiomeMap(int width, int height, Vector2 offsets)
     {
         float[,] biomeMap = new float[width, height];
+        float[] perlinvalues = new float[11];
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                float sampleX = (x + offsets.x) / 50 + 10000;
-                float sampleY = (y + offsets.y) / 50 + 10000;
+                // Scale out the values of the Biomes Noise map. 
+                //This way changes between values are smaller and make the same biomes value stick more together
+                float sampleX = (x + offsets.x) / 1000 + 100000;
+                float sampleY = (y + offsets.y) / 1000 + 100000;
                 float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
                 biomeMap[x, y] = perlinValue;
+                perlinvalues[y] = perlinValue;
             }
         }
+
         this.biomeMap = biomeMap;
     }
 
@@ -223,12 +229,12 @@ public class TileBuilder : MonoBehaviour
     private Biome GetBiomeByBiomeValue(float biomeValue)
     {
         // TODO: expand with more biomes
-        if (biomeValue <= 0.2)
+        if (biomeValue < 0.2)
         {
             //Debug.Log("Plains " + biomeValue);
             return new PlainsBiome();
         } 
-        else if (biomeValue > 0.2) 
+        else if (biomeValue >= 0.2) 
         {
             //Debug.Log("Mountain " + biomeValue);
             return new MountainBiome();

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Management.Instrumentation;
 using System.Xml.Schema;
 using UnityEngine;
 
@@ -24,8 +25,6 @@ namespace Assets.World
         public void loadTiles(Vector3 position)
         {
             terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-            //t = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-            //tG = new TerrainGenerator(t);
 
             // x-, x+, z-, z+
             int bounds = 100;
@@ -39,10 +38,11 @@ namespace Assets.World
                 for (int j = zMin; j < zMax; j += 10)
                 {
                     Vector3 newChunkPosition = new Vector3(calcChunkCoord(i), 0, calcChunkCoord(j));
-                    //Debug.Log(newChunkPosition);
                     if (!tileDict.ContainsKey(newChunkPosition))
                     {
                         GameObject tile = terrainGenerator.GenerateTile(newChunkPosition);
+                        //Make the tiles a parent of the Level GameObject to have a clean hierarchy.
+                        tile.transform.SetParent(terrainGenerator.transform);
                         tileDict.Add(newChunkPosition, tile);
                     }
                 }
