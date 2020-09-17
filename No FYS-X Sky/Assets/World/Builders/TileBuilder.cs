@@ -71,7 +71,7 @@ public class TileBuilder : MonoBehaviour
                 float frequency = 1;
                 float noiseHeight = 0;
 
-                Biome biome = GetBiomeByBiomeValue(this.biomeMap[x, y]);
+                Biome biome = terrainGenerator.GetBiomeByBiomeValue(this.biomeMap[x, y]);
 
                 for (int i = 0; i < biome.octaves; i++)
                 {
@@ -109,8 +109,8 @@ public class TileBuilder : MonoBehaviour
             {
                 // Scale out the values of the Biomes Noise map. 
                 // This way changes between values are smaller and make the same biomes value stick more together
-                float sampleX = (x + offsets.x) / 10000 + 100000;
-                float sampleY = (y + offsets.y) / 10000 + 100000;
+                float sampleX = ((x + offsets.x) / 3000 + 100000);
+                float sampleY = ((y + offsets.y) / 3000 + 100000);
                 float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
                 biomeMap[x, y] = perlinValue;
             }
@@ -128,7 +128,7 @@ public class TileBuilder : MonoBehaviour
         {
             for (int xIndex = 0; xIndex < tileWidth; xIndex++)
             {
-                Biome biome = GetBiomeByBiomeValue(this.biomeMap[xIndex,zIndex]);
+                Biome biome = terrainGenerator.GetBiomeByBiomeValue(this.biomeMap[xIndex,zIndex]);
                 int colorIndex = zIndex * tileWidth + xIndex;
 
                 float height = this.heightMap[xIndex, zIndex];
@@ -184,54 +184,4 @@ public class TileBuilder : MonoBehaviour
         this.meshCollider.sharedMesh = this.meshFilter.mesh;
     }
 
-    private Biome GetBiomeByBiomeValue(float biomeValue)
-    {
-        // TODO: expand with more biomes
-        if (biomeValue < 0.1)
-        {
-            return new OceanBiome();
-        } 
-        if (biomeValue < 0.12) 
-        {
-            return new BeachBiome();
-        }
-        if (biomeValue < 0.22)
-        {
-            return new PlainsBiome();
-        }
-        if (biomeValue < 0.28)
-        { 
-            return new ShrublandBiome();
-        }
-        if (biomeValue < 0.40)
-        {
-            return new DesertBiome();
-        }
-        if (biomeValue < 0.45)
-        {
-            return new ShrublandBiome();
-        }
-        if (biomeValue < 0.50)
-        {
-            
-            return new PlainsBiome();
-        }
-        if (biomeValue < 0.70)
-        {
-            
-            return new ForestBiome();
-        }
-        if (biomeValue < 0.80)
-        {
-            
-            return new MountainBiome();
-        }  if (biomeValue< 0.90)
-        {
-            
-            return new SnowBiome();
-        } 
-        return new MountainBiome();
-    }
-    
-    
 }

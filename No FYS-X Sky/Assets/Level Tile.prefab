@@ -117,15 +117,15 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: -0.0024878185
-      outSlope: -0.0024878185
+      inSlope: 0.009732198
+      outSlope: 0.009732198
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.50085825
-      value: -0.0012460444
+      time: 0.35800546
+      value: 0.0034841802
       inSlope: 0.06408127
       outSlope: 0.06408127
       tangentMode: 0
@@ -135,8 +135,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 2.0059354
-      outSlope: 2.0059354
+      inSlope: 1.5522186
+      outSlope: 1.5522186
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -144,37 +144,4 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  terrainTypes:
-  - name: water
-    threshold: 0.2
-    color: {r: 0.23113209, g: 0.7447188, b: 1, a: 0}
-  - name: grass
-    threshold: 0.4
-    color: {r: 0.069115125, g: 0.6509434, b: 0, a: 0}
-  - name: mountain
-    threshold: 0.8
-    color: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 0}
-  heightTerrainTypes:
-  - name: water
-    threshold: 0.4
-    color: {r: 0.01214843, g: 0.70792645, b: 0.8584906, a: 0}
-  - name: grass
-    threshold: 0.7
-    color: {r: 0.4085307, g: 1, b: 0.1372549, a: 0}
-  - name: mountain
-    threshold: 1
-    color: {r: 0.476459, g: 0.4811321, b: 0.47432363, a: 0}
-  heatTerrainTypes:
-  - name: hottest
-    threshold: -0.11
-    color: {r: 1, g: 0, b: 0, a: 0}
-  - name: hot
-    threshold: 0.13
-    color: {r: 0.83094406, g: 0.9433962, b: 0, a: 0}
-  - name: cold
-    threshold: 0.45
-    color: {r: 0, g: 0.18658686, b: 0.9811321, a: 0}
-  - name: coldest
-    threshold: 0.44
-    color: {r: 0.5566038, g: 0.09189212, b: 0.5351386, a: 0}
   visualizationMode: 0
