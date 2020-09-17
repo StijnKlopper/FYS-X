@@ -26,22 +26,7 @@ public class TileBuilder : MonoBehaviour
     [System.NonSerialized]
     public float[,] biomeMap;
 
-    [System.Serializable]
-    public class TerrainType
-    {
-        public string name;
-        public float threshold;
-        public Color color;
-    }
 
-    [SerializeField]
-    private TerrainType[] terrainTypes;
-
-    [SerializeField]
-    private TerrainType[] heightTerrainTypes;
-
-    [SerializeField]
-    private TerrainType[] heatTerrainTypes;
 
     enum VisualizationMode { Height, Heat }
 
@@ -67,7 +52,7 @@ public class TileBuilder : MonoBehaviour
         GenerateBiomeMap(tileWidth, tileHeight, offsets);
         GenerateNoiseMap(tileWidth, tileHeight, offsets);
 
-        Texture2D heightTexture = BuildTexture(this.terrainTypes);
+        Texture2D heightTexture = BuildTexture();
     
         this.tileRenderer.material.mainTexture = heightTexture;
         UpdateMeshVertices(heightMap);
@@ -76,13 +61,6 @@ public class TileBuilder : MonoBehaviour
     public void GenerateNoiseMap(int width, int height, Vector2 offset)
     {
         float[,] noisemap = new float[width, height];
-
-        // Scale can not be negative, using range is not great because it can be a large number
-        // Not needed because biomes are predefined
-        //if (biome.noiseScale <= 0)
-        //{
-        //    biome.noiseScale = 0.0001f;
-        //}
 
         // Loop through all coordinates on the tile, for every coordinate calculate a height value using octaves
         for(int y = 0; y < height; y++)
@@ -115,47 +93,32 @@ public class TileBuilder : MonoBehaviour
                     frequency *= biome.lacunarity;
                 }
 
-                //Normalise noise map between current minimum and maximum noise heights
+                // Normalise noise map between current minimum and maximum noise heights
                 noisemap[x, y] = (noiseHeight + 1) / (2f * biome.GetMaxPossibleHeight() / 1.75f);
             }
-
-
         }
-
-        //for (int y = 0; y < height; y++)
-        //{
-        //    for (int x = 0; x < width; x++)
-        //    {
-        //        float normalizedHeight = (noisemap[x,y] + 1) / (2f * maxPossibleHeight / 1.75f);
-        //        noisemap[x, y] = normalizedHeight;
-        //    }
-        //}
-
         this.heightMap = noisemap;
     }
 
     private void GenerateBiomeMap(int width, int height, Vector2 offsets)
     {
         float[,] biomeMap = new float[width, height];
-        float[] perlinvalues = new float[11];
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 // Scale out the values of the Biomes Noise map. 
-                //This way changes between values are smaller and make the same biomes value stick more together
-                float sampleX = (x + offsets.x) / 1000 + 100000;
-                float sampleY = (y + offsets.y) / 1000 + 100000;
+                // This way changes between values are smaller and make the same biomes value stick more together
+                float sampleX = (x + offsets.x) / 10000 + 100000;
+                float sampleY = (y + offsets.y) / 10000 + 100000;
                 float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
                 biomeMap[x, y] = perlinValue;
-                perlinvalues[y] = perlinValue;
             }
         }
-
         this.biomeMap = biomeMap;
     }
 
-    private Texture2D BuildTexture(TerrainType[] terrainTypes)
+    private Texture2D BuildTexture()
     {
         int tileDepth = this.biomeMap.GetLength(0);
         int tileWidth = this.biomeMap.GetLength(1);
@@ -168,7 +131,6 @@ public class TileBuilder : MonoBehaviour
                 Biome biome = GetBiomeByBiomeValue(this.biomeMap[xIndex,zIndex]);
                 int colorIndex = zIndex * tileWidth + xIndex;
 
-                 // TODO: Klopt niet
                 float height = this.heightMap[xIndex, zIndex];
                 colorMap[colorIndex] = ChooseTerrainType(height, biome);
             }
@@ -191,7 +153,6 @@ public class TileBuilder : MonoBehaviour
                 return terrainTypes.Value;
             }
         }
-
         return Color.white;
     }
 
@@ -216,7 +177,6 @@ public class TileBuilder : MonoBehaviour
                 vertexIndex++;
             }
         }
-
         this.meshFilter.mesh.vertices = meshVertices;
         this.meshFilter.mesh.RecalculateBounds();
         this.meshFilter.mesh.RecalculateNormals();
@@ -224,24 +184,54 @@ public class TileBuilder : MonoBehaviour
         this.meshCollider.sharedMesh = this.meshFilter.mesh;
     }
 
-
-
     private Biome GetBiomeByBiomeValue(float biomeValue)
     {
         // TODO: expand with more biomes
-        if (biomeValue < 0.2)
+        if (biomeValue < 0.1)
         {
-            //Debug.Log("Plains " + biomeValue);
-            return new PlainsBiome();
+            return new OceanBiome();
         } 
-        else if (biomeValue >= 0.2) 
+        if (biomeValue < 0.12) 
         {
-            //Debug.Log("Mountain " + biomeValue);
-            return new MountainBiome();
-        } 
-        else
-        {
-            throw new Exception("GetBiomeByBiomeValue shouldn't happen");
+            return new BeachBiome();
         }
+        if (biomeValue < 0.22)
+        {
+            return new PlainsBiome();
+        }
+        if (biomeValue < 0.28)
+        { 
+            return new ShrublandBiome();
+        }
+        if (biomeValue < 0.40)
+        {
+            return new DesertBiome();
+        }
+        if (biomeValue < 0.45)
+        {
+            return new ShrublandBiome();
+        }
+        if (biomeValue < 0.50)
+        {
+            
+            return new PlainsBiome();
+        }
+        if (biomeValue < 0.70)
+        {
+            
+            return new ForestBiome();
+        }
+        if (biomeValue < 0.80)
+        {
+            
+            return new MountainBiome();
+        }  if (biomeValue< 0.90)
+        {
+            
+            return new SnowBiome();
+        } 
+        return new MountainBiome();
     }
+    
+    
 }

@@ -22,22 +22,22 @@ namespace Assets.World
 
         }
 
-        public void loadTiles(Vector3 position)
+        public void LoadTiles(Vector3 position)
         {
             terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
 
             // x-, x+, z-, z+
             int bounds = 100;
-            int xMin = calcChunkCoord(position.x - bounds);
-            int xMax = calcChunkCoord(position.x + bounds);
-            int zMin = calcChunkCoord(position.z - bounds);
-            int zMax = calcChunkCoord(position.z + bounds);
+            int xMin = CalcChunkCoord(position.x - bounds);
+            int xMax = CalcChunkCoord(position.x + bounds);
+            int zMin = CalcChunkCoord(position.z - bounds);
+            int zMax = CalcChunkCoord(position.z + bounds);
 
             for (int i = xMin; i < xMax; i += 10)
             {
                 for (int j = zMin; j < zMax; j += 10)
                 {
-                    Vector3 newChunkPosition = new Vector3(calcChunkCoord(i), 0, calcChunkCoord(j));
+                    Vector3 newChunkPosition = new Vector3(CalcChunkCoord(i), 0, CalcChunkCoord(j));
                     if (!tileDict.ContainsKey(newChunkPosition))
                     {
                         GameObject tile = terrainGenerator.GenerateTile(newChunkPosition);
@@ -49,13 +49,13 @@ namespace Assets.World
             }
         }
 
-        public void unloadTiles(Vector3 position)
+        public void UnloadTiles(Vector3 position)
         {
             int bounds = 100;
-            int xMin = calcChunkCoord(position.x - bounds);
-            int xMax = calcChunkCoord(position.x + bounds);
-            int zMin = calcChunkCoord(position.z - bounds);
-            int zMax = calcChunkCoord(position.z + bounds);
+            int xMin = CalcChunkCoord(position.x - bounds);
+            int xMax = CalcChunkCoord(position.x + bounds);
+            int zMin = CalcChunkCoord(position.z - bounds);
+            int zMax = CalcChunkCoord(position.z + bounds);
 
             foreach (KeyValuePair<Vector3, GameObject> tile in tileDict.ToList())
             {
@@ -67,7 +67,7 @@ namespace Assets.World
             }
         }
 
-        private int calcChunkCoord(float coordinate)
+        private int CalcChunkCoord(float coordinate)
         {
             return Mathf.FloorToInt(coordinate / 10) * 10;
         }

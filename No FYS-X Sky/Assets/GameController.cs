@@ -19,8 +19,8 @@ public class GameController : MonoBehaviour
     void Update()
     {
         //Debug.Log("PLAYERPOSITION : " + player.transform.position + "This is X: " + Mathf.FloorToInt(player.transform.position.x / 10) + " This is Z : " + Mathf.FloorToInt(player.transform.position.z / 10));
-        worldBuilder.loadTiles(player.transform.position);
-        worldBuilder.unloadTiles(player.transform.position);
+        worldBuilder.LoadTiles(player.transform.position);
+        worldBuilder.UnloadTiles(player.transform.position);
 
     }
 
