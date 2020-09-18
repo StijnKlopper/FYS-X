@@ -50,50 +50,23 @@ public class TerrainGenerator : MonoBehaviour, Generator
         return tile;
     }
 
-    // TO-DO: Modify to take in height and moisture
-    public Biome GetBiomeByBiomeValue(float biomeValue)
+    public Biome GetBiomeByHeightAndMoisture(float height, float moisture)
     {
-        if (biomeValue < 0.1)
+        // TO-DO: add biomes and tweak values
+        if (height < 0.2f) return new OceanBiome();
+
+        if (height < 0.3f) return new BeachBiome();
+
+        if (height > 0.65f) return new MountainBiome();
+        
+        if (height < 0.65f)
         {
-            return new OceanBiome();
-        }
-        if (biomeValue < 0.12)
-        {
-            return new BeachBiome();
-        }
-        if (biomeValue < 0.22)
-        {
-            return new PlainsBiome();
-        }
-        if (biomeValue < 0.28)
-        {
-            return new ShrublandBiome();
-        }
-        if (biomeValue < 0.40)
-        {
-            return new DesertBiome();
-        }
-        if (biomeValue < 0.45)
-        {
-            return new ShrublandBiome();
-        }
-        if (biomeValue < 0.50)
-        {
-            return new PlainsBiome();
-        }
-        if (biomeValue < 0.70)
-        {
+            if (moisture < 0.2) return new DesertBiome();
+            if (moisture < 0.4) return new ShrublandBiome();
+            if (moisture < 0.7) return new PlainsBiome();
             return new ForestBiome();
         }
-        if (biomeValue < 0.80)
-        {
-            return new MountainBiome();
-        }
-        if (biomeValue < 0.90)
-        {
-            return new SnowBiome();
-        }
-        return new MountainBiome();
+        return new SnowBiome();
     }
 
 }

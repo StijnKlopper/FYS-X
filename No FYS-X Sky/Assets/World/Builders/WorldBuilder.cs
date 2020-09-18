@@ -12,22 +12,12 @@ namespace Assets.World
 
         private Dictionary<Vector3, GameObject> tileDict = new Dictionary<Vector3, GameObject>();
 
-        void Start()
-        {
-
-        }
-
-        void Update()
-        {
-
-        }
-
         public void LoadTiles(Vector3 position)
         {
             terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
 
             // x-, x+, z-, z+
-            int bounds = 200;
+            int bounds = 100;
             int xMin = CalcChunkCoord(position.x - bounds);
             int xMax = CalcChunkCoord(position.x + bounds);
             int zMin = CalcChunkCoord(position.z - bounds);
@@ -51,7 +41,7 @@ namespace Assets.World
 
         public void UnloadTiles(Vector3 position)
         {
-            int bounds = 200;
+            int bounds = 100;
             int xMin = CalcChunkCoord(position.x - bounds);
             int xMax = CalcChunkCoord(position.x + bounds);
             int zMin = CalcChunkCoord(position.z - bounds);

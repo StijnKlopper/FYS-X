@@ -13,7 +13,7 @@ public class TileBuilder : MonoBehaviour
     private MeshRenderer tileRenderer;
 
     [SerializeField]
-    public MeshFilter meshFilter;
+    private MeshFilter meshFilter;
 
     [SerializeField]
     private MeshCollider meshCollider;
@@ -26,14 +26,13 @@ public class TileBuilder : MonoBehaviour
     [System.NonSerialized]
     public float[,] biomeMap;
 
+    [System.NonSerialized]
+    public float[,] moistureMap;
 
-
-    enum VisualizationMode { Height, Heat }
-
-    [SerializeField]
-    private VisualizationMode visualizationMode;
+    private float edgeModifier = 0.005f;
 
     TerrainGenerator terrainGenerator;
+
 
     // Start is called before the first frame update
     void Start()
@@ -49,8 +48,9 @@ public class TileBuilder : MonoBehaviour
         int tileWidth = tileHeight;
       
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
-        GenerateBiomeMap(tileWidth, tileHeight, offsets);
-        GenerateNoiseMap(tileWidth, tileHeight, offsets);
+
+        GenerateHeightMap(tileWidth, tileHeight, offsets);
+        GenerateMoistureMap(tileWidth, tileHeight, offsets);
 
         Texture2D heightTexture = BuildTexture();
     
@@ -58,27 +58,39 @@ public class TileBuilder : MonoBehaviour
         UpdateMeshVertices(heightMap);
     }
 
-    public void GenerateNoiseMap(int width, int height, Vector2 offset)
+    public void GenerateHeightMap(int width, int height, Vector2 offsets)
     {
-        float[,] noisemap = new float[width, height];
+        float[,] heightMap = new float[width, height];
+
+        float maxPossibleHeight = 0f;
+        float amplitude = 1f;
+        float persistance = 0.5f;
+        float lacunarity = 2f;
+
+        int octaves = 12;
+        int scale = 50;
+
+        for (int i = 0; i < octaves; i++)
+        {
+            maxPossibleHeight += amplitude;
+            amplitude *= 0.5f;
+        }
 
         // Loop through all coordinates on the tile, for every coordinate calculate a height value using octaves
-        for(int y = 0; y < height; y++)
+        for (int y = 0; y < height; y++)
         {
-            for(int x = 0; x < width; x++)
+            for (int x = 0; x < width; x++)
             {
-                float amplitude = 1;
+                amplitude = 1;
                 float frequency = 1;
                 float noiseHeight = 0;
 
-                Biome biome = terrainGenerator.GetBiomeByBiomeValue(this.biomeMap[x, y]);
-
-                for (int i = 0; i < biome.octaves; i++)
+                for (int i = 0; i < octaves; i++)
                 {
-                    // Add 10000 to the sample coordinates to prevent feeding negative numbers into the Perlin Noise function
+                    // Add large number to the sample coordinates to prevent feeding negative numbers into the Perlin Noise function
                     // Prevents the mandela effect around (0,0)
-                    float sampleX = (x + offset.x) / biome.noiseScale * frequency + terrainGenerator.randomNumbers[i];
-                    float sampleY = (y + offset.y) / biome.noiseScale * frequency + terrainGenerator.randomNumbers[i];
+                    float sampleX = (x + offsets.x) / scale * frequency + terrainGenerator.randomNumbers[i];
+                    float sampleY = (y + offsets.y) / scale * frequency + terrainGenerator.randomNumbers[i];
 
                     // Because we * 2 - 1 this value, we stretch out the noise from [0,1] to [-1,1]
                     float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
@@ -87,56 +99,69 @@ public class TileBuilder : MonoBehaviour
                     noiseHeight += perlinValue * amplitude;
 
                     // Amplitude decreases every octave
-                    amplitude *= biome.persistance;
+                    amplitude *= persistance;
 
                     // Frequency increases every octave
-                    frequency *= biome.lacunarity;
+                    frequency *= lacunarity;
                 }
 
-                // Normalise noise map between current minimum and maximum noise heights
-                noisemap[x, y] = (noiseHeight + 1) / (2f * biome.GetMaxPossibleHeight() / 1.75f);
+                // Normalise noise map between minimum and maximum noise heights
+                noiseHeight = (noiseHeight + 1) / (2f * maxPossibleHeight / 1.75f);
+
+                heightMap[x, y] = noiseHeight;
             }
         }
-        this.heightMap = noisemap;
+
+        this.heightMap = heightMap;
     }
 
-    private void GenerateBiomeMap(int width, int height, Vector2 offsets)
+    private void GenerateMoistureMap(int width, int height, Vector2 offsets)
     {
-        float[,] biomeMap = new float[width, height];
+        float[,] moistureMap = new float[width, height];
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 // Scale out the values of the Biomes Noise map. 
                 // This way changes between values are smaller and make the same biomes value stick more together
-                float sampleX = ((x + offsets.x) / 3000 + 100000);
-                float sampleY = ((y + offsets.y) / 3000 + 100000);
+                float sampleX = (x + offsets.x) / 100 + terrainGenerator.randomNumbers[1];
+                float sampleY = (y + offsets.y) / 100 + terrainGenerator.randomNumbers[1];
                 float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
-                biomeMap[x, y] = perlinValue;
+                 
+                // Smoothen biome edges (half of the time, I think. TO-DO: Figure out a way to do this only when close to biome edge, only at biomeEdge - edgeModifier)
+                if (x + y % 2 == 0)
+                {
+                    perlinValue += edgeModifier;
+                }
+
+                moistureMap[x, y] = perlinValue;
             }
         }
-        this.biomeMap = biomeMap;
+        this.moistureMap = moistureMap;
     }
 
     private Texture2D BuildTexture()
     {
-        int tileDepth = this.biomeMap.GetLength(0);
-        int tileWidth = this.biomeMap.GetLength(1);
+        int tileHeight = this.heightMap.GetLength(0);
+        int tileWidth = this.heightMap.GetLength(1);
 
-        Color[] colorMap = new Color[tileDepth * tileWidth];
-        for (int zIndex = 0; zIndex < tileDepth; zIndex++)
+        Color[] colorMap = new Color[tileHeight * tileWidth];
+        for (int y = 0; y < tileHeight; y++)
         {
-            for (int xIndex = 0; xIndex < tileWidth; xIndex++)
+            for (int x = 0; x < tileWidth; x++)
             {
-                Biome biome = terrainGenerator.GetBiomeByBiomeValue(this.biomeMap[xIndex,zIndex]);
-                int colorIndex = zIndex * tileWidth + xIndex;
+                int colorIndex = y * tileWidth + x;
 
-                float height = this.heightMap[xIndex, zIndex];
-                colorMap[colorIndex] = ChooseTerrainType(height, biome);
+                float height = this.heightMap[x, y];
+                float moisture = this.moistureMap[x, y];
+
+                Biome biome = terrainGenerator.GetBiomeByHeightAndMoisture(height, moisture);
+
+                colorMap[colorIndex] = biome.color;
             }
         }
 
-        Texture2D tileTexture = new Texture2D(tileWidth, tileDepth);
+        Texture2D tileTexture = new Texture2D(tileWidth, tileHeight);
         tileTexture.wrapMode = TextureWrapMode.Clamp;
         tileTexture.SetPixels(colorMap);
         tileTexture.Apply();
@@ -144,33 +169,22 @@ public class TileBuilder : MonoBehaviour
         return tileTexture;
     }
 
-    Color ChooseTerrainType(float noise, Biome biome)
-    {
-        foreach (var terrainTypes in biome.terrainThreshold)
-        {
-            if (noise < terrainTypes.Key)
-            {
-                return terrainTypes.Value;
-            }
-        }
-        return Color.white;
-    }
-
     private void UpdateMeshVertices(float[,] heightMap)
     {
-        int tileDepth = heightMap.GetLength(0);
-        int tileWidth = heightMap.GetLength(1);
+        int height = heightMap.GetLength(0);
+        int width = heightMap.GetLength(1);
         Vector3[] meshVertices = this.meshFilter.mesh.vertices;
 
         int vertexIndex = 0;
 
-        for (int zIndex = 0; zIndex < tileDepth; zIndex++)
+        for (int y = 0; y < height; y++)
         {
-            for (int xIndex = 0; xIndex < tileWidth; xIndex++)
+            for (int x = 0; x < width; x++)
             {
-                float height = heightMap[xIndex, zIndex];
+                float heightValue = heightMap[x, y];
                 Vector3 vertex = meshVertices[vertexIndex];
-                float terrainHeight = this.heightCurve.Evaluate(height) * 50; // TODO heightmultiplier
+
+                float terrainHeight = this.heightCurve.Evaluate(heightValue) * 50; // TODO heightmultiplier
 
                 meshVertices[vertexIndex] = new Vector3(vertex.x, terrainHeight, vertex.z);
 
