@@ -1,11 +1,4 @@
-﻿using Assets.World;
-using Assets.World.Generator;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEditorInternal;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
 {
@@ -29,8 +22,6 @@ public class TileBuilder : MonoBehaviour
     [System.NonSerialized]
     public float[,] moistureMap;
 
-    private float edgeModifier = 0.005f;
-
     TerrainGenerator terrainGenerator;
 
 
@@ -49,10 +40,11 @@ public class TileBuilder : MonoBehaviour
       
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
 
+        // Instead of generating height map:
         GenerateHeightMap(tileWidth, tileHeight, offsets);
-        GenerateMoistureMap(tileWidth, tileHeight, offsets);
+        //GenerateMoistureMap(tileWidth, tileHeight, offsets);
 
-        Texture2D heightTexture = BuildTexture();
+        Texture2D heightTexture = BuildTexture(offsets);
     
         this.tileRenderer.material.mainTexture = heightTexture;
         UpdateMeshVertices(heightMap);
@@ -115,32 +107,7 @@ public class TileBuilder : MonoBehaviour
         this.heightMap = heightMap;
     }
 
-    private void GenerateMoistureMap(int width, int height, Vector2 offsets)
-    {
-        float[,] moistureMap = new float[width, height];
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                // Scale out the values of the Biomes Noise map. 
-                // This way changes between values are smaller and make the same biomes value stick more together
-                float sampleX = (x + offsets.x) / 100 + terrainGenerator.randomNumbers[1];
-                float sampleY = (y + offsets.y) / 100 + terrainGenerator.randomNumbers[1];
-                float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
-                 
-                // Smoothen biome edges (half of the time, I think. TO-DO: Figure out a way to do this only when close to biome edge, only at biomeEdge - edgeModifier)
-                if (x + y % 2 == 0)
-                {
-                    perlinValue += edgeModifier;
-                }
-
-                moistureMap[x, y] = perlinValue;
-            }
-        }
-        this.moistureMap = moistureMap;
-    }
-
-    private Texture2D BuildTexture()
+    private Texture2D BuildTexture(Vector2 offsets)
     {
         int tileHeight = this.heightMap.GetLength(0);
         int tileWidth = this.heightMap.GetLength(1);
@@ -152,10 +119,7 @@ public class TileBuilder : MonoBehaviour
             {
                 int colorIndex = y * tileWidth + x;
 
-                float height = this.heightMap[x, y];
-                float moisture = this.moistureMap[x, y];
-
-                Biome biome = terrainGenerator.GetBiomeByHeightAndMoisture(height, moisture);
+                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
 
                 colorMap[colorIndex] = biome.color;
             }

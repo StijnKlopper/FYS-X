@@ -3,37 +3,90 @@ using System.Linq;
 using System.Management.Instrumentation;
 using System.Xml.Schema;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.World
 {
-    class WorldBuilder : MonoBehaviour
+    class WorldBuilder
     {
         private TerrainGenerator terrainGenerator;
 
-        private Dictionary<Vector3, GameObject> tileDict = new Dictionary<Vector3, GameObject>();
+        private int chunkSize;
+
+        // Must be divisible by Region.regionSize.
+        private int chunkRenderDistance;
+
+        private int regionRenderDistance;
+
+        public WorldBuilder()
+        {
+            this.chunkSize = 10;
+            this.chunkRenderDistance = 400;
+            this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
+            this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        }
+
+        public void LoadRegions(Vector3 position)
+        {
+            // Input: 220, 420. Output: 200, 400, gives corners of current region
+            int x = CalcCoord(position.x, Region.regionSize);
+            int z = CalcCoord(position.z, Region.regionSize);
+            int xMin = x - regionRenderDistance - Region.regionSize;
+            int zMin = z - regionRenderDistance - Region.regionSize;
+            int xMax = x + regionRenderDistance + Region.regionSize;
+            int zMax = z + regionRenderDistance + Region.regionSize;
+
+            // Loop through current region and the 8 surrounding regions
+            for (int i = xMin; i < xMax; i += Region.regionSize)
+            {
+                for (int j = zMin; j < zMax; j += Region.regionSize)
+                {
+                    Vector3 regionPosition = new Vector3(i, 0, j);
+                    if(!terrainGenerator.regionDict.ContainsKey(regionPosition))
+                    {
+                        terrainGenerator.regionDict.Add(regionPosition, new Region(i, j));
+                    }
+                }
+            }
+        }
+
+        public void UnloadRegions(Vector3 position)
+        {
+            int x = CalcCoord(position.x, Region.regionSize);
+            int z = CalcCoord(position.z, Region.regionSize);
+            int xMin = x - regionRenderDistance - Region.regionSize;
+            int zMin = z - regionRenderDistance - Region.regionSize;
+            int xMax = x + regionRenderDistance + Region.regionSize;
+            int zMax = z + regionRenderDistance + Region.regionSize;
+
+            foreach (KeyValuePair<Vector3, Region> region in terrainGenerator.regionDict.ToList())
+            {
+                if (region.Key.x < xMin || region.Key.x > xMax || region.Key.z < zMin || region.Key.z > zMax)
+                {
+                    terrainGenerator.regionDict.Remove(region.Key);
+                }
+            }
+        }
 
         public void LoadTiles(Vector3 position)
         {
-            terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-
             // x-, x+, z-, z+
-            int bounds = 100;
-            int xMin = CalcChunkCoord(position.x - bounds);
-            int xMax = CalcChunkCoord(position.x + bounds);
-            int zMin = CalcChunkCoord(position.z - bounds);
-            int zMax = CalcChunkCoord(position.z + bounds);
+            int xMin = CalcCoord(position.x - chunkRenderDistance, chunkSize);
+            int xMax = CalcCoord(position.x + chunkRenderDistance, chunkSize);
+            int zMin = CalcCoord(position.z - chunkRenderDistance, chunkSize);
+            int zMax = CalcCoord(position.z + chunkRenderDistance, chunkSize);
 
-            for (int i = xMin; i < xMax; i += 10)
+            for (int i = xMin; i < xMax; i += chunkSize)
             {
-                for (int j = zMin; j < zMax; j += 10)
+                for (int j = zMin; j < zMax; j += chunkSize)
                 {
-                    Vector3 newChunkPosition = new Vector3(CalcChunkCoord(i), 0, CalcChunkCoord(j));
-                    if (!tileDict.ContainsKey(newChunkPosition))
+                    Vector3 newChunkPosition = new Vector3(i, 0, j);
+                    if (!terrainGenerator.tileDict.ContainsKey(newChunkPosition))
                     {
                         GameObject tile = terrainGenerator.GenerateTile(newChunkPosition);
                         //Make the tiles a parent of the Level GameObject to have a clean hierarchy.
                         tile.transform.SetParent(terrainGenerator.transform);
-                        tileDict.Add(newChunkPosition, tile);
+                        terrainGenerator.tileDict.Add(newChunkPosition, tile);
                     }
                 }
             }
@@ -41,25 +94,25 @@ namespace Assets.World
 
         public void UnloadTiles(Vector3 position)
         {
-            int bounds = 100;
-            int xMin = CalcChunkCoord(position.x - bounds);
-            int xMax = CalcChunkCoord(position.x + bounds);
-            int zMin = CalcChunkCoord(position.z - bounds);
-            int zMax = CalcChunkCoord(position.z + bounds);
 
-            foreach (KeyValuePair<Vector3, GameObject> tile in tileDict.ToList())
+            int xMin = CalcCoord(position.x - chunkRenderDistance, chunkSize);
+            int xMax = CalcCoord(position.x + chunkRenderDistance, chunkSize);
+            int zMin = CalcCoord(position.z - chunkRenderDistance, chunkSize);
+            int zMax = CalcCoord(position.z + chunkRenderDistance, chunkSize);
+
+            foreach (KeyValuePair<Vector3, GameObject> tile in terrainGenerator.tileDict.ToList())
             {
                 if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
                 {
-                    Destroy(tile.Value);
-                    tileDict.Remove(tile.Key);
+                    terrainGenerator.DestroyTile(tile.Value);
+                    terrainGenerator.tileDict.Remove(tile.Key);
                 }
             }
         }
 
-        private int CalcChunkCoord(float coordinate)
+        private int CalcCoord(float coordinate, int size)
         {
-            return Mathf.FloorToInt(coordinate / 10) * 10;
+            return Mathf.FloorToInt(coordinate / size) * size;
         }
     }
 }

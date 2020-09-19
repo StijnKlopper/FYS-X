@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GameController : MonoBehaviour
 {
@@ -19,8 +20,11 @@ public class GameController : MonoBehaviour
     void Update()
     {
         //Debug.Log("PLAYERPOSITION : " + player.transform.position + "This is X: " + Mathf.FloorToInt(player.transform.position.x / 10) + " This is Z : " + Mathf.FloorToInt(player.transform.position.z / 10));
-        worldBuilder.LoadTiles(player.transform.position);
-        worldBuilder.UnloadTiles(player.transform.position);
+        Vector3 position = player.transform.position;
+        worldBuilder.LoadRegions(position);
+        worldBuilder.LoadTiles(position);
+        worldBuilder.UnloadTiles(position);
+        worldBuilder.UnloadRegions(position);
 
     }
 
