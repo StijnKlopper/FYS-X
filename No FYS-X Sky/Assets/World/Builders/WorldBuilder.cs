@@ -31,7 +31,7 @@ namespace Assets.World
         {
             (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize);
 
-            // Loop through current region and the 8 surrounding regions
+            // Loop through current region and the surrounding regions
             for (int i = xMin; i < xMax; i += Region.regionSize)
             {
                 for (int j = zMin; j < zMax; j += Region.regionSize)

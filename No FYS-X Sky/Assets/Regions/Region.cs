@@ -27,18 +27,18 @@ public class Region
         int xMiddle = x < 0 ? x - regionSize / 2 : x + regionSize / 2;
         int zMiddle = z < 0 ? z - regionSize / 2 : x + regionSize / 2;
 
-        float scale = 0.17777f;
+        float scale = 50f;
 
         // Calculate noise for middle of the region, adding a random number to account for negative numbers, * 2 - 1 to spread output to range [-1,1]
-        float xNoise = Mathf.PerlinNoise((xMiddle + terrainGenerator.randomNumbers[1]) * scale, (zMiddle + terrainGenerator.randomNumbers[1]) * scale) * 2 - 1;
+        float xNoise = Mathf.PerlinNoise((xMiddle + terrainGenerator.randomNumbers[1]) / scale, (zMiddle + terrainGenerator.randomNumbers[1]) * scale) * 2 - 1;
         int xJitter = (int)(xNoise * regionSize / 2);
         int xFinal = x + xJitter;
 
-        float zNoise = Mathf.PerlinNoise((xMiddle + terrainGenerator.randomNumbers[1]) * scale, (zMiddle + terrainGenerator.randomNumbers[1]) * scale) * 2 - 1;
+        float zNoise = Mathf.PerlinNoise((xMiddle + terrainGenerator.randomNumbers[1]) / scale, (zMiddle + terrainGenerator.randomNumbers[1]) * scale) * 2 - 1;
         int zJitter = (int)(zNoise * regionSize / 2);
         int zFinal = z + zJitter;
 
-        float heat = Mathf.PerlinNoise(xFinal * scale, zFinal * scale);
+        float heat = Mathf.PerlinNoise(xFinal / scale, zFinal / scale);
         float moisture = Mathf.PerlinNoise(xFinal + terrainGenerator.randomNumbers[0], zFinal + terrainGenerator.randomNumbers[0]);
 
         this.seed = new Vector2(xFinal, zFinal);
@@ -77,10 +77,13 @@ public class Region
     {
         float scale = 0.17777f;
         int biomeSize = regionSize / 10;
-        for (int i = 0; i < x + regionSize; i+= biomeSize)
+        for (int i = x; i < x + regionSize; i += biomeSize)
         {
-            for (int j = 0; j < z + regionSize; j += biomeSize)
+            for (int j = z; j < z + regionSize; j += biomeSize)
             {
+                int xMiddle = i < 0 ? i - biomeSize / 2 : i + biomeSize / 2;
+                int zMiddle = j < 0 ? j - biomeSize / 2 : j + biomeSize / 2;
+
                 float xNoise = Mathf.PerlinNoise((x + i + terrainGenerator.randomNumbers[4]) * scale, (x + i + terrainGenerator.randomNumbers[4]) * scale) * 2 - 1;
                 int xJitter = (int)(xNoise * biomeSize / 2);
                 int xFinal = i + x + xJitter;
@@ -110,7 +113,10 @@ public class Region
                 distance = distanceToSeed;
             }
         }
-
+        if (nearestBiome.biomeType is DefaultBiomeType)
+        {
+            Debug.Log("Ik heb kanker");
+        }
         return nearestBiome;
     }
 

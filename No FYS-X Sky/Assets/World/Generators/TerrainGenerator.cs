@@ -72,7 +72,7 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
     public Region GetRegionByCoordinates(Vector2 coordinates)
     {
-        float distance = 1000f;
+        float distance = 10000f;
         Region nearestRegion = new Region();
         //float regionRatio = 0f;
 
