@@ -1,4 +1,5 @@
 ﻿using Assets.World.Generator;
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -45,62 +46,51 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
     public Biome GetBiomeByCoordinates(Vector2 coordinates)
     {
-        float scale = 0.017f;
-        float x = coordinates.x * scale;
-        float z = coordinates.y * scale;
-        x += Mathf.PerlinNoise(x, z);
-        z += Mathf.PerlinNoise(x, z);
+        Region region = GetRegionByCoordinates(coordinates);
+        return region.GetBiomeByCoordinates(coordinates);
+        // Using coordinates, determine region/continent, then determine biome based on the continent and position
+        //float scale = 0.17777f;
+        //float x = coordinates.x * scale;
+        //float z = coordinates.y * scale;
+        //x += Mathf.PerlinNoise(x, z);
+        //z += Mathf.PerlinNoise(x, z);
 
-        coordinates = new Vector2(x / scale, z / scale);
+        //coordinates = new Vector2(x / scale, z / scale);
+        //float distance = 1000f;
+        //// TO-DO: Add DefaultBiome();
+        //Biome biome = new DefaultBiome();
+        //foreach (KeyValuePair<Vector3, Region> region in regionDict)
+        //{
+        //    float distanceToSeed = Vector2.Distance(region.Value.seed, coordinates);
+        //    if (distanceToSeed < distance)
+        //    {
+        //        biome = region.Value.biome;
+        //        distance = distanceToSeed;
+        //    }
+        //}
+    }
+
+    public Region GetRegionByCoordinates(Vector2 coordinates)
+    {
         float distance = 1000f;
-        // TO-DO: Add DefaultBiome();
-        Biome biome = new SnowBiome();
+        Region nearestRegion = new Region();
+        //float regionRatio = 0f;
+
+        // Find distance of coordinates to the seed (middle) of the region
         foreach (KeyValuePair<Vector3, Region> region in regionDict)
         {
-            int x1 = (int)coordinates.x;
-            int z1 = (int)coordinates.y;
-            int x2 = (int)region.Value.seed.x;
-            int z2 = (int)region.Value.seed.y;
-            float distanceToSeed = Mathf.Sqrt((x1 - x2) * (x1 - x2) + (z1 - z2) * (z1 - z2));
+            float distanceToSeed = Vector2.Distance(region.Value.seed, coordinates);
             if (distanceToSeed < distance)
             {
-                biome = region.Value.biome;
+                nearestRegion = region.Value;
+                // The lower regionRatio is, the nearer the coordinates are to the center of the region (range of [0,1])
+                //regionRatio = distanceToSeed / distance;
                 distance = distanceToSeed;
             }
         }
 
-        return biome;
+        return nearestRegion;
     }
-
-    public Biome GetBiomeByNoise(float noise)
-    {
-        if (noise < 0.2f) return new OceanBiome();
-        if (noise < 0.4f) return new BeachBiome();
-        if (noise < 0.5f) return new PlainsBiome();
-        if (noise < 0.6f) return new ForestBiome();
-        if (noise < 0.8f) return new MountainBiome();
-        return new SnowBiome();
-    }
-
-    // Use later when implementing logical biome placement
-    //public Biome GetBiomeByHeightAndMoisture(float height, float moisture)
-    //{
-    //    // TO-DO: add biomes and tweak values
-    //    if (height < 0.2f) return new OceanBiome();
-
-    //    if (height < 0.3f) return new BeachBiome();
-
-    //    if (height > 0.65f) return new MountainBiome();
-        
-    //    if (height < 0.65f)
-    //    {
-    //        if (moisture < 0.2) return new DesertBiome();
-    //        if (moisture < 0.4) return new ShrublandBiome();
-    //        if (moisture < 0.7) return new PlainsBiome();
-    //        return new ForestBiome();
-    //    }
-    //    return new SnowBiome();
-    //}
 
     public void DestroyTile(GameObject obj)
     {

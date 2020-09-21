@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShrublandBiome : Biome
+public class ShrublandBiomeType : BiomeType
 {
-    public ShrublandBiome()
+    public ShrublandBiomeType()
     {
-
         this.color = GetColorFromRGB(new Vector3(204, 156, 90));
     }
 }

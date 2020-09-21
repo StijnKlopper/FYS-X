@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Win32;
+using System.Collections.Generic;
 using System.Linq;
 using System.Management.Instrumentation;
 using System.Xml.Schema;
@@ -21,20 +22,14 @@ namespace Assets.World
         public WorldBuilder()
         {
             this.chunkSize = 10;
-            this.chunkRenderDistance = 400;
-            this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
+            this.chunkRenderDistance = 200;
+            this.regionRenderDistance = Mathf.FloorToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
             this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         }
 
         public void LoadRegions(Vector3 position)
         {
-            // Input: 220, 420. Output: 200, 400, gives corners of current region
-            int x = CalcCoord(position.x, Region.regionSize);
-            int z = CalcCoord(position.z, Region.regionSize);
-            int xMin = x - regionRenderDistance - Region.regionSize;
-            int zMin = z - regionRenderDistance - Region.regionSize;
-            int xMax = x + regionRenderDistance + Region.regionSize;
-            int zMax = z + regionRenderDistance + Region.regionSize;
+            (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize);
 
             // Loop through current region and the 8 surrounding regions
             for (int i = xMin; i < xMax; i += Region.regionSize)
@@ -52,12 +47,7 @@ namespace Assets.World
 
         public void UnloadRegions(Vector3 position)
         {
-            int x = CalcCoord(position.x, Region.regionSize);
-            int z = CalcCoord(position.z, Region.regionSize);
-            int xMin = x - regionRenderDistance - Region.regionSize;
-            int zMin = z - regionRenderDistance - Region.regionSize;
-            int xMax = x + regionRenderDistance + Region.regionSize;
-            int zMax = z + regionRenderDistance + Region.regionSize;
+            (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize);
 
             foreach (KeyValuePair<Vector3, Region> region in terrainGenerator.regionDict.ToList())
             {
@@ -70,11 +60,7 @@ namespace Assets.World
 
         public void LoadTiles(Vector3 position)
         {
-            // x-, x+, z-, z+
-            int xMin = CalcCoord(position.x - chunkRenderDistance, chunkSize);
-            int xMax = CalcCoord(position.x + chunkRenderDistance, chunkSize);
-            int zMin = CalcCoord(position.z - chunkRenderDistance, chunkSize);
-            int zMax = CalcCoord(position.z + chunkRenderDistance, chunkSize);
+            (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
 
             for (int i = xMin; i < xMax; i += chunkSize)
             {
@@ -94,11 +80,7 @@ namespace Assets.World
 
         public void UnloadTiles(Vector3 position)
         {
-
-            int xMin = CalcCoord(position.x - chunkRenderDistance, chunkSize);
-            int xMax = CalcCoord(position.x + chunkRenderDistance, chunkSize);
-            int zMin = CalcCoord(position.z - chunkRenderDistance, chunkSize);
-            int zMax = CalcCoord(position.z + chunkRenderDistance, chunkSize);
+            (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
 
             foreach (KeyValuePair<Vector3, GameObject> tile in terrainGenerator.tileDict.ToList())
             {
@@ -110,8 +92,24 @@ namespace Assets.World
             }
         }
 
+        private (int xMin, int xMax, int zMin, int zMax) CalcBoundaries(Vector3 position, int renderDistance, int size)
+        {
+            (int xMin, int xMax, int zMin, int zMax) boundaries;
+
+            int x = CalcCoord(position.x, size);
+            int z = CalcCoord(position.z, size);
+
+            boundaries.xMin = x - renderDistance;
+            boundaries.xMax = x + renderDistance;
+            boundaries.zMin = z - renderDistance;
+            boundaries.zMax = z + renderDistance;
+
+            return boundaries;
+        }
+
         private int CalcCoord(float coordinate, int size)
         {
+            // Input: 220, 200. Output: 200, gives corners of current region, rounds to the nearest 200
             return Mathf.FloorToInt(coordinate / size) * size;
         }
     }

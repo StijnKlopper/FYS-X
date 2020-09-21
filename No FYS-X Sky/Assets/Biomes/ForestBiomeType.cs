@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
-public class ForestBiome : Biome
+public class ForestBiomeType : BiomeType
 {
-    public ForestBiome()
+    public ForestBiomeType()
     {
         this.color = GetColorFromRGB(new Vector3(89, 138, 37));
     }

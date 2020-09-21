@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class SnowBiome : Biome
+public class SnowBiomeType : BiomeType
 {
-    public SnowBiome()
+    public SnowBiomeType()
     {
         this.color = Color.white;
     }
+
 }

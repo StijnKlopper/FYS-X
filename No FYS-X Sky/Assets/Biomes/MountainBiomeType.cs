@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MountainBiome : Biome
+public class MountainBiomeType : BiomeType
 {
-    public MountainBiome()
+    public MountainBiomeType()
     {
         this.color = Color.gray;
     }

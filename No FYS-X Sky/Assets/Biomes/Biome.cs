@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Biome
+public class Biome
 {
+    public BiomeType biomeType;
 
-    public Color color;
+    public Vector2 seed;
 
-    public Color GetColorFromRGB(Vector3 color)
+    public Biome(Vector2 seed, BiomeType biomeType)
     {
-        int limit = 255;
-        return new Color(color.x / limit, color.y / limit, color.z / limit);
+        this.seed = seed;
+        this.biomeType = biomeType;
     }
-
-
 }

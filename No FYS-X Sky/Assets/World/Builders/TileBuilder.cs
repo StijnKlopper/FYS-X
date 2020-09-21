@@ -77,6 +77,9 @@ public class TileBuilder : MonoBehaviour
                 float frequency = 1;
                 float noiseHeight = 0;
 
+                // Needs to ask terraingenerator what the biome is using offsets + x / y
+                //Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(offsets.x + x, offsets.y + y));
+
                 for (int i = 0; i < octaves; i++)
                 {
                     // Add large number to the sample coordinates to prevent feeding negative numbers into the Perlin Noise function
@@ -121,7 +124,7 @@ public class TileBuilder : MonoBehaviour
 
                 Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
 
-                colorMap[colorIndex] = biome.color;
+                colorMap[colorIndex] = biome.biomeType.color;
             }
         }
 

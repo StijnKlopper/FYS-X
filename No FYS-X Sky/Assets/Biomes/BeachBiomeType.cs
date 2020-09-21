@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BeachBiome : Biome
+public class BeachBiomeType : BiomeType
 {
-    public BeachBiome()
+    public BeachBiomeType()
     {
         this.color = GetColorFromRGB(new Vector3(247, 219, 143));
     }
