@@ -176,6 +176,12 @@ namespace UnityChan
 					anim.SetBool ("Rest", false);
 				}
 			}
+
+
+			//if (transform.position.y < -10)
+            //{
+			//	transform.position = new Vector3(transform.position.x, 20, transform.position.z);
+			//}
 		}
 
 		void OnGUI ()

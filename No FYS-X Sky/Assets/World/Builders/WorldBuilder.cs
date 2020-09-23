@@ -39,7 +39,7 @@ namespace Assets.World
                     Vector3 regionPosition = new Vector3(i, 0, j);
                     if(!terrainGenerator.regionDict.ContainsKey(regionPosition))
                     {
-                        Debug.Log(regionPosition);
+                        //Debug.Log(regionPosition);
                         terrainGenerator.regionDict.Add(regionPosition, new Region(i, j));
                     }
                 }

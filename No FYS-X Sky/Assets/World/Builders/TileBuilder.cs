@@ -47,7 +47,7 @@ public class TileBuilder : MonoBehaviour
         Texture2D heightTexture = BuildTexture(offsets);
     
         this.tileRenderer.material.mainTexture = heightTexture;
-        UpdateMeshVertices(heightMap);
+        UpdateMeshVertices(heightMap, offsets);
     }
 
     public void GenerateHeightMap(int width, int height, Vector2 offsets)
@@ -136,13 +136,14 @@ public class TileBuilder : MonoBehaviour
         return tileTexture;
     }
 
-    private void UpdateMeshVertices(float[,] heightMap)
+    private void UpdateMeshVertices(float[,] heightMap, Vector2 offsets)
     {
         int height = heightMap.GetLength(0);
         int width = heightMap.GetLength(1);
         Vector3[] meshVertices = this.meshFilter.mesh.vertices;
 
         int vertexIndex = 0;
+
 
         for (int y = 0; y < height; y++)
         {
@@ -151,8 +152,10 @@ public class TileBuilder : MonoBehaviour
                 float heightValue = heightMap[x, y];
                 Vector3 vertex = meshVertices[vertexIndex];
 
-                float terrainHeight = this.heightCurve.Evaluate(heightValue) * 50; // TODO heightmultiplier
+                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
 
+                float terrainHeight = this.heightCurve.Evaluate(heightValue) * biome.biomeType.heightMultiplier + biome.biomeType.yOffset;
+                
                 meshVertices[vertexIndex] = new Vector3(vertex.x, terrainHeight, vertex.z);
 
                 vertexIndex++;

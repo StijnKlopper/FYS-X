@@ -13,19 +13,14 @@ public class PlayerController : MonoBehaviour
 
     public GameObject plane;
 
-
-
     private PlayerMotor motor;
 
     void Start()
     {
-      
         motor = GetComponent<PlayerMotor>();
         Cursor.lockState = CursorLockMode.Locked;
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
-
-
     }
 
     void Update()
@@ -61,16 +56,8 @@ public class PlayerController : MonoBehaviour
         Vector3 _CameraRotation = new Vector3(_xRot, 0f, 0f) * mouseSensitivity;
 
         //Apply rotation
-
         motor.CameraRotate(_CameraRotation);
 
- 
-
-        
-
     }
-
-   
-
 
 }
