@@ -14,7 +14,6 @@ namespace Assets.World
 
         private int chunkSize;
 
-        // Must be divisible by Region.regionSize.
         private int chunkRenderDistance;
 
         private int regionRenderDistance;
@@ -23,14 +22,15 @@ namespace Assets.World
         {
             this.chunkSize = 10;
             this.chunkRenderDistance = 200;
-            this.regionRenderDistance = Mathf.FloorToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
+            this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
             this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         }
 
         public void LoadRegions(Vector3 position)
         {
-            (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize);
+            (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize, true);
 
+            //Debug.Log("x1: " + xMin + ", x2: " + xMax + ", z1: " + zMin + ", z2: " + zMax);
             // Loop through current region and the surrounding regions
             for (int i = xMin; i < xMax; i += Region.regionSize)
             {
@@ -39,6 +39,7 @@ namespace Assets.World
                     Vector3 regionPosition = new Vector3(i, 0, j);
                     if(!terrainGenerator.regionDict.ContainsKey(regionPosition))
                     {
+                        Debug.Log(regionPosition);
                         terrainGenerator.regionDict.Add(regionPosition, new Region(i, j));
                     }
                 }
@@ -47,7 +48,7 @@ namespace Assets.World
 
         public void UnloadRegions(Vector3 position)
         {
-            (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize);
+            (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize, true);
 
             foreach (KeyValuePair<Vector3, Region> region in terrainGenerator.regionDict.ToList())
             {
@@ -92,12 +93,19 @@ namespace Assets.World
             }
         }
 
-        private (int xMin, int xMax, int zMin, int zMax) CalcBoundaries(Vector3 position, int renderDistance, int size)
+
+
+        private (int xMin, int xMax, int zMin, int zMax) CalcBoundaries(Vector3 position, int renderDistance, int size, bool region = false)
         {
             (int xMin, int xMax, int zMin, int zMax) boundaries;
 
             int x = CalcCoord(position.x, size);
             int z = CalcCoord(position.z, size);
+
+            if(region)
+            {
+                renderDistance += size;
+            }
 
             boundaries.xMin = x - renderDistance;
             boundaries.xMax = x + renderDistance;
@@ -109,7 +117,7 @@ namespace Assets.World
 
         private int CalcCoord(float coordinate, int size)
         {
-            // Input: 220, 200. Output: 200, gives corners of current region, rounds to the nearest 200
+            // Input: 220, 200. Output: 200, gives corners of current location, rounds to the nearest size number
             return Mathf.FloorToInt(coordinate / size) * size;
         }
     }

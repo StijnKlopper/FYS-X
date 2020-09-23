@@ -46,28 +46,16 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
     public Biome GetBiomeByCoordinates(Vector2 coordinates)
     {
-        Region region = GetRegionByCoordinates(coordinates);
-        return region.GetBiomeByCoordinates(coordinates);
-        // Using coordinates, determine region/continent, then determine biome based on the continent and position
-        //float scale = 0.17777f;
-        //float x = coordinates.x * scale;
-        //float z = coordinates.y * scale;
-        //x += Mathf.PerlinNoise(x, z);
-        //z += Mathf.PerlinNoise(x, z);
+        //Using coordinates, determine region / continent, then determine biome based on the continent and position
+        float scale = 0.17777f;
+        float x = coordinates.x * scale;
+        float z = coordinates.y * scale;
+        x += Mathf.PerlinNoise(x, z) * 2 - 1;
+        z += Mathf.PerlinNoise(x, z) * 2 - 1;
 
-        //coordinates = new Vector2(x / scale, z / scale);
-        //float distance = 1000f;
-        //// TO-DO: Add DefaultBiome();
-        //Biome biome = new DefaultBiome();
-        //foreach (KeyValuePair<Vector3, Region> region in regionDict)
-        //{
-        //    float distanceToSeed = Vector2.Distance(region.Value.seed, coordinates);
-        //    if (distanceToSeed < distance)
-        //    {
-        //        biome = region.Value.biome;
-        //        distance = distanceToSeed;
-        //    }
-        //}
+        Vector2 newCoordinates = new Vector2(x / scale, z / scale);
+        Region region = GetRegionByCoordinates(newCoordinates);
+        return region.GetBiomeByCoordinates(newCoordinates);
     }
 
     public Region GetRegionByCoordinates(Vector2 coordinates)
