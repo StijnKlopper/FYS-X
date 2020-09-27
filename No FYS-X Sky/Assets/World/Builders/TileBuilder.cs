@@ -108,38 +108,6 @@ public class TileBuilder : MonoBehaviour
             }
         }
 
-        int radius = 1;
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
-                int xMin = x == 0 ? 0 : x - radius;
-                int xMax = x == width ? 0 : x + radius;
-                int yMin = y == 0 ? 0 : y - radius;
-                int yMax = y == height ? 0 : y + radius;
-
-                bool isDone = false;
-                List<float> heights = new List<float>();
-
-                for (int i = xMin; i < xMax; i++)
-                {
-                    for (int j = yMin; j < yMax; j++)
-                    {
-                        if (i == x && j == y) continue;
-                        Biome checkBiome = terrainGenerator.GetBiomeByCoordinates(new Vector2(i + offsets.x, j + offsets.y));
-                        heights.Add(heightMap[x, y]);
-                        if (biome != checkBiome && biome.biomeType.color != checkBiome.biomeType.color)
-                        {
-                            heightMap[x, y] = heightMap[x, y] / heights.Average() * heightMap[x, y];
-                            isDone = true;
-                            break;
-                        }
-                    }
-                    if (isDone) break;
-                }
-            }
-        }
         this.heightMap = heightMap;
     }
 
