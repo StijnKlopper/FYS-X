@@ -1,11 +1,14 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 using UnityEngine.Tilemaps;
+
 public class MapDisplay : MonoBehaviour
 {
     public enum DrawMode {NoiseMap, ColourMap, Mesh}
     public DrawMode drawMode;
     public int mapWidth;
     public int mapHeight;
+
 
     public float noiseScale;
     public int octaves;
@@ -21,6 +24,8 @@ public class MapDisplay : MonoBehaviour
     public Renderer textureRender;
 
     public TerrainType[] regions;
+
+    public AnimationCurve heightCurve;
 
     public void GenerateMap()
     {
@@ -56,6 +61,28 @@ public class MapDisplay : MonoBehaviour
         texture.Apply();
         textureRender.sharedMaterial.mainTexture = texture;
         textureRender.transform.localScale = new Vector3(mapWidth, 1, mapHeight);
+    }
+
+    public void CopyCurve()
+    {
+        string result = "this.heightCurve = new AnimationCurve(";
+        string split = "f, ";
+
+        foreach (Keyframe keyframe in heightCurve.keys)
+        {
+            result += "new Keyframe(" + keyframe.time + split + keyframe.value;
+
+            result += split + keyframe.inTangent + split + keyframe.outTangent;
+
+            result += split + keyframe.inWeight + split + keyframe.outWeight;
+
+            result += "f),";
+        }
+
+        result = result.Remove(result.Length - 1, 1);
+        result += ");";
+        Debug.Log(result);
+        EditorGUIUtility.systemCopyBuffer = result;
     }
 
     private void OnValidate()

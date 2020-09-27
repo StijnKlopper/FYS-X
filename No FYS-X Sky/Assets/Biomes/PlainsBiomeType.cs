@@ -7,6 +7,5 @@ public class PlainsBiomeType : BiomeType
     public PlainsBiomeType()
     {
         this.color = GetColorFromRGB(new Vector3(146, 201, 85));
-        this.heightMultiplier = 10f;
     }
 }

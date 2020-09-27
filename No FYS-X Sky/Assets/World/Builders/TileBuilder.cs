@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Schema;
+using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
 {
@@ -15,12 +18,6 @@ public class TileBuilder : MonoBehaviour
 
     [System.NonSerialized]
     public float[,] heightMap;
-
-    [System.NonSerialized]
-    public float[,] biomeMap;
-
-    [System.NonSerialized]
-    public float[,] moistureMap;
 
     TerrainGenerator terrainGenerator;
 
@@ -61,6 +58,7 @@ public class TileBuilder : MonoBehaviour
 
         int octaves = 12;
         int scale = 50;
+        int heightMultiplier = 10;
 
         for (int i = 0; i < octaves; i++)
         {
@@ -103,10 +101,45 @@ public class TileBuilder : MonoBehaviour
                 // Normalise noise map between minimum and maximum noise heights
                 noiseHeight = (noiseHeight + 1) / (2f * maxPossibleHeight / 1.75f);
 
+                // Change height based on height curve and heightMultiplier
+                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
+                noiseHeight = biome.biomeType.heightCurve.Evaluate(noiseHeight) * heightMultiplier;
                 heightMap[x, y] = noiseHeight;
             }
         }
 
+        int radius = 1;
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
+                int xMin = x == 0 ? 0 : x - radius;
+                int xMax = x == width ? 0 : x + radius;
+                int yMin = y == 0 ? 0 : y - radius;
+                int yMax = y == height ? 0 : y + radius;
+
+                bool isDone = false;
+                List<float> heights = new List<float>();
+
+                for (int i = xMin; i < xMax; i++)
+                {
+                    for (int j = yMin; j < yMax; j++)
+                    {
+                        if (i == x && j == y) continue;
+                        Biome checkBiome = terrainGenerator.GetBiomeByCoordinates(new Vector2(i + offsets.x, j + offsets.y));
+                        heights.Add(heightMap[x, y]);
+                        if (biome != checkBiome && biome.biomeType.color != checkBiome.biomeType.color)
+                        {
+                            heightMap[x, y] = heightMap[x, y] / heights.Average() * heightMap[x, y];
+                            isDone = true;
+                            break;
+                        }
+                    }
+                    if (isDone) break;
+                }
+            }
+        }
         this.heightMap = heightMap;
     }
 
@@ -122,9 +155,17 @@ public class TileBuilder : MonoBehaviour
             {
                 int colorIndex = y * tileWidth + x;
 
-                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
+                Vector2 location = new Vector2(x + offsets.x, y + offsets.y);
+                Biome biome = terrainGenerator.GetBiomeByCoordinates(location);
 
-                colorMap[colorIndex] = biome.biomeType.color;
+                if (Vector2.Distance(location, biome.seed) < 2)
+                {
+                    colorMap[colorIndex] = Color.red;
+                } else
+                {
+                    colorMap[colorIndex] = biome.biomeType.color;
+                }
+                
             }
         }
 
@@ -144,23 +185,18 @@ public class TileBuilder : MonoBehaviour
 
         int vertexIndex = 0;
 
-
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                float heightValue = heightMap[x, y];
                 Vector3 vertex = meshVertices[vertexIndex];
-
-                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
-
-                float terrainHeight = this.heightCurve.Evaluate(heightValue) * biome.biomeType.heightMultiplier + biome.biomeType.yOffset;
                 
-                meshVertices[vertexIndex] = new Vector3(vertex.x, terrainHeight, vertex.z);
+                meshVertices[vertexIndex] = new Vector3(vertex.x, heightMap[x, y], vertex.z);
 
                 vertexIndex++;
             }
         }
+
         this.meshFilter.mesh.vertices = meshVertices;
         this.meshFilter.mesh.RecalculateBounds();
         this.meshFilter.mesh.RecalculateNormals();

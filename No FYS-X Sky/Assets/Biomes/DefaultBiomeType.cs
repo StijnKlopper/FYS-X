@@ -7,6 +7,5 @@ public class DefaultBiomeType : BiomeType
     public DefaultBiomeType()
     { 
         this.color = GetColorFromRGB(new Vector3(255, 0, 255));
-        this.heightMultiplier = 10f;
     }
 }

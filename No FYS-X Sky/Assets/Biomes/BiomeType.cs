@@ -6,9 +6,7 @@ public abstract class BiomeType
 {
     public Color color;
 
-    public float heightMultiplier;
-
-    public float yOffset = 0;
+    public AnimationCurve heightCurve = new AnimationCurve(new Keyframe(0f, 1f, 0f, 0f, 0f, 0f), new Keyframe(1f, 1f, 0f, 0f, 0f, 0f));
 
     public Color GetColorFromRGB(Vector3 color)
     {

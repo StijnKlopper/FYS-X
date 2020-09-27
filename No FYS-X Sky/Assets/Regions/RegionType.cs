@@ -13,11 +13,11 @@ public abstract class RegionType
         float distance = Vector2.Distance(position, regionSeed);
         float centreRatio = distance / Region.regionSize;
 
-        if (centreRatio > 0.4)
+        if (centreRatio > 0.5)
         {
             return new Biome(position, new OceanBiomeType());
         }
-        if (centreRatio > 0.2)
+        if (centreRatio > 0.4)
         {
             return new Biome(position, new BeachBiomeType());
         }
@@ -38,8 +38,8 @@ public abstract class RegionType
         //    // 0-1 + 0.0002 < 1 / 3, 
         //}
 
-        if (centreRatio > 0.1) return new Biome(position, availableBiomes[2]);
-        if (centreRatio > 0.05) return new Biome(position, availableBiomes[1]);
+        if (centreRatio > 0.3) return new Biome(position, availableBiomes[2]);
+        if (centreRatio > 0.2) return new Biome(position, availableBiomes[1]);
         return new Biome(position, availableBiomes[0]);
 
         // PerlinValue + centreRatio = max 2

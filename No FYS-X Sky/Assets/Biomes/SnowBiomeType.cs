@@ -8,7 +8,6 @@ public class SnowBiomeType : BiomeType
     public SnowBiomeType()
     {
         this.color = Color.white;
-        this.heightMultiplier = 15f;
     }
 
 }
