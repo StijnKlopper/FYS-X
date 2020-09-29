@@ -116,6 +116,8 @@ public class TileBuilder : MonoBehaviour
         int tileHeight = this.heightMap.GetLength(0);
         int tileWidth = this.heightMap.GetLength(1);
 
+        Texture2D temp = new Texture2D(100, 100);
+
         Color[] colorMap = new Color[tileHeight * tileWidth];
         for (int y = 0; y < tileHeight; y++)
         {
@@ -132,6 +134,8 @@ public class TileBuilder : MonoBehaviour
                 } else
                 {
                     colorMap[colorIndex] = biome.biomeType.color;
+                    temp = biome.biomeType.biomeTexture;
+
                 }
                 
             }
@@ -139,7 +143,7 @@ public class TileBuilder : MonoBehaviour
 
         Texture2D tileTexture = new Texture2D(tileWidth, tileHeight);
         tileTexture.wrapMode = TextureWrapMode.Clamp;
-        tileTexture.SetPixels(colorMap);
+        tileTexture = temp;
         tileTexture.Apply();
 
         return tileTexture;
