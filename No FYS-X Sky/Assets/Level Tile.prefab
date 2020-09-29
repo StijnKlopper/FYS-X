@@ -60,8 +60,7 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
+  m_Materials: []
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -112,73 +111,36 @@ MonoBehaviour:
   tileRenderer: {fileID: 5520266623367027304}
   meshFilter: {fileID: 5520266623367027305}
   meshCollider: {fileID: 5520266623367027307}
-  mapScale: 30
-  heightMultiplier: 10
   heightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
-      inSlope: 0.0026841264
-      outSlope: 0.0026841264
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.39783782
-      value: 0.001067847
-      inSlope: 0.092098266
-      outSlope: 0.092098266
+      value: 0.0038757324
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.28662008
-      outWeight: 0.33333334
+      inWeight: 0
+      outWeight: 0
     - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 1.6589087
-      outSlope: 1.6589087
-      tangentMode: 34
+      time: 0.74133295
+      value: 0.15754843
+      inSlope: 0.3523762
+      outSlope: 0.3523762
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.440094
+      value: 0.77939606
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  postid: {x: 0, y: 0, z: 0}
-  terrainTypes:
-  - name: water
-    threshold: 0
-    color: {r: 0.23113209, g: 0.7447188, b: 1, a: 0}
-  - name: grass
-    threshold: 0
-    color: {r: 0.069115125, g: 0.6509434, b: 0, a: 0}
-  - name: mountain
-    threshold: 0
-    color: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 0}
-  heightTerrainTypes:
-  - name: water
-    threshold: 0.4
-    color: {r: 0.01214843, g: 0.70792645, b: 0.8584906, a: 0}
-  - name: grass
-    threshold: 0.7
-    color: {r: 0.4085307, g: 1, b: 0.1372549, a: 0}
-  - name: mountain
-    threshold: 1
-    color: {r: 0.476459, g: 0.4811321, b: 0.47432363, a: 0}
-  heatTerrainTypes:
-  - name: hottest
-    threshold: 0.25
-    color: {r: 1, g: 0, b: 0, a: 0}
-  - name: hot
-    threshold: 0.5
-    color: {r: 0.83094406, g: 0.9433962, b: 0, a: 0}
-  - name: cold
-    threshold: 0.75
-    color: {r: 0, g: 0.18658686, b: 0.9811321, a: 0}
-  - name: coldest
-    threshold: 1
-    color: {r: 0.5566038, g: 0.09189212, b: 0.5351386, a: 0}
-  visualizationMode: 1
