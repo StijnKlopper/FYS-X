@@ -1,6 +1,9 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
+using System;
+using System.Reflection;
 
 public class MapDisplay : MonoBehaviour
 {
@@ -26,6 +29,8 @@ public class MapDisplay : MonoBehaviour
     public TerrainType[] regions;
 
     public AnimationCurve heightCurve;
+
+    public string biomeType;
 
     public void GenerateMap()
     {
@@ -81,8 +86,12 @@ public class MapDisplay : MonoBehaviour
 
         result = result.Remove(result.Length - 1, 1);
         result += ");";
-        Debug.Log(result);
         EditorGUIUtility.systemCopyBuffer = result;
+    }
+
+    public void GetCurve()
+    {
+        
     }
 
     private void OnValidate()

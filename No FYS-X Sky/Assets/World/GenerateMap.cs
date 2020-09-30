@@ -24,7 +24,10 @@ public class GenerateMap : Editor
         {
             mapdisp.CopyCurve();
         }
-
+        if (GUILayout.Button("Get Curve from BiomeType"))
+        {
+            mapdisp.GetCurve();
+        }
 
     }
 
