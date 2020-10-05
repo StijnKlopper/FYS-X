@@ -14,6 +14,8 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
     public int seed;
 
+    public TextureData textureData;
+
     [System.NonSerialized]
     public int[] randomNumbers;
 

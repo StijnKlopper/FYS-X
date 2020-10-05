@@ -2357,6 +2357,12 @@ MonoBehaviour:
   autoUpdate: 0
   textureRender: {fileID: 87063622}
   regions: []
+  heightCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!4 &575286827
 Transform:
   m_ObjectHideFlags: 0
@@ -5155,6 +5161,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 5520266623367027301, guid: 0c31a200cbf2256439ca13b894b6f98b, type: 3}
   seed: 69420
+  textureData: {fileID: 11400000, guid: 9850fb257560b7a45a8dc1285bf4881a, type: 2}
 --- !u!4 &1284178398
 Transform:
   m_ObjectHideFlags: 0

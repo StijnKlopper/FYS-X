@@ -21,7 +21,7 @@ namespace Assets.World
         public WorldBuilder()
         {
             this.chunkSize = 10;
-            this.chunkRenderDistance = 200;
+            this.chunkRenderDistance = 100;
             this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
             this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         }

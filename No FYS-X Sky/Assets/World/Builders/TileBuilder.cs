@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Schema;
+using UnityEditor;
 using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
@@ -25,6 +26,7 @@ public class TileBuilder : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //textureData = (TextureData)AssetDatabase.LoadAssetAtPath("Assets/TextureDataSet.asset", typeof(TextureData));
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         GenerateTile();
     }
@@ -41,9 +43,18 @@ public class TileBuilder : MonoBehaviour
         GenerateHeightMap(tileWidth, tileHeight, offsets);
         //GenerateMoistureMap(tileWidth, tileHeight, offsets);
 
-        Texture2D heightTexture = BuildTexture(offsets);
-    
-        this.tileRenderer.material.mainTexture = heightTexture;
+        //Texture2D heightTexture = BuildTexture(offsets);
+
+        Shader shader = Shader.Find("Custom/Blend");
+
+        this.tileRenderer.material.enableInstancing = true;
+
+        this.tileRenderer.material.shader = shader;
+
+        terrainGenerator.textureData.ApplyToMaterial(this.tileRenderer.material);
+
+        this.tileRenderer.material.mainTexture = BuildTexture(offsets); 
+
         UpdateMeshVertices(heightMap, offsets);
     }
 
@@ -134,7 +145,7 @@ public class TileBuilder : MonoBehaviour
                 } else
                 {
                     colorMap[colorIndex] = biome.biomeType.color;
-                    temp = biome.biomeType.biomeTexture;
+                    //temp = biome.biomeType.biomeTexture;
 
                 }
                 
@@ -143,7 +154,7 @@ public class TileBuilder : MonoBehaviour
 
         Texture2D tileTexture = new Texture2D(tileWidth, tileHeight);
         tileTexture.wrapMode = TextureWrapMode.Clamp;
-        tileTexture = temp;
+        tileTexture.SetPixels(colorMap);
         tileTexture.Apply();
 
         return tileTexture;
