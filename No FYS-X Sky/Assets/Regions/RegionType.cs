@@ -11,13 +11,16 @@ public abstract class RegionType
     {
         Vector2 position = new Vector2(x, z);
         float distance = Vector2.Distance(position, regionSeed);
-        float centreRatio = distance / Region.regionSize;
 
-        if (centreRatio > 0.5)
+        // Ratio to centre, [0, 1], 1 is farther away, 0 is closer
+        float centreRatio = (distance / Region.regionSize) * 2;
+
+        // If furthest 10% away from centre, pick Ocean
+        if (centreRatio > 0.9)
         {
             return new Biome(position, new OceanBiomeType());
         }
-        if (centreRatio > 0.4)
+        if (centreRatio > 0.8)
         {
             return new Biome(position, new BeachBiomeType());
         }
@@ -25,29 +28,19 @@ public abstract class RegionType
         int amountOfBiomes = availableBiomes.Count;
 
         float scale = 0.17777f;
-        float perlinValue = Mathf.PerlinNoise(x * scale, z * scale);
 
-        // Create array of values where it steps evenly from 0 to 1.5, divided by the amount of biomes
+        // [-0.1, 0.1], Distort biome choice a little bit
+        float perlinValue = (Mathf.PerlinNoise(x * scale, z * scale) * 2 - 1) / 10;
 
-        //for (int i = 1; i < amountOfBiomes; i++)
-        //{
-        //    if (perlinValue + centreRatio < i / amountOfBiomes)
-        //    {
-        //        return new Biome(position, availableBiomes[i]);
-        //    }
-        //    // 0-1 + 0.0002 < 1 / 3, 
-        //}
+        // Pick biomes from availableBiomes starting from the middle, equally divided
+        for (int i = 1; i <= amountOfBiomes; i++)
+        {
+            if (perlinValue + centreRatio < i / (float)amountOfBiomes)
+            {
+                return new Biome(position, availableBiomes[i - 1]);
+            }
+        }
 
-        if (centreRatio > 0.3) return new Biome(position, availableBiomes[2]);
-        if (centreRatio > 0.2) return new Biome(position, availableBiomes[1]);
-        return new Biome(position, availableBiomes[0]);
-
-        // PerlinValue + centreRatio = max 2
-
-        // Available: current coordinates
-        //            middle of region
-        // Using distance between coordinates and middle of region / size of region
-        // If ratio = close to zero, place ocean/ biomes at the start of availableBiomes
-        // If ratio = close to one, place biomes at the end of availablebiomes
+        return new Biome(position, new DefaultBiomeType());
     }
 }

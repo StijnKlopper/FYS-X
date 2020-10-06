@@ -1,6 +1,11 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
+using System;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 public class MapDisplay : MonoBehaviour
 {
@@ -81,8 +86,52 @@ public class MapDisplay : MonoBehaviour
 
         result = result.Remove(result.Length - 1, 1);
         result += ");";
-        Debug.Log(result);
         EditorGUIUtility.systemCopyBuffer = result;
+    }
+
+    public void GetCurve()
+    {
+        string animationCurveString = EditorGUIUtility.systemCopyBuffer.Trim();
+
+        if (animationCurveString.Contains("AnimationCurve"))
+        {
+            // Strip and make animation curve
+            String[] sep = { "AnimationCurve(", ");" };
+            animationCurveString = animationCurveString.Split(sep, 3, StringSplitOptions.None)[1].Trim();
+
+            // Regex the values of the key frames
+            Regex rgx = new Regex("-?[0-9]\\.?[0-9]*");
+            MatchCollection matches = rgx.Matches(animationCurveString);
+            Keyframe[] keys = new Keyframe[matches.Count / 6];
+            for (int i = 0; i < matches.Count; i+=6)
+            {
+                keys[i / 6] = new Keyframe(
+                    float.Parse(matches[i].Value),
+                    float.Parse(matches[i + 1].Value),
+                    float.Parse(matches[i + 2].Value),
+                    float.Parse(matches[i + 3].Value),
+                    float.Parse(matches[i + 4].Value),
+                    float.Parse(matches[i + 5].Value)
+                    );
+
+                /*
+                Debug.Log(float.Parse(matches[i].Value) + " " +
+                    float.Parse(matches[i + 1].Value) + " " +
+                    float.Parse(matches[i + 2].Value) + " " +
+                    float.Parse(matches[i + 3].Value) + " " +
+                    float.Parse(matches[i + 4].Value) + " " +
+                    float.Parse(matches[i + 5].Value));
+                */
+            }
+
+            // Set AnimationCurve
+            this.heightCurve = new AnimationCurve(keys);
+        }
+        else
+        {
+            Debug.Log("You didn't copy the correct string!");
+        }
+
     }
 
     private void OnValidate()

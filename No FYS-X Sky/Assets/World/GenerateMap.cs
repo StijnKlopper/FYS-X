@@ -24,7 +24,10 @@ public class GenerateMap : Editor
         {
             mapdisp.CopyCurve();
         }
-
+        if (GUILayout.Button("Import Curve from clipboard to graph"))
+        {
+            mapdisp.GetCurve();
+        }
 
     }
 
