@@ -32,8 +32,6 @@ public class MapDisplay : MonoBehaviour
 
     public AnimationCurve heightCurve;
 
-    public string biomeType;
-
     public void GenerateMap()
     {
         TileBuilder tile = new TileBuilder();
