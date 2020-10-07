@@ -41,19 +41,16 @@ public class TileBuilder : MonoBehaviour
 
         // Instead of generating height map:
         GenerateHeightMap(tileWidth, tileHeight, offsets);
+
+        //BiomeTextureSelection(offsets);
+
+        terrainGenerator.textureData.setBiomeIndex(this.tileRenderer.material, BiomeTextureSelection(offsets));
+
         //GenerateMoistureMap(tileWidth, tileHeight, offsets);
+        //terrainGenerator.textureData.
 
-        //Texture2D heightTexture = BuildTexture(offsets);
+        //BiomeTextureSelection(offsets);
 
-        Shader shader = Shader.Find("Custom/Blend");
-
-        this.tileRenderer.material.enableInstancing = true;
-
-        this.tileRenderer.material.shader = shader;
-
-        terrainGenerator.textureData.ApplyToMaterial(this.tileRenderer.material);
-
-        this.tileRenderer.material.mainTexture = BuildTexture(offsets); 
 
         UpdateMeshVertices(heightMap, offsets);
     }
@@ -122,42 +119,23 @@ public class TileBuilder : MonoBehaviour
         this.heightMap = heightMap;
     }
 
-    private Texture2D BuildTexture(Vector2 offsets)
+    private float[] BiomeTextureSelection(Vector2 offsets)
     {
         int tileHeight = this.heightMap.GetLength(0);
         int tileWidth = this.heightMap.GetLength(1);
 
-        Texture2D temp = new Texture2D(100, 100);
+        float[] tileTextureData = new float[tileWidth * tileHeight];
 
-        Color[] colorMap = new Color[tileHeight * tileWidth];
         for (int y = 0; y < tileHeight; y++)
         {
             for (int x = 0; x < tileWidth; x++)
             {
-                int colorIndex = y * tileWidth + x;
-
-                Vector2 location = new Vector2(x + offsets.x, y + offsets.y);
-                Biome biome = terrainGenerator.GetBiomeByCoordinates(location);
-
-                if (Vector2.Distance(location, biome.seed) < 2)
-                {
-                    colorMap[colorIndex] = Color.red;
-                } else
-                {
-                    colorMap[colorIndex] = biome.biomeType.color;
-                    //temp = biome.biomeType.biomeTexture;
-
-                }
-                
+                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
+                tileTextureData[x + y * tileHeight] = biome.biomeType.textureIndex;
             }
         }
 
-        Texture2D tileTexture = new Texture2D(tileWidth, tileHeight);
-        tileTexture.wrapMode = TextureWrapMode.Clamp;
-        tileTexture.SetPixels(colorMap);
-        tileTexture.Apply();
-
-        return tileTexture;
+        return tileTextureData;
     }
 
     private void UpdateMeshVertices(float[,] heightMap, Vector2 offsets)

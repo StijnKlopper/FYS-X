@@ -28,6 +28,7 @@ public class TerrainGenerator : MonoBehaviour, Generator
     // Start is called before the first frame update
     void Start()
     {
+
         System.Random random = new System.Random(seed);
         this.randomNumbers = new int[20];
 
@@ -35,10 +36,13 @@ public class TerrainGenerator : MonoBehaviour, Generator
         {
             this.randomNumbers[i] = random.Next(10000, 100000);
         }
+
+        textureData.ApplyToMaterial(tilePrefab.GetComponent<Renderer>().sharedMaterial);
     }
 
     public GameObject GenerateTile(Vector3 position)
     {
+        textureData.setRegionCount(tilePrefab.GetComponent<Renderer>().sharedMaterial, regionDict);
         Vector3 tilePosition = new Vector3(position.x + tileOffset,
                 this.gameObject.transform.position.y,
                 position.z + tileOffset);
@@ -54,6 +58,7 @@ public class TerrainGenerator : MonoBehaviour, Generator
         float z = coordinates.y * scale;
         x += Mathf.PerlinNoise(x, z) * 2 - 1;
         z += Mathf.PerlinNoise(x, z) * 2 - 1;
+        /////////////////////////////////////
 
         Vector2 newCoordinates = new Vector2(x / scale, z / scale);
         Region region = GetRegionByCoordinates(newCoordinates);

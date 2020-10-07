@@ -19,11 +19,18 @@ public class TextureData : UpdatableData
 
     public Layer[] layers;
 
-    float savedMinHeight;
-    float savedMaxHeight;
+    //public int[] regions;
+
+    public void setRegionCount(Material material, Dictionary<Vector3, Region> regionDict) {
+
+        
+    }
+
+    public void setBiomeIndex(Material material, float[] textureIndex) {
+        material.SetFloatArray("textureIndexByBiome", textureIndex);
+    }
 
     public void ApplyToMaterial(Material material) {
-
         material.SetInt("layerCount", layers.Length);
         material.SetColorArray("baseColours", layers.Select(x => x.tint).ToArray());
         material.SetFloatArray("baseStartHeights", layers.Select(x => x.startHeight).ToArray());

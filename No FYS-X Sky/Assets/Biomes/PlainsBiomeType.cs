@@ -10,5 +10,6 @@ public class PlainsBiomeType : BiomeType
         this.color = GetColorFromRGB(new Vector3(146, 201, 85));
 
         this.color = GetColorFromRGB(new Vector3(89, 138, 37));
+        this.textureIndex = 1;
     }
 }
