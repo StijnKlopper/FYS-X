@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour, Generator
@@ -36,16 +37,13 @@ public class TerrainGenerator : MonoBehaviour, Generator
         {
             this.randomNumbers[i] = random.Next(10000, 100000);
         }
-
         textureData.ApplyToMaterial(tilePrefab.GetComponent<Renderer>().sharedMaterial);
     }
 
     public GameObject GenerateTile(Vector3 position)
     {
         textureData.setRegionCount(tilePrefab.GetComponent<Renderer>().sharedMaterial, regionDict);
-        Vector3 tilePosition = new Vector3(position.x + tileOffset,
-                this.gameObject.transform.position.y,
-                position.z + tileOffset);
+        Vector3 tilePosition = new Vector3(position.x + tileOffset, this.gameObject.transform.position.y, position.z + tileOffset);
         GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
         return tile;
     }

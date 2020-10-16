@@ -1,5 +1,9 @@
 ﻿Shader "Custom/Blend"
 {
+    Properties {
+        _BaseTextures ("Terrain Textures", 2DArray) = "" {}
+    }
+
     SubShader
     {
         Tags { "RenderType"="Opaque" }
@@ -30,11 +34,14 @@
 
         float textureIndexByBiome[11 * 11];
 
+        sampler2D map;
 
-        UNITY_DECLARE_TEX2DARRAY(baseTextures);
+
+        UNITY_DECLARE_TEX2DARRAY(_BaseTextures);
 
         struct Input
         {
+            float2 uv_BaseTextures;
             float3 worldPos;
             float3 worldNormal;
         };
@@ -46,29 +53,33 @@
         float3 triplanar(float3 worldPos, float scale, float3 blendAxes, int index) {
                 float3 scaledWorldPos = worldPos / scale;
 
-                float3 xProjection = UNITY_SAMPLE_TEX2DARRAY(baseTextures, float3(scaledWorldPos.y, scaledWorldPos.z, index)) * blendAxes.x;
-			    float3 yProjection = UNITY_SAMPLE_TEX2DARRAY(baseTextures, float3(scaledWorldPos.x, scaledWorldPos.z, index)) * blendAxes.y;
-			    float3 zProjection = UNITY_SAMPLE_TEX2DARRAY(baseTextures, float3(scaledWorldPos.x, scaledWorldPos.y, index)) * blendAxes.z;
+                float3 xProjection = UNITY_SAMPLE_TEX2DARRAY(_BaseTextures, float3(scaledWorldPos.y, scaledWorldPos.z, index)) * blendAxes.x ;
+			    float3 yProjection = UNITY_SAMPLE_TEX2DARRAY(_BaseTextures, float3(scaledWorldPos.x, scaledWorldPos.z, index)) * blendAxes.y ;
+			    float3 zProjection = UNITY_SAMPLE_TEX2DARRAY(_BaseTextures, float3(scaledWorldPos.x, scaledWorldPos.y, index)) * blendAxes.z ;
                 return xProjection + yProjection + zProjection;
             
         }
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            float index = textureIndexByBiome[IN.worldPos.x + IN.worldPos.y * 11];
+            float index = textureIndexByBiome[IN.worldPos.x + IN.worldPos.z * 11];
             float heightPercent = inverseLerp(minHeight, maxHeight, IN.worldPos.y);
             float3 blendAxes = abs(IN.worldNormal);
             blendAxes /= blendAxes.x + blendAxes.y + blendAxes.z;
 
             for (int i = 0; i < layerCount; i++) {
-                float drawStrength = inverseLerp(-baseBlends[index]/2 - epsilon, baseBlends[index]/2, heightPercent - baseStartHeights[index]);
 
-                float3 baseColour = baseColours[index] * baseColourStrength[index];
-                float3 textureColour = triplanar(IN.worldPos, baseTextureScales[index], blendAxes, index) * (1-baseColourStrength[index]);
+                float drawStrength = inverseLerp(-baseBlends[i]/2 - epsilon, baseBlends[i]/2, IN.uv_BaseTextures.y/5);
+              
+                float3 baseColour = baseColours[i] * baseColourStrength[i];
+                float3 textureColour = triplanar(IN.worldPos, baseTextureScales[i], blendAxes, i) * (1-baseColourStrength[i]);
 
                 o.Albedo = o.Albedo * (1-drawStrength) + (baseColour + textureColour) * drawStrength;
-            }
+
+            } 
+
         }
+
         ENDCG
     }
     FallBack "Diffuse"

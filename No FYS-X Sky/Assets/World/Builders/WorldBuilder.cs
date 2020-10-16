@@ -1,8 +1,8 @@
 ﻿using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Linq;
-using System.Management.Instrumentation;
-using System.Xml.Schema;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -63,6 +63,7 @@ namespace Assets.World
         {
             (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
 
+
             for (int i = xMin; i < xMax; i += chunkSize)
             {
                 for (int j = zMin; j < zMax; j += chunkSize)
@@ -77,7 +78,10 @@ namespace Assets.World
                     }
                 }
             }
+
         }
+
+       
 
         public void UnloadTiles(Vector3 position)
         {

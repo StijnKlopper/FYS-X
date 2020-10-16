@@ -19,6 +19,9 @@ public class TextureData : UpdatableData
 
     public Layer[] layers;
 
+    float savedMinHeight;
+    float savedMaxHeight;
+
     //public int[] regions;
 
     public void setRegionCount(Material material, Dictionary<Vector3, Region> regionDict) {
@@ -30,6 +33,11 @@ public class TextureData : UpdatableData
         material.SetFloatArray("textureIndexByBiome", textureIndex);
     }
 
+    public void SetBiomeSeeds(Material material, Vector4[] biomeSeeds)
+    {
+        material.SetVectorArray("textureIndexByBiome", biomeSeeds);
+    }
+
     public void ApplyToMaterial(Material material) {
         material.SetInt("layerCount", layers.Length);
         material.SetColorArray("baseColours", layers.Select(x => x.tint).ToArray());
@@ -38,7 +46,20 @@ public class TextureData : UpdatableData
         material.SetFloatArray("baseColourStrength", layers.Select(x => x.tintStrength).ToArray());
         material.SetFloatArray("baseTextureScales", layers.Select(x => x.textureScale).ToArray());
         Texture2DArray texturesArray = GenerateTextureArray(layers.Select(x => x.texture).ToArray());
-        material.SetTexture("baseTextures", texturesArray);
+        material.SetTexture("_BaseTextures", texturesArray);
+
+        UpdateMeshHeights(material, savedMinHeight, savedMaxHeight);
+    }
+
+    public void UpdateMeshHeights(Material material, float minHeight, float maxHeight)
+    {
+        savedMinHeight = minHeight;
+        savedMaxHeight = 1;
+
+        Debug.Log(savedMaxHeight);
+
+        material.SetFloat("minHeight", minHeight);
+        material.SetFloat("maxHeight", maxHeight);
     }
 
     [System.Serializable]

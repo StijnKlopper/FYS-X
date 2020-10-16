@@ -145,3 +145,4 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  computeShader: {fileID: 7200000, guid: 87c82ec2a9ba45049ad1d4bc790ebc9c, type: 3}
