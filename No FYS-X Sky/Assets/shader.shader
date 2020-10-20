@@ -7,14 +7,14 @@
     SubShader
     {
         Tags { "RenderType"="Opaque" }
-        LOD 200
+        LOD 600
 
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
         #pragma surface surf Standard fullforwardshadows
 
         // Use shader model 3.0 target, to get nicer looking lighting
-        #pragma target 3.0
+        #pragma target 4.0
 
         const static int maxLayerCount = 8;
         const static float epsilon = 1E-4;
@@ -44,13 +44,14 @@
             float2 uv_BaseTextures;
             float3 worldPos;
             float3 worldNormal;
+            float4 color;
         };
 
         float inverseLerp(float a, float b, float value) {
             return saturate((value-a)/(b-a));
         }
 
-        float3 triplanar(float3 worldPos, float scale, float3 blendAxes, int index) {
+        float3 triplanar(float3 worldPos, float scale, float3 blendAxes, float index) {
                 float3 scaledWorldPos = worldPos / scale;
 
                 float3 xProjection = UNITY_SAMPLE_TEX2DARRAY(_BaseTextures, float3(scaledWorldPos.y, scaledWorldPos.z, index)) * blendAxes.x ;
@@ -62,21 +63,17 @@
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            float index = textureIndexByBiome[IN.worldPos.x + IN.worldPos.z * 11];
             float heightPercent = inverseLerp(minHeight, maxHeight, IN.worldPos.y);
             float3 blendAxes = abs(IN.worldNormal);
             blendAxes /= blendAxes.x + blendAxes.y + blendAxes.z;
 
-            for (int i = 0; i < layerCount; i++) {
+            int i = IN.uv_BaseTextures.xy;
 
-                float drawStrength = inverseLerp(-baseBlends[i]/2 - epsilon, baseBlends[i]/2, IN.uv_BaseTextures.y/5);
-              
-                float3 baseColour = baseColours[i] * baseColourStrength[i];
-                float3 textureColour = triplanar(IN.worldPos, baseTextureScales[i], blendAxes, i) * (1-baseColourStrength[i]);
+            float drawStrength = 1 ;
+            float3 baseColour = baseColours[IN.uv_BaseTextures.y] * baseColourStrength[IN.uv_BaseTextures.y];
+            float3 textureColour = triplanar(IN.worldPos, baseTextureScales[IN.uv_BaseTextures.y], blendAxes, i) * (1-baseColourStrength[IN.uv_BaseTextures.y]);
 
-                o.Albedo = o.Albedo * (1-drawStrength) + (baseColour + textureColour) * drawStrength;
-
-            } 
+            o.Albedo = o.Albedo * (1-drawStrength) + (baseColour + textureColour) * drawStrength;
 
         }
 

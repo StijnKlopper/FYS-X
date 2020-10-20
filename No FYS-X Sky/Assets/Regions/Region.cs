@@ -54,28 +54,30 @@ public class Region
 
     private RegionType GetRegionType(float heat, float moisture)
     {
-        return new HotDryRegionType();
-        //if ((heat < 0.1 || heat > 0.9) && (moisture < 0.1 || moisture > 0.9)) return new OceanRegionType();
+        if ((heat < 0.1 || heat > 0.9) && (moisture < 0.1 || moisture > 0.9)) return new OceanRegionType();
 
-        //if (heat < 0.5)
-        //{
-        //    if (moisture < 0.5)
-        //    {
-        //        return new ColdDryRegionType();
-        //    } else
-        //    {
-        //        return new ColdWetRegionType();
-        //    }
-        //} else
-        //{
-        //    if (moisture < 0.5)
-        //    {
-        //        return new HotDryRegionType();
-        //    } else
-        //    {
-        //        return new HotWetRegionType();
-        //    }
-        //}
+        if (heat < 0.5)
+        {
+            if (moisture < 0.5)
+            {
+                return new ColdDryRegionType();
+            }
+            else
+            {
+                return new ColdWetRegionType();
+            }
+        }
+        else
+        {
+            if (moisture < 0.5)
+            {
+                return new HotDryRegionType();
+            }
+            else
+            {
+                return new HotWetRegionType();
+            }
+        }
     }
 
     private void GenerateBiomes(int x, int z)
@@ -125,10 +127,7 @@ public class Region
                 distance = distanceToSeed;
             }
         }
-        if (nearestBiome.biomeType is DefaultBiomeType)
-        {
-            Debug.Log("Oepsie woepsie");
-        }
+
         return nearestBiome;
     }
 }

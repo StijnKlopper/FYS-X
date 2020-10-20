@@ -24,15 +24,6 @@ public class TextureData : UpdatableData
 
     //public int[] regions;
 
-    public void setRegionCount(Material material, Dictionary<Vector3, Region> regionDict) {
-
-        
-    }
-
-    public void setBiomeIndex(Material material, float[] textureIndex) {
-        material.SetFloatArray("textureIndexByBiome", textureIndex);
-    }
-
     public void SetBiomeSeeds(Material material, Vector4[] biomeSeeds)
     {
         material.SetVectorArray("textureIndexByBiome", biomeSeeds);
@@ -55,8 +46,6 @@ public class TextureData : UpdatableData
     {
         savedMinHeight = minHeight;
         savedMaxHeight = 1;
-
-        Debug.Log(savedMaxHeight);
 
         material.SetFloat("minHeight", minHeight);
         material.SetFloat("maxHeight", maxHeight);

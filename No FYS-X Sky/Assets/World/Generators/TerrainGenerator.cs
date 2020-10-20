@@ -42,7 +42,7 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
     public GameObject GenerateTile(Vector3 position)
     {
-        textureData.setRegionCount(tilePrefab.GetComponent<Renderer>().sharedMaterial, regionDict);
+       
         Vector3 tilePosition = new Vector3(position.x + tileOffset, this.gameObject.transform.position.y, position.z + tileOffset);
         GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
         return tile;

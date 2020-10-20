@@ -46,8 +46,6 @@ public class TileBuilder : MonoBehaviour
 
         //BiomeTextureSelection(offsets);
 
-        Debug.Log(tileTextureData);
-
         //terrainGenerator.textureData.setBiomeIndex(this.tileRenderer.material, tileTextureData);
 
 
@@ -143,6 +141,16 @@ public class TileBuilder : MonoBehaviour
 
         int vertexIndex = 0;
 
+        int p = uvs.Length - 1;
+
+        for (int i = 0; i < uvs.Length ; i++)
+        {
+            Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(meshVertices[p].x + offsets.x + 5, meshVertices[p].z + offsets.y + 5));
+
+            uvs[i] = new Vector2(biome.biomeType.textureIndex, biome.biomeType.textureIndex);
+            p--;
+        }
+
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -155,32 +163,11 @@ public class TileBuilder : MonoBehaviour
             }
         }
 
-        int p = uvs.Length -1;
-        int prevTextureIndex = 0;
-        float drawStrength = 0;
-
-        for (int i = 0; i < uvs.Length; i++) 
-        {
-            
-
-            Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(meshVertices[p].x + offsets.x + 5, meshVertices[p].z + offsets.y + 5));
-
-            if (prevTextureIndex != biome.biomeType.textureIndex)
-            {
-                drawStrength = -1;
-            }
-            else { drawStrength = 1; }
-
-            uvs[i] = new Vector2(drawStrength, biome.biomeType.textureIndex);
-            p--;
-        }
-
         this.meshFilter.mesh.vertices = meshVertices;
         this.meshFilter.mesh.RecalculateBounds();
         this.meshFilter.mesh.RecalculateNormals();
 
-        this.meshFilter.mesh.uv = uvs;
-
+        this.meshFilter.mesh.SetUVs(0, uvs);
         this.meshCollider.sharedMesh = this.meshFilter.mesh;
     }
 
