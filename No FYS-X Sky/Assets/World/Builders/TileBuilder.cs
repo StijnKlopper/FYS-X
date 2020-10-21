@@ -166,6 +166,7 @@ public class TileBuilder : MonoBehaviour
 
         int p = uvs.Length - 1;
 
+        // for every vertice in our mesh set the texture index based on the current biome the vertice is located.
         for (int i = 0; i < uvs.Length; i++)
         {
             Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(meshVertices[p].x + offsets.x + 5, meshVertices[p].z + offsets.y + 5));
@@ -173,6 +174,7 @@ public class TileBuilder : MonoBehaviour
             uvs[i] = new Vector2(biome.biomeType.textureIndex, biome.biomeType.textureIndex);
             p--;
         }
+
 
         for (int y = 0; y < height; y++)
         {

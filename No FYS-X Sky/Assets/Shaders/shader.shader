@@ -34,6 +34,7 @@
             float3 worldNormal;
         };
 
+        // use triplanar mapping to prevent texture stretching across various surface
         float3 triplanar(float3 worldPos, float scale, float3 blendAxes, float index) {
             float3 scaledWorldPos = worldPos / scale;
 
@@ -43,7 +44,7 @@
             return xProjection + yProjection + zProjection;
         }
 
-
+        // display texture based on index in a texture array that is stored via a vertice value.
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
             int i = IN.uv_BaseTextures.y;

@@ -37,6 +37,8 @@ public class TerrainGenerator : MonoBehaviour, Generator
         {
             this.randomNumbers[i] = random.Next(10000, 100000);
         }
+
+        //set shared texture array for all tiles to use to preserve loading and unloading too many textures
         textureData.ApplyToMaterial(tilePrefab.GetComponent<Renderer>().sharedMaterial);
     }
 

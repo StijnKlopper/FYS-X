@@ -19,16 +19,12 @@ public class TextureData : UpdatableData
 
     public Layer[] layers;
 
-    float savedMinHeight;
-    float savedMaxHeight;
-
-    //public int[] regions;
-
     public void SetBiomeSeeds(Material material, Vector4[] biomeSeeds)
     {
         material.SetVectorArray("textureIndexByBiome", biomeSeeds);
     }
 
+    // Set values for every texture layer and apply to material
     public void ApplyToMaterial(Material material) {
         material.SetInt("layerCount", layers.Length);
         material.SetColorArray("baseColours", layers.Select(x => x.tint).ToArray());
@@ -38,17 +34,6 @@ public class TextureData : UpdatableData
         material.SetFloatArray("baseTextureScales", layers.Select(x => x.textureScale).ToArray());
         Texture2DArray texturesArray = GenerateTextureArray(layers.Select(x => x.texture).ToArray());
         material.SetTexture("_BaseTextures", texturesArray);
-
-        UpdateMeshHeights(material, savedMinHeight, savedMaxHeight);
-    }
-
-    public void UpdateMeshHeights(Material material, float minHeight, float maxHeight)
-    {
-        savedMinHeight = minHeight;
-        savedMaxHeight = 1;
-
-        material.SetFloat("minHeight", minHeight);
-        material.SetFloat("maxHeight", maxHeight);
     }
 
     [System.Serializable]
@@ -65,6 +50,7 @@ public class TextureData : UpdatableData
     
     }
 
+    // Generate texture array data type from array of 2D textures
     Texture2DArray GenerateTextureArray(Texture2D[] textures) {
         Texture2DArray textureArray = new Texture2DArray(textureSize, textureSize, textures.Length, textureFormat, true);
         for (int i = 0; i < textures.Length; i++) {
