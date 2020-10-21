@@ -44,24 +44,16 @@ public class TileBuilder : MonoBehaviour
         // Instead of generating height map:
         GenerateHeightMap(tileWidth, tileHeight, offsets);
 
-        //BiomeTextureSelection(offsets);
 
-        //terrainGenerator.textureData.setBiomeIndex(this.tileRenderer.material, tileTextureData);
-
-
-        //GenerateMoistureMap(tileWidth, tileHeight, offsets);
-        //terrainGenerator.textureData.
-
-        //BiomeTextureSelection(offsets);
-/*
-        Texture2D heightTexture = BuildTexture(offsets);
-
-        this.tileRenderer.material.mainTexture = heightTexture;*/
-
+        // NOT CURRENTLY IN USE
+        //Texture2D heightTexture = BuildTexture(offsets);
+        //this.tileRenderer.material.mainTexture = heightTexture;
 
         UpdateMeshVertices(heightMap, offsets);
     }
 
+
+    // OUT OF ORDER FUNCTION MAY BE USED IN THE FUTURE:
     private Texture2D BuildTexture(Vector2 offsets)
     {
         int tileHeight = this.heightMap.GetLength(0);
@@ -201,7 +193,5 @@ public class TileBuilder : MonoBehaviour
         this.meshFilter.mesh.SetUVs(0, uvs);
         this.meshCollider.sharedMesh = this.meshFilter.mesh;
     }
-
-
 
 }
