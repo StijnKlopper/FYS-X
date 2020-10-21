@@ -3,6 +3,7 @@
         Properties
         {
             _BaseTextures ("Main Tex Array", 2DArray) = "white" {}
+            _MainTex("Albedo (RGB)", 2D) = "white" {}
         }
         SubShader
         {
@@ -22,7 +23,7 @@
                 struct v2f {
                     float4 pos : SV_POSITION;
                     float2 uv : TEXCOORD0;
-                    nointerpolation int index : TEXCOORD1;
+                    int index : TEXCOORD1;
                 };
      
                 v2f vert(appdata v)
@@ -35,10 +36,13 @@
                 }
      
                 UNITY_DECLARE_TEX2DARRAY(_BaseTextures);
+                sampler2D _MainTex;
      
                 fixed4 frag(v2f i) : SV_Target
                 {
-                    return UNITY_SAMPLE_TEX2DARRAY(_BaseTextures, float3(1, 1, i.index + 1));
+                    fixed4 c = tex2D(_MainTex, i.uv);
+                    
+                    return UNITY_SAMPLE_TEX2DARRAY(_BaseTextures, float3(i.uv, c.rgb.r * 10));;
                 }
                 ENDCG
             }

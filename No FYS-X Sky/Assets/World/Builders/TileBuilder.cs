@@ -53,9 +53,40 @@ public class TileBuilder : MonoBehaviour
         //terrainGenerator.textureData.
 
         //BiomeTextureSelection(offsets);
+/*
+        Texture2D heightTexture = BuildTexture(offsets);
+
+        this.tileRenderer.material.mainTexture = heightTexture;*/
 
 
         UpdateMeshVertices(heightMap, offsets);
+    }
+
+    private Texture2D BuildTexture(Vector2 offsets)
+    {
+        int tileHeight = this.heightMap.GetLength(0);
+        int tileWidth = this.heightMap.GetLength(1);
+
+        Color[] colorMap = new Color[tileHeight * tileWidth];
+        for (int y = 0; y < tileHeight; y++)
+        {
+            for (int x = 0; x < tileWidth; x++)
+            {
+                int colorIndex = y * tileWidth + x;
+
+                Vector2 location = new Vector2(x + offsets.x, y + offsets.y);
+                Biome biome = terrainGenerator.GetBiomeByCoordinates(location);
+                colorMap[colorIndex] = biome.biomeType.color;
+
+            }
+        }
+
+        Texture2D tileTexture = new Texture2D(tileWidth, tileHeight);
+        tileTexture.wrapMode = TextureWrapMode.Clamp;
+        tileTexture.SetPixels(colorMap);
+        tileTexture.Apply();
+
+        return tileTexture;
     }
 
     public void GenerateHeightMap(int width, int height, Vector2 offsets)
@@ -143,7 +174,7 @@ public class TileBuilder : MonoBehaviour
 
         int p = uvs.Length - 1;
 
-        for (int i = 0; i < uvs.Length ; i++)
+        for (int i = 0; i < uvs.Length; i++)
         {
             Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(meshVertices[p].x + offsets.x + 5, meshVertices[p].z + offsets.y + 5));
 

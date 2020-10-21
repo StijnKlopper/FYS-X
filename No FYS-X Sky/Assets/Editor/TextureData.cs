@@ -19,8 +19,6 @@ public class TextureData : UpdatableData
 
     public Layer[] layers;
 
-    //public int[] regions;
-
     public void setRegionCount(Material material, Dictionary<Vector3, Region> regionDict) {
 
         
