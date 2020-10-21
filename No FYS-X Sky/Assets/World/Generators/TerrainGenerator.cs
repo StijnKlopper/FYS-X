@@ -56,7 +56,6 @@ public class TerrainGenerator : MonoBehaviour, Generator
         float z = coordinates.y * scale;
         x += Mathf.PerlinNoise(x, z) * 2 - 1;
         z += Mathf.PerlinNoise(x, z) * 2 - 1;
-        /////////////////////////////////////
 
         Vector2 newCoordinates = new Vector2(x / scale, z / scale);
         Region region = GetRegionByCoordinates(newCoordinates);
@@ -67,7 +66,6 @@ public class TerrainGenerator : MonoBehaviour, Generator
     {
         float distance = 10000f;
         Region nearestRegion = new Region();
-        //float regionRatio = 0f;
 
         // Find distance of coordinates to the seed (middle) of the region
         foreach (KeyValuePair<Vector3, Region> region in regionDict)
