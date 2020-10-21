@@ -8,7 +8,7 @@ public abstract class BiomeType
 
     public AnimationCurve heightCurve = new AnimationCurve(new Keyframe(0f, 1f, 0f, 0f, 0f, 0f), new Keyframe(1f, 1f, 0f, 0f, 0f, 0f));
 
-    public int textureIndex;
+    public int biomeTypeId;
 
     public Color GetColorFromRGB(Vector3 color)
     {

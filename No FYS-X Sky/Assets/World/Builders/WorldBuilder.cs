@@ -63,7 +63,6 @@ namespace Assets.World
         {
             (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
 
-
             for (int i = xMin; i < xMax; i += chunkSize)
             {
                 for (int j = zMin; j < zMax; j += chunkSize)
@@ -78,10 +77,7 @@ namespace Assets.World
                     }
                 }
             }
-
         }
-
-       
 
         public void UnloadTiles(Vector3 position)
         {
@@ -96,8 +92,6 @@ namespace Assets.World
                 }
             }
         }
-
-
 
         private (int xMin, int xMax, int zMin, int zMax) CalcBoundaries(Vector3 position, int renderDistance, int size, bool region = false)
         {

@@ -27,10 +27,8 @@ public class TileBuilder : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //textureData = (TextureData)AssetDatabase.LoadAssetAtPath("Assets/TextureDataSet.asset", typeof(TextureData));
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         GenerateTile();
-
     }
 
     private void GenerateTile()
@@ -97,10 +95,6 @@ public class TileBuilder : MonoBehaviour
         int scale = 50;
         int heightMultiplier = 10;
 
-        int p = 0;
-
-        int[] randomNumbersArray = terrainGenerator.randomNumbers;
-
         for (int i = 0; i < octaves; i++)
         {
             maxPossibleHeight += amplitude;
@@ -123,8 +117,8 @@ public class TileBuilder : MonoBehaviour
                 {
                     // Add large number to the sample coordinates to prevent feeding negative numbers into the Perlin Noise function
                     // Prevents the mandela effect around (0,0)
-                    float sampleX = (x + offsets.x) / scale * frequency + randomNumbersArray[i];
-                    float sampleY = (y + offsets.y) / scale * frequency + randomNumbersArray[i];
+                    float sampleX = (x + offsets.x) / scale * frequency + terrainGenerator.randomNumbers[i];
+                    float sampleY = (y + offsets.y) / scale * frequency + terrainGenerator.randomNumbers[i];
 
                     // Because we * 2 - 1 this value, we stretch out the noise from [0,1] to [-1,1]
                     float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
@@ -146,7 +140,7 @@ public class TileBuilder : MonoBehaviour
                 // Change height based on height curve and heightMultiplier
                 Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
 
-                tileTextureData[x + y * height] = biome.biomeType.textureIndex;
+                tileTextureData[x + y * height] = biome.biomeType.biomeTypeId;
 
                 noiseHeight = biome.biomeType.heightCurve.Evaluate(noiseHeight) * heightMultiplier;
                 heightMap[x, y] = noiseHeight;
@@ -171,7 +165,7 @@ public class TileBuilder : MonoBehaviour
         {
             Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(meshVertices[p].x + offsets.x + 5, meshVertices[p].z + offsets.y + 5));
 
-            uvs[i] = new Vector2(biome.biomeType.textureIndex, biome.biomeType.textureIndex);
+            uvs[i] = new Vector2(biome.biomeType.biomeTypeId, biome.biomeType.biomeTypeId);
             p--;
         }
 

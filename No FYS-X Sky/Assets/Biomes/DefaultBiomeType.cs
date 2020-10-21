@@ -6,7 +6,7 @@ public class DefaultBiomeType : BiomeType
 {
     public DefaultBiomeType()
     { 
-        this.textureIndex = 10;
+        this.biomeTypeId = 10;
         this.color = new Color(1.0f, 0, 0);
     }
 }
