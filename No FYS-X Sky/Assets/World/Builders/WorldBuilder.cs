@@ -1,8 +1,8 @@
 ﻿using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Linq;
-using System.Management.Instrumentation;
-using System.Xml.Schema;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,7 +21,7 @@ namespace Assets.World
         public WorldBuilder()
         {
             this.chunkSize = 10;
-            this.chunkRenderDistance = 200;
+            this.chunkRenderDistance = 100;
             this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
             this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         }
@@ -92,8 +92,6 @@ namespace Assets.World
                 }
             }
         }
-
-
 
         private (int xMin, int xMax, int zMin, int zMax) CalcBoundaries(Vector3 position, int renderDistance, int size, bool region = false)
         {

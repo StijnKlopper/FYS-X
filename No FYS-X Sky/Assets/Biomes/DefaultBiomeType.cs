@@ -6,6 +6,7 @@ public class DefaultBiomeType : BiomeType
 {
     public DefaultBiomeType()
     { 
-        this.color = GetColorFromRGB(new Vector3(255, 0, 255));
+        this.biomeTypeId = 10;
+        this.color = new Color(1.0f, 0, 0);
     }
 }

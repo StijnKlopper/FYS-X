@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour, Generator
@@ -13,6 +14,8 @@ public class TerrainGenerator : MonoBehaviour, Generator
     private int tileOffset = 5;
 
     public int seed;
+
+    public TextureData textureData;
 
     [System.NonSerialized]
     public int[] randomNumbers;
@@ -26,6 +29,7 @@ public class TerrainGenerator : MonoBehaviour, Generator
     // Start is called before the first frame update
     void Start()
     {
+
         System.Random random = new System.Random(seed);
         this.randomNumbers = new int[20];
 
@@ -33,13 +37,15 @@ public class TerrainGenerator : MonoBehaviour, Generator
         {
             this.randomNumbers[i] = random.Next(10000, 100000);
         }
+
+        //set shared texture array for all tiles to use to preserve loading and unloading too many textures
+        textureData.ApplyToMaterial(tilePrefab.GetComponent<Renderer>().sharedMaterial);
     }
 
     public GameObject GenerateTile(Vector3 position)
     {
-        Vector3 tilePosition = new Vector3(position.x + tileOffset,
-                this.gameObject.transform.position.y,
-                position.z + tileOffset);
+       
+        Vector3 tilePosition = new Vector3(position.x + tileOffset, this.gameObject.transform.position.y, position.z + tileOffset);
         GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
         return tile;
     }
@@ -62,7 +68,6 @@ public class TerrainGenerator : MonoBehaviour, Generator
     {
         float distance = 10000f;
         Region nearestRegion = new Region();
-        //float regionRatio = 0f;
 
         // Find distance of coordinates to the seed (middle) of the region
         foreach (KeyValuePair<Vector3, Region> region in regionDict)

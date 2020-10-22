@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;
@@ -86,7 +88,10 @@ public class MapDisplay : MonoBehaviour
 
         result = result.Remove(result.Length - 1, 1);
         result += ");";
+        Debug.Log(result);
+        #if UNITY_EDITOR
         EditorGUIUtility.systemCopyBuffer = result;
+        #endif
     }
 
     public void GetCurve()

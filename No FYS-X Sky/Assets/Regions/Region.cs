@@ -82,6 +82,7 @@ public class Region
 
     private void GenerateBiomes(int x, int z)
     {
+        
         int biomeSize = regionSize / 10;
         for (int i = x; i < x + regionSize; i += biomeSize)
         {
@@ -129,5 +130,4 @@ public class Region
 
         return nearestBiome;
     }
-
 }
