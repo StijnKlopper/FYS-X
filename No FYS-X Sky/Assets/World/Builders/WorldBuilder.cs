@@ -12,6 +12,8 @@ namespace Assets.World
     {
         private TerrainGenerator terrainGenerator;
 
+        private CaveGenerator caveGenerator;
+
         private int chunkSize;
 
         private int chunkRenderDistance;
@@ -24,6 +26,7 @@ namespace Assets.World
             this.chunkRenderDistance = 100;
             this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
             this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+            this.caveGenerator = GameObject.Find("Level").GetComponent<CaveGenerator>();
         }
 
         public void LoadRegions(Vector3 position)
@@ -71,6 +74,7 @@ namespace Assets.World
                     if (!terrainGenerator.tileDict.ContainsKey(newChunkPosition))
                     {
                         GameObject tile = terrainGenerator.GenerateTile(newChunkPosition);
+                        caveGenerator.GenerateTile(newChunkPosition);
                         //Make the tiles a parent of the Level GameObject to have a clean hierarchy.
                         tile.transform.SetParent(terrainGenerator.transform);
                         terrainGenerator.tileDict.Add(newChunkPosition, tile);

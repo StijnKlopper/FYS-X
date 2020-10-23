@@ -5,6 +5,12 @@ using UnityEngine;
 
 public class CaveGenerator : MonoBehaviour, Generator
 {
+
+    [SerializeField]
+    private GameObject cavePrefab;
+
+    private int tileOffset = 5;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -15,5 +21,12 @@ public class CaveGenerator : MonoBehaviour, Generator
     void Update()
     {
         
+    }
+
+    public GameObject GenerateTile(Vector3 position)
+    {
+        Vector3 tilePosition = new Vector3(position.x + tileOffset, 20, position.z + tileOffset);
+        GameObject tile = Instantiate(cavePrefab, tilePosition, Quaternion.identity) as GameObject;
+        return tile;
     }
 }
