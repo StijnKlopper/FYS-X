@@ -23,6 +23,7 @@ public class TileBuilder : MonoBehaviour
     TerrainGenerator terrainGenerator;
 
     float[] tileTextureData;
+    float[] textureDataInfo;
 
     // Start is called before the first frame update
     void Start()
@@ -44,20 +45,26 @@ public class TileBuilder : MonoBehaviour
 
 
         // NOT CURRENTLY IN USE
-        //Texture2D heightTexture = BuildTexture(offsets);
+        Texture2D[] splatmaps = BuildTexture(offsets);
         //this.tileRenderer.material.mainTexture = heightTexture;
+        this.tileRenderer.material.SetTexture("_SplatMap1", splatmaps[0]);
+        this.tileRenderer.material.SetTexture("_SplatMap2", splatmaps[1]);
+        this.tileRenderer.material.SetTexture("_SplatMap3", splatmaps[2]);
 
         UpdateMeshVertices(heightMap, offsets);
     }
 
 
     // OUT OF ORDER FUNCTION MAY BE USED IN THE FUTURE:
-    private Texture2D BuildTexture(Vector2 offsets)
+    private Texture2D[] BuildTexture(Vector2 offsets)
     {
         int tileHeight = this.heightMap.GetLength(0);
         int tileWidth = this.heightMap.GetLength(1);
 
         Color[] colorMap = new Color[tileHeight * tileWidth];
+        Color[] colorMap2 = new Color[tileHeight * tileWidth];
+        Color[] colorMap3 = new Color[tileHeight * tileWidth];
+        textureDataInfo = new float[tileHeight * tileWidth * 11];
         for (int y = 0; y < tileHeight; y++)
         {
             for (int x = 0; x < tileWidth; x++)
@@ -67,16 +74,35 @@ public class TileBuilder : MonoBehaviour
                 Vector2 location = new Vector2(x + offsets.x, y + offsets.y);
                 Biome biome = terrainGenerator.GetBiomeByCoordinates(location);
                 colorMap[colorIndex] = biome.biomeType.color;
+                colorMap2[colorIndex] = biome.biomeType.color2;
+                colorMap3[colorIndex] = biome.biomeType.color3;
 
             }
         }
 
-        Texture2D tileTexture = new Texture2D(tileWidth, tileHeight);
-        tileTexture.wrapMode = TextureWrapMode.Clamp;
-        tileTexture.SetPixels(colorMap);
-        tileTexture.Apply();
+        Texture2D[] splatmaps = new Texture2D[4];
 
-        return tileTexture;
+
+        Texture2D colorMap1Texture = new Texture2D(tileWidth, tileHeight);
+        colorMap1Texture.wrapMode = TextureWrapMode.Clamp;
+        colorMap1Texture.SetPixels(colorMap);
+        colorMap1Texture.Apply();
+
+        Texture2D colorMap2Texture = new Texture2D(tileWidth, tileHeight);
+        colorMap2Texture.wrapMode = TextureWrapMode.Clamp;
+        colorMap2Texture.SetPixels(colorMap2);
+        colorMap2Texture.Apply();
+
+        Texture2D colorMap3Texture = new Texture2D(tileWidth, tileHeight);
+        colorMap3Texture.wrapMode = TextureWrapMode.Clamp;
+        colorMap3Texture.SetPixels(colorMap3);
+        colorMap3Texture.Apply();
+
+        splatmaps[0] = colorMap1Texture;
+        splatmaps[1] = colorMap2Texture;
+        splatmaps[2] = colorMap3Texture;
+
+        return splatmaps;
     }
 
     public void GenerateHeightMap(int width, int height, Vector2 offsets)
@@ -161,13 +187,13 @@ public class TileBuilder : MonoBehaviour
         int p = uvs.Length - 1;
 
         // for every vertice in our mesh set the texture index based on the current biome the vertice is located.
-        for (int i = 0; i < uvs.Length; i++)
+/*        for (int i = 0; i < uvs.Length; i++)
         {
             Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(meshVertices[p].x + offsets.x + 5, meshVertices[p].z + offsets.y + 5));
 
-            uvs[i] = new Vector2(biome.biomeType.biomeTypeId, biome.biomeType.biomeTypeId);
+            uvs[i] = new Vector2(2, biome.biomeType.biomeTypeId);
             p--;
-        }
+        }*/
 
 
         for (int y = 0; y < height; y++)
@@ -186,7 +212,7 @@ public class TileBuilder : MonoBehaviour
         this.meshFilter.mesh.RecalculateBounds();
         this.meshFilter.mesh.RecalculateNormals();
 
-        this.meshFilter.mesh.SetUVs(0, uvs);
+        //this.meshFilter.mesh.SetUVs(0, uvs);
         this.meshCollider.sharedMesh = this.meshFilter.mesh;
     }
 

@@ -12,5 +12,6 @@ public class ColdWetRegionType : RegionType
         this.availableBiomes.Add(new MountainBiomeType());
         this.availableBiomes.Add(new SnowBiomeType());
         this.availableBiomes.Add(new TaigaBiomeType());
+        this.RegionColor = new Color(0, 0, 1, 0);
     }
 }

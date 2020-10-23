@@ -12,5 +12,6 @@ public class HotDryRegionType : RegionType
         this.availableBiomes.Add(new MountainBiomeType());
         this.availableBiomes.Add(new DesertBiomeType());
         this.availableBiomes.Add(new ShrublandBiomeType());
+        this.RegionColor = new Color(0, 0, 1, 0);
     }
 }

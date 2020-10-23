@@ -2,6 +2,7 @@
 {
     Properties {
         _BaseTextures ("Terrain Textures", 2DArray) = "" {}
+        _MainTex("Albedo (RGB)", 2D) = "white" {}
     }
 
     SubShader
@@ -11,7 +12,7 @@
 
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf Standard fullforwardshadows
+        #pragma surface surf Standard vertex:vert
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 4.0
@@ -26,13 +27,22 @@
         float baseTextureScales[maxLayerCount];
 
         UNITY_DECLARE_TEX2DARRAY(_BaseTextures);
+        sampler2D _MainTex;
 
         struct Input
         {
             float2 uv_BaseTextures;
             float3 worldPos;
             float3 worldNormal;
+            float4 emissionColor;
+            float3 zIndex;
         };
+
+        void vert(inout appdata_full v, out Input o) {
+            UNITY_INITIALIZE_OUTPUT(Input, o);
+            float3 zIndex = v.vertex;
+            //o.uv.xy = (v.vertex.xy + 0.5) * 1;
+        }
 
         // use triplanar mapping to prevent texture stretching across various surface
         float3 triplanar(float3 worldPos, float scale, float3 blendAxes, float index) {
@@ -48,11 +58,12 @@
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
             int i = IN.uv_BaseTextures.y;
+            int b = 1 / IN.uv_BaseTextures.x;
             float3 blendAxes = abs(IN.worldNormal);
 
             float drawStrength = 1;
             float3 baseColour = baseColours[i] * baseColourStrength[i];
-            float3 textureColour = triplanar(IN.worldPos, baseTextureScales[i], blendAxes, i) * (1 - baseColourStrength[i]);
+            float3 textureColour = triplanar(IN.worldPos, baseTextureScales[i], blendAxes, i * b) * (1 - baseColourStrength[i]);
 
             o.Albedo = o.Albedo * (1 - drawStrength) + (baseColour + textureColour) * drawStrength;
         }

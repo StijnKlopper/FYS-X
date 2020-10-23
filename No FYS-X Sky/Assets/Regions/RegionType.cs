@@ -7,6 +7,8 @@ public abstract class RegionType
 {
     public List<BiomeType> availableBiomes;
 
+    public Color RegionColor;
+
     public Biome ChooseBiome(int x, int z, Vector2 regionSeed)
     {
         Vector2 position = new Vector2(x, z);
