@@ -12,7 +12,5 @@ public class HotWetRegionType : RegionType
         this.availableBiomes.Add(new MountainBiomeType());
         this.availableBiomes.Add(new ForestBiomeType());
         this.availableBiomes.Add(new PlainsBiomeType());
-        this.RegionColor = new Color(0, 1, 0, 0);
-
     }
 }

@@ -10,6 +10,5 @@ public class OceanRegionType : RegionType
     {
         this.availableBiomes = new List<BiomeType>();
         this.availableBiomes.Add(new OceanBiomeType());
-        this.RegionColor = new Color(1, 0, 0, 0);
     }
 }

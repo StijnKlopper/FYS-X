@@ -12,6 +12,5 @@ public class ColdDryRegionType : RegionType
         this.availableBiomes.Add(new MountainBiomeType());
         this.availableBiomes.Add(new SnowBiomeType());
         this.availableBiomes.Add(new TundraBiomeType());
-        this.RegionColor = new Color(0, 0, 0, 1);
     }
 }
