@@ -8,23 +8,13 @@ using LibNoise.Operator;
 
 public class CaveBuilder : MonoBehaviour
 {
+    [SerializeField]
+    MeshFilter floorMeshFilter;
 
     [SerializeField]
-    private MeshRenderer tileRenderer;
-
-    [SerializeField]
-    private MeshFilter meshFilter;
-
-    [SerializeField]
-    private MeshCollider meshCollider;
+    MeshFilter wallMeshFilter;
 
     RidgedMultifractal ridgedMultifractal;
-    GameObject cavePlane;
-    Texture2D noiseTexture;
-    Color[] colorMap;
-
-    int[] tempArray;
-
 
     // Start is called before the first frame update
     void Start()
@@ -33,68 +23,36 @@ public class CaveBuilder : MonoBehaviour
     }
 
 
-    public void GenerateCaveMap() {
-        cavePlane = GameObject.Find("CavePlane");
+    public void GenerateCaveMap()
+    {
+        int size = 11;
 
-        noiseTexture = new Texture2D(10, 10);
-        colorMap = new Color[10 * 10];
+        // Gets added to coordinates, is a decimal to make sure it does not end up at an integer
+        float addendum = 1000.17777f;
 
-        tempArray = new int[10 * 10];
-
-        float scale = 1000.17777f;
+        // Coordinates are divided by scale, larger scale = larger/more spread out caves
+        float scale = 20f;
 
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
 
         ridgedMultifractal = new RidgedMultifractal();
-        ridgedMultifractal.OctaveCount = 10;
-        ridgedMultifractal.Frequency = 2;
+        ridgedMultifractal.OctaveCount = 3;
 
+        int[,] caveMap = new int[size, size];
 
-        for (int x = 0; x < 10; x++)
+        for (int x = 0; x < size; x++)
         {
-            for (int y = 0; y < 10; y++)
+            for (int y = 0; y < size; y++)
             {
-                int colorIndex = y * 10 + x;
-                double tempVal = ridgedMultifractal.GetValue(x + offsets.x + scale, 1, y + offsets.y + scale);
-                int isCave = tempVal < 0.0 ? 0 : 1;
-                tempArray[colorIndex] = isCave;
-                colorMap[colorIndex] = new Color(isCave, isCave, isCave);
+                double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, this.gameObject.transform.position.y, (y + offsets.y + addendum) / scale);
+                int isCave = tempVal < 0.35 ? 0 : 1;
+                caveMap[x, y] = isCave;
             }
         }
 
-        noiseTexture.filterMode = FilterMode.Point;
-        noiseTexture.SetPixels(colorMap);
-        noiseTexture.wrapMode = TextureWrapMode.Clamp;
-        noiseTexture.Apply();
-
-
-
-        tileRenderer.material.mainTexture = noiseTexture;
-
-/*        Vector3[] meshVertices = this.meshFilter.mesh.vertices;
-
-        int vertexIndex = 0;
-
-        for (int x = 0; x < 10; x++)
-        {
-            for (int y = 0; y < 10; y++)
-            {
-                Vector3 vertex = meshVertices[vertexIndex];
-
-                int colorIndex = y * 10 + x;
-
-                meshVertices[vertexIndex] = new Vector3(vertex.x, tempArray[colorIndex] * 2, vertex.z);
-
-                vertexIndex++;
-            }
-        }
-
-        this.meshFilter.mesh.vertices = meshVertices;
-        this.meshFilter.mesh.RecalculateBounds();
-        this.meshFilter.mesh.RecalculateNormals();
-
-        this.meshCollider.sharedMesh = this.meshFilter.mesh;*/
-
+        CaveMeshGenerator caveMeshGen = GameObject.Find("Level").GetComponent<CaveMeshGenerator>();
+        
+        caveMeshGen.GenerateMesh(caveMap, 1, this.floorMeshFilter, this.wallMeshFilter);
     }
 
     // Update is called once per frame

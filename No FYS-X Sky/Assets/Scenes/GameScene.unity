@@ -792,6 +792,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1284178398}
   - component: {fileID: 1284178397}
+  - component: {fileID: 1284178399}
+  - component: {fileID: 1284178400}
   m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
@@ -828,6 +830,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1284178399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284178396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c603bd3a4f019124a965f8783c8c80a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cavePrefab: {fileID: 5849594575968623539, guid: 414f10da3431ef44f88a77f5c556f3b2, type: 3}
+--- !u!114 &1284178400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284178396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff13745a6c9980641afc88fe70406be6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1716791247 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100326, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}

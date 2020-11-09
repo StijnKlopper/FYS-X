@@ -73,11 +73,12 @@ namespace Assets.World
                     Vector3 newChunkPosition = new Vector3(i, 0, j);
                     if (!terrainGenerator.tileDict.ContainsKey(newChunkPosition))
                     {
-                        GameObject tile = terrainGenerator.GenerateTile(newChunkPosition);
-                        caveGenerator.GenerateTile(newChunkPosition);
+                        GameObject terrainTile = terrainGenerator.GenerateTile(newChunkPosition);
+                        GameObject caveTile = caveGenerator.GenerateTile(newChunkPosition);
                         //Make the tiles a parent of the Level GameObject to have a clean hierarchy.
-                        tile.transform.SetParent(terrainGenerator.transform);
-                        terrainGenerator.tileDict.Add(newChunkPosition, tile);
+                        terrainTile.transform.SetParent(terrainGenerator.transform);
+                        terrainGenerator.tileDict.Add(newChunkPosition, terrainTile);
+                        terrainGenerator.caveDict.Add(newChunkPosition, caveTile);
                     }
                 }
             }
@@ -87,7 +88,17 @@ namespace Assets.World
         {
             (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
 
+            // Next step, loop through coordinates for tiles and have the value be a list of gameobjects which is looped through to delete them
             foreach (KeyValuePair<Vector3, GameObject> tile in terrainGenerator.tileDict.ToList())
+            {
+                if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
+                {
+                    terrainGenerator.DestroyTile(tile.Value);
+                    terrainGenerator.tileDict.Remove(tile.Key);
+                }
+            }
+
+            foreach (KeyValuePair<Vector3, GameObject> tile in terrainGenerator.caveDict.ToList())
             {
                 if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
                 {
