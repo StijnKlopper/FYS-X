@@ -24,6 +24,10 @@ public class TileBuilder : MonoBehaviour
 
     float[] tileTextureData;
 
+    GameObject oceanTile;
+
+    private Texture2D oceanSplatmap;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +37,7 @@ public class TileBuilder : MonoBehaviour
 
     private void GenerateTile()
     {
+        
         Vector3[] meshVertices = this.meshFilter.mesh.vertices;
         int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
         int tileWidth = tileHeight;
@@ -46,6 +51,8 @@ public class TileBuilder : MonoBehaviour
         this.tileRenderer.material.SetTexture("_SplatMaps", splatmaps);
 
         UpdateMeshVertices(heightMap, offsets);
+        oceanTile = terrainGenerator.GenerateOcean(tileRenderer.gameObject.transform.position);
+        oceanTile.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
     }
 
     private Texture2DArray BuildTexture(Vector2 offsets)
@@ -59,6 +66,8 @@ public class TileBuilder : MonoBehaviour
         Color[] splatMap2 = new Color[splatmapSize];
         Color[] splatMap3 = new Color[splatmapSize];
 
+        Color[] oceanMap = new Color[splatmapSize];
+
         for (int y = 0; y < tileHeight; y++)
         {
             for (int x = 0; x < tileWidth; x++)
@@ -71,14 +80,22 @@ public class TileBuilder : MonoBehaviour
                 splatMap1[colorIndex] = biome.biomeType.color;
                 splatMap2[colorIndex] = biome.biomeType.color2;
                 splatMap3[colorIndex] = biome.biomeType.color3;
+
+                oceanMap[colorIndex] = biome.biomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
+
             }
         }
 
         Texture2DArray splatmapsArray = new Texture2DArray(tileWidth, tileHeight, 3, TextureFormat.RGBA32, true);
+        oceanSplatmap = new Texture2D(tileHeight, tileWidth);
 
         splatmapsArray.SetPixels(splatMap1, 0);
         splatmapsArray.SetPixels(splatMap2, 1);
         splatmapsArray.SetPixels(splatMap3, 2);
+
+        oceanSplatmap.SetPixels(oceanMap);
+        oceanSplatmap.wrapMode = TextureWrapMode.Clamp;
+        oceanSplatmap.Apply();
 
         splatmapsArray.wrapMode = TextureWrapMode.Clamp;
         splatmapsArray.Apply();
@@ -180,6 +197,11 @@ public class TileBuilder : MonoBehaviour
         this.meshFilter.mesh.RecalculateNormals();
 
         this.meshCollider.sharedMesh = this.meshFilter.mesh;
+    }
+
+    void OnDestroy()
+    {
+        Destroy(oceanTile);
     }
 
 }
