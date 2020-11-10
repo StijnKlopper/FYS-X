@@ -3,7 +3,11 @@ guid: 2567748ade6485549b90943e549d318a
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - tileRenderer: {instanceID: 0}
+  - meshFilter: {instanceID: 0}
+  - meshCollider: {instanceID: 0}
+  - OceanPrefab: {fileID: 8703873624021677109, guid: b4c854845c276c3409741edef1149a9d, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
