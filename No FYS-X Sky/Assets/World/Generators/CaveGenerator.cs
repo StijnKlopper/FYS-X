@@ -26,7 +26,7 @@ public class CaveGenerator : MonoBehaviour, Generator
     {
         Vector3 tilePosition = new Vector3(position.x + tileOffset, 20, position.z + tileOffset);
         GameObject tile = Instantiate(cavePrefab, tilePosition, Quaternion.Euler(0, 180, 0)) as GameObject;
-   
+        tile.transform.SetParent(this.transform);
         return tile;
     }
 }

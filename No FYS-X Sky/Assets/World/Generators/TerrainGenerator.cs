@@ -24,10 +24,7 @@ public class TerrainGenerator : MonoBehaviour, Generator
     public int[] randomNumbers;
 
     [System.NonSerialized]
-    public Dictionary<Vector3, GameObject> tileDict = new Dictionary<Vector3, GameObject>();
-
-    [System.NonSerialized]
-    public Dictionary<Vector3, GameObject> caveDict = new Dictionary<Vector3, GameObject>();
+    public Dictionary<Vector3, List<GameObject>> tileDict = new Dictionary<Vector3, List<GameObject>>();
 
     [System.NonSerialized]
     public Dictionary<Vector3, Region> regionDict = new Dictionary<Vector3, Region>();
@@ -51,12 +48,14 @@ public class TerrainGenerator : MonoBehaviour, Generator
     {
         Vector3 tilePosition = new Vector3(position.x + tileOffset, this.gameObject.transform.position.y, position.z + tileOffset);
         GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
+        tile.transform.SetParent(this.transform);
         return tile;
     }
 
     public GameObject GenerateOcean(Vector3 position) {
         Vector3 tilePosition = new Vector3(position.x, this.gameObject.transform.position.y, position.z);
         GameObject oceanTile = Instantiate(oceanPrefab, tilePosition, Quaternion.identity) as GameObject;
+        oceanTile.transform.SetParent(this.transform);
         return oceanTile;
     }
 

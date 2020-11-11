@@ -70,15 +70,14 @@ namespace Assets.World
             {
                 for (int j = zMin; j < zMax; j += chunkSize)
                 {
+                    List<GameObject> tileList = new List<GameObject>();
                     Vector3 newChunkPosition = new Vector3(i, 0, j);
                     if (!terrainGenerator.tileDict.ContainsKey(newChunkPosition))
                     {
-                        GameObject terrainTile = terrainGenerator.GenerateTile(newChunkPosition);
-                        GameObject caveTile = caveGenerator.GenerateTile(newChunkPosition);
-                        //Make the tiles a parent of the Level GameObject to have a clean hierarchy.
-                        terrainTile.transform.SetParent(terrainGenerator.transform);
-                        terrainGenerator.tileDict.Add(newChunkPosition, terrainTile);
-                        terrainGenerator.caveDict.Add(newChunkPosition, caveTile);
+                        tileList.Add(terrainGenerator.GenerateTile(newChunkPosition));
+                        tileList.Add(caveGenerator.GenerateTile(newChunkPosition));
+
+                        terrainGenerator.tileDict.Add(newChunkPosition, tileList);
                     }
                 }
             }
@@ -89,22 +88,21 @@ namespace Assets.World
             (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
 
             // Next step, loop through coordinates for tiles and have the value be a list of gameobjects which is looped through to delete them
-            foreach (KeyValuePair<Vector3, GameObject> tile in terrainGenerator.tileDict.ToList())
+            foreach (KeyValuePair<Vector3, List<GameObject>> tile in terrainGenerator.tileDict.ToList())
             {
                 if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
                 {
-                    terrainGenerator.DestroyTile(tile.Value);
+                    DestroyTiles(tile.Value);
                     terrainGenerator.tileDict.Remove(tile.Key);
                 }
             }
+        }
 
-            foreach (KeyValuePair<Vector3, GameObject> tile in terrainGenerator.caveDict.ToList())
+        private void DestroyTiles(List<GameObject> tiles)
+        {
+            foreach (GameObject tile in tiles)
             {
-                if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
-                {
-                    terrainGenerator.DestroyTile(tile.Value);
-                    terrainGenerator.tileDict.Remove(tile.Key);
-                }
+                terrainGenerator.DestroyTile(tile);
             }
         }
 
