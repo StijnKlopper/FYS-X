@@ -13,7 +13,7 @@ public class LightManager : MonoBehaviour
         sun = GameObject.Find("Sun").GetComponent<Light>();
         moon = GameObject.Find("Moon").GetComponent<Light>();
 
-        // Start position for the sun and moon
+        // Start position for the sun and moond
         xRotationSun = 20f;
         xRotationMoon = 180f + xRotationSun;
     }
