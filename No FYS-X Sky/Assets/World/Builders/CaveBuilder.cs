@@ -40,13 +40,16 @@ public class CaveBuilder : MonoBehaviour
 
         int[,] caveMap = new int[size, size];
 
-        for (int x = 0; x < size; x++)
-        {
-            for (int y = 0; y < size; y++)
+        for (int height = 0; height < 20; height++) {
+
+            for (int x = 0; x < size; x++)
             {
-                double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, this.gameObject.transform.position.y, (y + offsets.y + addendum) / scale);
-                int isCave = tempVal < 0.35 ? 0 : 1;
-                caveMap[x, y] = isCave;
+                for (int y = 0; y < size; y++)
+                {
+                    double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, height, (y + offsets.y + addendum) / scale);
+                    int isCave = tempVal < 0.35 ? 0 : 1;
+                    caveMap[x, y] = isCave;
+                }
             }
         }
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class CaveMeshGenerator : MonoBehaviour
+public class CaveMeshGeneratorTemp : MonoBehaviour
 {
     public SquareGrid squareGrid;
 
@@ -352,15 +352,27 @@ public class CaveMeshGenerator : MonoBehaviour
     public class Square
     {
         public ControlNode topLeft, topRight, bottomLeft, bottomRight;
+        public ControlNode v0, v1, v2, v3, v4, v5, v6, v7;
         public Node centreTop, centreRight, centreBottom, centreLeft;
         public int configuration;
 
-        public Square(ControlNode _topLeft, ControlNode _topRight, ControlNode _bottomLeft, ControlNode _bottomRight)
+        public Square(ControlNode _v0, ControlNode _v1, ControlNode _v2, ControlNode _v3, ControlNode _v4, ControlNode _v5, ControlNode _v6, ControlNode _v7)
         {
-            topLeft = _topLeft;
+           /* topLeft = _topLeft;
             topRight = _topRight;
             bottomLeft = _bottomLeft;
-            bottomRight = _bottomRight;
+            bottomRight = _bottomRight;*/
+
+
+            v0 = _v0;
+            v1 = _v1;
+            v2 = _v2;
+            v3 = _v3;
+            v4 = _v4;
+            v5 = _v5;
+            v6 = _v6;
+            v7 = _v7;
+
 
             centreTop = topLeft.right;
             centreRight = bottomRight.above;
