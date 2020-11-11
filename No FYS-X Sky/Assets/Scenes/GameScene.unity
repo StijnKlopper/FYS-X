@@ -368,7 +368,25 @@ MonoBehaviour:
   regions: []
   heightCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -814,6 +832,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 5520266623367027301, guid: 0c31a200cbf2256439ca13b894b6f98b, type: 3}
+  oceanPrefab: {fileID: 8703873624021677109, guid: b4c854845c276c3409741edef1149a9d, type: 3}
   seed: 69420
   textureData: {fileID: 11400000, guid: 9850fb257560b7a45a8dc1285bf4881a, type: 2}
 --- !u!4 &1284178398
@@ -876,7 +895,7 @@ MonoBehaviour:
   lookSmoother: 3
   useCurves: 1
   useCurvesHeight: 0.5
-  forwardSpeed: 7
+  forwardSpeed: 20
   backwardSpeed: 2
   rotateSpeed: 2
   jumpPower: 3
@@ -895,7 +914,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!136 &1716791250
 CapsuleCollider:
   m_ObjectHideFlags: 0

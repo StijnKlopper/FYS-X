@@ -11,6 +11,9 @@ public class TerrainGenerator : MonoBehaviour, Generator
     [SerializeField]
     private GameObject tilePrefab;
 
+    [SerializeField]
+    private GameObject oceanPrefab;
+
     private int tileOffset = 5;
 
     public int seed;
@@ -49,6 +52,12 @@ public class TerrainGenerator : MonoBehaviour, Generator
         Vector3 tilePosition = new Vector3(position.x + tileOffset, this.gameObject.transform.position.y, position.z + tileOffset);
         GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
         return tile;
+    }
+
+    public GameObject GenerateOcean(Vector3 position) {
+        Vector3 tilePosition = new Vector3(position.x, this.gameObject.transform.position.y, position.z);
+        GameObject oceanTile = Instantiate(oceanPrefab, tilePosition, Quaternion.identity) as GameObject;
+        return oceanTile;
     }
 
     public Biome GetBiomeByCoordinates(Vector2 coordinates)
