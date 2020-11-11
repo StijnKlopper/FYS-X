@@ -59,7 +59,7 @@ public class CaveMeshGenerator : MonoBehaviour
         List<Vector3> wallVertices = new List<Vector3>();
         List<int> wallTriangles = new List<int>();
         Mesh wallMesh = new Mesh();
-        float wallHeight = 1;
+        float wallHeight = 4;
 
         foreach (List<int> outline in outlines)
         {

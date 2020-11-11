@@ -3,7 +3,9 @@ guid: 54ad6cf70475d3a49a2ff05c6cd4c716
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - floorMeshFilter: {instanceID: 0}
+  - wallMeshFilter: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
