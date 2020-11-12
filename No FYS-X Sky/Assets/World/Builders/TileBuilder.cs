@@ -22,6 +22,8 @@ public class TileBuilder : MonoBehaviour
 
     TerrainGenerator terrainGenerator;
 
+    CityGenerator cityGenerator;
+
     float[] tileTextureData;
 
     GameObject oceanTile;
@@ -32,6 +34,7 @@ public class TileBuilder : MonoBehaviour
     void Start()
     {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
         GenerateTile();
     }
 
@@ -51,8 +54,11 @@ public class TileBuilder : MonoBehaviour
         this.tileRenderer.material.SetTexture("_SplatMaps", splatmaps);
 
         UpdateMeshVertices(heightMap, offsets);
-        oceanTile = terrainGenerator.GenerateOcean(tileRenderer.gameObject.transform.position);
-        oceanTile.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
+        //oceanTile = terrainGenerator.GenerateOcean(tileRenderer.gameObject.transform.position);
+        //oceanTile.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
+
+        //Spawning city points
+        cityGenerator.DrawCityLocations(tileWidth, tileHeight, offsets);
     }
 
     private Texture2DArray BuildTexture(Vector2 offsets)
