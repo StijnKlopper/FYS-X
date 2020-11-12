@@ -1,50 +1,63 @@
 ﻿using Assets.World.Generator;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CityGenerator : MonoBehaviour, Generator
 {
-    //public int totalpoints = 10;
-    //public float buildingWith = 100f;
-    //public float buildingLength = 100f;
     [SerializeField]
     public float minimumCityDistanceRadius = 20f;
-
 
     List<GameObject> points;
 
     TerrainGenerator terrainGenerator;
 
-    Biome biome;
     // Start is called before the first frame update
     void Start()
     {
         points = new List<GameObject>();
+        terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
     }
 
-    void checkTiles(Vector2 coords)
+    // Update is called once per frame
+    void Update()
     {
+        DebugPoints();
+    }
 
-        biome = terrainGenerator.GetBiomeByCoordinates(coords);
-        if (biome.biomeType is DesertBiomeType)
+    bool CheckValidPoint(Vector3 pointPosition)
+    {
+        Vector2 cubePosition = new Vector2(-pointPosition.x, -pointPosition.z);
+        Biome biome = terrainGenerator.GetBiomeByCoordinates(cubePosition);
+
+        // Check for not a Ocean or Mountain biome
+        if (!(biome.biomeType is OceanBiomeType) && !(biome.biomeType is MountainBiomeType))
         {
 
+            // Check height with Raycasting
+            //Debug.Log(Physics.Raycast(cube.transform.position, -transform.up));
+            RaycastHit hit;
+            if (Physics.Raycast(pointPosition, transform.up, out hit))
+            {
+                Debug.Log(hit.transform.name);
+                Debug.Log(hit.distance);
+                Debug.Log("From: " + pointPosition + " To: " + hit.point);
+            }
+            Debug.Log("Point: " + cubePosition + " " + biome.biomeType);
 
+            return true;
         }
 
+        return false;
     }
 
     private float[,] generateCityNoiseMap(int mapWidth, int mapHeight, Vector2 offsets)
     {
-
         int scale = 20;
         int octaves = 1;
         mapWidth *= 5;
         mapWidth *= 5;
         float maxNoiseHeight = float.MinValue;
         float minNoiseHeight = float.MaxValue;
-
 
         float[,] noiseMap = new float[mapWidth, mapHeight];
         for (int y = 0; y < mapHeight; y++)
@@ -86,6 +99,7 @@ public class CityGenerator : MonoBehaviour, Generator
 
         return noiseMap;
     }
+
     //Create starting search points for city
     public void DrawCityLocations(int mapWidth, int mapHeight, Vector2 offsets)
     {
@@ -93,7 +107,6 @@ public class CityGenerator : MonoBehaviour, Generator
         float[,] noiseMap = generateCityNoiseMap(mapWidth, mapHeight, offsets);
 
         float pointHeight = 0.00f;
-        List<GameObject> cubes = new List<GameObject>();
         for (int y = 0; y < mapHeight; y++)
         {
             for (int x = 0; x < mapWidth; x++)
@@ -101,32 +114,38 @@ public class CityGenerator : MonoBehaviour, Generator
                 float currentHeight = noiseMap[x, y];
                 if (currentHeight <= pointHeight)
                 {
-                    if (checkNearbyPoints(new Vector3(-(x + offsets.x), 10, -(y + offsets.y)), minimumCityDistanceRadius))
+                    Vector3 possiblePointPosition = new Vector3(-(x + offsets.x), 0, -(y + offsets.y));
+
+                    if (checkNearbyPoints(possiblePointPosition, minimumCityDistanceRadius))
                     {
                         break;
                     }
                     else
                     {
-                        GameObject point = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        point.transform.SetParent(parentObj.transform);
-                        point.transform.position = new Vector3(-(x + offsets.x), 10, -(y + offsets.y));
-                        point.GetComponent<Renderer>().enabled = false;
-                        cubes.Add(point);
-                        Physics.SyncTransforms();
-                        points.Add(point);
-                        break;
+
+                        if (CheckValidPoint(possiblePointPosition))
+                        {
+                            GameObject point = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                            point.transform.SetParent(parentObj.transform);
+                            point.transform.position = possiblePointPosition;
+                            //point.GetComponent<Renderer>().enabled = false;
+
+                            Physics.SyncTransforms();
+
+                            points.Add(point);
+                            break;
+                        }
+                           
                     }
                 }
-
-                //noiseMapC[y * mapWidth + x] = Color.Lerp(Color.black, Color.white, noiseMap[x, y]);
             }
         }
 
     }
+
     //Raycast a sphere and check for nearby gameobjects
     private bool checkNearbyPoints(Vector3 center, float radius)
     {
-
         Collider[] hitColliders = Physics.OverlapSphere(center, radius);
         foreach (var hitCollider in hitColliders)
         {
@@ -135,20 +154,10 @@ public class CityGenerator : MonoBehaviour, Generator
             {
                 return true;
             }
-
-
         }
         return false;
     }
 
-    //void OnDrawGizmoSelecteD()
-    //{
-    //    foreach (var cube in points)
-    //    {
-    //        Gizmos.DrawLine(cube.transform.position, -transform.up);
-    //    }
-
-    //}
     private void DebugPoints()
     {
         foreach (var cube in points)
@@ -161,18 +170,10 @@ public class CityGenerator : MonoBehaviour, Generator
     {
         int scale = 10;
 
-
         float sampleX = (position.x) / scale;
         float sampleY = (position.y) / scale;
 
         float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-        DebugPoints();
-
-    }
+   
 }
