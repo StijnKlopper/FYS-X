@@ -5,6 +5,7 @@ using UnityEngine;
 using LibNoise;
 using LibNoise.Generator;
 using LibNoise.Operator;
+using UnityEditor.UIElements;
 
 public class CaveBuilder : MonoBehaviour
 {
@@ -38,22 +39,25 @@ public class CaveBuilder : MonoBehaviour
         ridgedMultifractal = new RidgedMultifractal();
         ridgedMultifractal.OctaveCount = 3;
 
-        int[,] caveMap = new int[size, size];
+        int height = 20;
 
-        for (int height = 0; height < 20; height++) {
+        int[, ,] caveMap = new int[size, height, size];
 
-            for (int x = 0; x < size; x++)
+        for (int x = 0; x < size; x++) {
+
+            // Cave height
+            for (int y = 0; y < height; y++)
             {
-                for (int y = 0; y < size; y++)
+                for (int z = 0; z < size; z++)
                 {
-                    double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, height, (y + offsets.y + addendum) / scale);
+                    double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, (y + addendum) / scale, (z + offsets.y + addendum) / scale);
                     int isCave = tempVal < 0.35 ? 0 : 1;
-                    caveMap[x, y] = isCave;
+                    caveMap[x, y, z] = isCave;
                 }
             }
         }
 
-        CaveMeshGenerator caveMeshGen = GameObject.Find("Level").GetComponent<CaveMeshGenerator>();
+        CaveMeshGeneratorTemp caveMeshGen = GameObject.Find("Level").GetComponent<CaveMeshGeneratorTemp>();
         
         caveMeshGen.GenerateMesh(caveMap, 1, this.floorMeshFilter, this.wallMeshFilter);
     }

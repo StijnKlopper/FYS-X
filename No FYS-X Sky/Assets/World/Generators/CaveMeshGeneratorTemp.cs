@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class CaveMeshGeneratorTemp : MonoBehaviour
@@ -33,21 +34,21 @@ public class CaveMeshGeneratorTemp : MonoBehaviour
             {
                 for (int z = 0; z < cubeGrid.cubes.GetLength(2); z++)
                 {
-                    TriangulateSquare(cubeGrid.cubes[x, y, z]);
+                    TriangulateCube(cubeGrid.cubes[x, y, z]);
                 }
             }
         }
 
-        Mesh floorMesh = new Mesh();
-        floorMesh.vertices = vertices.ToArray();
-        floorMesh.triangles = triangles.ToArray();
+        //Mesh floorMesh = new Mesh();
+        //floorMesh.vertices = vertices.ToArray();
+        //floorMesh.triangles = triangles.ToArray();
 
         Mesh wallMesh = CreateWallMesh();
 
-        floorMesh.RecalculateNormals();
+        //floorMesh.RecalculateNormals();
         wallMesh.RecalculateNormals();
 
-        floorMeshFilter.mesh = floorMesh;
+        //floorMeshFilter.mesh = floorMesh;
         wallMeshFilter.mesh = wallMesh;
 
 
@@ -56,9 +57,8 @@ public class CaveMeshGeneratorTemp : MonoBehaviour
 
     Mesh CreateWallMesh()
     {
-
         CalculateMeshOutlines();
-
+        
         List<Vector3> wallVertices = new List<Vector3>();
         List<int> wallTriangles = new List<int>();
         Mesh wallMesh = new Mesh();
@@ -90,73 +90,128 @@ public class CaveMeshGeneratorTemp : MonoBehaviour
 
     void TriangulateCube(Cube cube)
     {
+        //int length = TriangleConnectionTable.GetLength(cube.configuration);
+        int[] triangles = new int[16];
 
+        //if(cube.configuration != 255)
+        //{
+        //    Debug.Log("Bro");
+        //}
 
-        int[] index = TriangleConnectionTable.[cube.configuration];
-
-
-        switch (cube.configuration)
+        for (int i = 0; i < 16; i++)
         {
-            case 0:
-                break;
-
-            // 1 points:
-            case 1:
-                MeshFromPoints(cube.centreLeft, cube.centreBottom, cube.bottomLeft);
-                break;
-            case 2:
-                MeshFromPoints(cube.bottomRight, cube.centreBottom, cube.centreRight);
-                break;
-            case 4:
-                MeshFromPoints(cube.topRight, cube.centreRight, cube.centreTop);
-                break;
-            case 8:
-                MeshFromPoints(cube.topLeft, cube.centreTop, cube.centreLeft);
-                break;
-
-            // 2 points:
-            case 3:
-                MeshFromPoints(cube.centreRight, cube.bottomRight, cube.bottomLeft, cube.centreLeft);
-                break;
-            case 6:
-                MeshFromPoints(cube.centreTop, cube.topRight, cube.bottomRight, cube.centreBottom);
-                break;
-            case 9:
-                MeshFromPoints(cube.topLeft, cube.centreTop, cube.centreBottom, cube.bottomLeft);
-                break;
-            case 12:
-                MeshFromPoints(cube.topLeft, cube.topRight, cube.centreRight, cube.centreLeft);
-                break;
-            case 5:
-                MeshFromPoints(cube.centreTop, cube.topRight, cube.centreRight, cube.centreBottom, cube.bottomLeft, cube.centreLeft);
-                break;
-            case 10:
-                MeshFromPoints(cube.topLeft, cube.centreTop, square.centreRight, square.bottomRight, square.centreBottom, square.centreLeft);
-                break;
-
-            // 3 point:
-            case 7:
-                MeshFromPoints(square.centreTop, square.topRight, square.bottomRight, square.bottomLeft, square.centreLeft);
-                break;
-            case 11:
-                MeshFromPoints(square.topLeft, square.centreTop, square.centreRight, square.bottomRight, square.bottomLeft);
-                break;
-            case 13:
-                MeshFromPoints(square.topLeft, square.topRight, square.centreRight, square.centreBottom, square.bottomLeft);
-                break;
-            case 14:
-                MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.centreBottom, square.centreLeft);
-                break;
-
-            // 4 point:
-            case 15:
-                MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.bottomLeft);
-                checkedVertices.Add(square.topLeft.vertexIndex);
-                checkedVertices.Add(square.topRight.vertexIndex);
-                checkedVertices.Add(square.bottomRight.vertexIndex);
-                checkedVertices.Add(square.bottomLeft.vertexIndex);
-                break;
+            triangles[i] = TriangleConnectionTable[cube.configuration, i];
         }
+        List<Node> edges = new List<Node>();
+
+        for (int i = 0; i < triangles.Length; i++)
+        {
+            // For nums between 0 and 11 (12), add edge of cube to meshfrompoints
+            switch (triangles[i])
+            {
+                case -1:
+                    break;
+                case 0:
+                    edges.Add(cube.centre0);
+                    break;
+                case 1:
+                    edges.Add(cube.centre1);
+                    break;
+                case 2:
+                    edges.Add(cube.centre2);
+                    break;
+                case 3:
+                    edges.Add(cube.centre3);
+                    break;
+                case 4:
+                    edges.Add(cube.centre4);
+                    break;
+                case 5:
+                    edges.Add(cube.centre5);
+                    break;
+                case 6:
+                    edges.Add(cube.centre6);
+                    break;
+                case 7:
+                    edges.Add(cube.centre7);
+                    break;
+                case 8:
+                    edges.Add(cube.centre8);
+                    break;
+                case 9:
+                    edges.Add(cube.centre9);
+                    break;
+                case 10:
+                    edges.Add(cube.centre10);
+                    break;
+                case 11:
+                    edges.Add(cube.centre11);
+                    break;
+            }
+        }
+        MeshFromPoints(edges);
+        //switch (cube.configuration)
+        //{
+        //    case 0:
+        //        break;
+
+        //    // 1 points:
+        //    case 1:
+        //        MeshFromPoints(cube.centreLeft, cube.centreBottom, cube.bottomLeft);
+        //        break;
+        //    case 2:
+        //        MeshFromPoints(cube.bottomRight, cube.centreBottom, cube.centreRight);
+        //        break;
+        //    case 4:
+        //        MeshFromPoints(cube.topRight, cube.centreRight, cube.centreTop);
+        //        break;
+        //    case 8:
+        //        MeshFromPoints(cube.topLeft, cube.centreTop, cube.centreLeft);
+        //        break;
+
+        //    // 2 points:
+        //    case 3:
+        //        MeshFromPoints(cube.centreRight, cube.bottomRight, cube.bottomLeft, cube.centreLeft);
+        //        break;
+        //    case 6:
+        //        MeshFromPoints(cube.centreTop, cube.topRight, cube.bottomRight, cube.centreBottom);
+        //        break;
+        //    case 9:
+        //        MeshFromPoints(cube.topLeft, cube.centreTop, cube.centreBottom, cube.bottomLeft);
+        //        break;
+        //    case 12:
+        //        MeshFromPoints(cube.topLeft, cube.topRight, cube.centreRight, cube.centreLeft);
+        //        break;
+        //    case 5:
+        //        MeshFromPoints(cube.centreTop, cube.topRight, cube.centreRight, cube.centreBottom, cube.bottomLeft, cube.centreLeft);
+        //        break;
+        //    case 10:
+        //        MeshFromPoints(cube.topLeft, cube.centreTop, square.centreRight, square.bottomRight, square.centreBottom, square.centreLeft);
+        //        break;
+
+        //    // 3 point:
+        //    case 7:
+        //        MeshFromPoints(square.centreTop, square.topRight, square.bottomRight, square.bottomLeft, square.centreLeft);
+        //        break;
+        //    case 11:
+        //        MeshFromPoints(square.topLeft, square.centreTop, square.centreRight, square.bottomRight, square.bottomLeft);
+        //        break;
+        //    case 13:
+        //        MeshFromPoints(square.topLeft, square.topRight, square.centreRight, square.centreBottom, square.bottomLeft);
+        //        break;
+        //    case 14:
+        //        MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.centreBottom, square.centreLeft);
+        //        break;
+
+        //    // 4 point:
+        //    case 15:
+        //        MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.bottomLeft);
+        //        checkedVertices.Add(square.topLeft.vertexIndex);
+        //        checkedVertices.Add(square.topRight.vertexIndex);
+        //        checkedVertices.Add(square.bottomRight.vertexIndex);
+        //        checkedVertices.Add(square.bottomLeft.vertexIndex);
+        //        break;
+        //}
 
     }
 
@@ -441,24 +496,19 @@ public class CaveMeshGeneratorTemp : MonoBehaviour
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
        };
 
-void MeshFromPoints(params Node[] points)
+    void MeshFromPoints(List<Node> points)
     {
+        if (points.Count < 1) return;
         AssignVertices(points);
-
-        if (points.Length >= 3)
-            CreateTriangle(points[0], points[1], points[2]);
-        if (points.Length >= 4)
-            CreateTriangle(points[0], points[2], points[3]);
-        if (points.Length >= 5)
-            CreateTriangle(points[0], points[3], points[4]);
-        if (points.Length >= 6)
-            CreateTriangle(points[0], points[4], points[5]);
-
+        for (int i = 0; i < points.Count; i+= 3)
+		{
+            CreateTriangle(points[i], points[i + 1], points[i + 2]);
+		}
     }
 
-    void AssignVertices(Node[] points)
+    void AssignVertices(List<Node> points)
     {
-        for (int i = 0; i < points.Length; i++)
+        for (int i = 0; i < points.Count; i++)
         {
             if (points[i].vertexIndex == -1)
             {
@@ -496,7 +546,6 @@ void MeshFromPoints(params Node[] points)
 
     void CalculateMeshOutlines()
     {
-
         for (int vertexIndex = 0; vertexIndex < vertices.Count; vertexIndex++)
         {
             if (!checkedVertices.Contains(vertexIndex))
@@ -618,7 +667,7 @@ void MeshFromPoints(params Node[] points)
             float mapWidth = nodeCountX * squareSize;
             float mapHeight = nodeCountZ * squareSize;
 
-            ControlNode[, ,] controlNodes = new ControlNode[nodeCountX, nodeCountZ, nodeCountY];
+            ControlNode[, ,] controlNodes = new ControlNode[nodeCountX, nodeCountY, nodeCountZ];
 
 
             for (int x = 0; x < nodeCountX; x++)
