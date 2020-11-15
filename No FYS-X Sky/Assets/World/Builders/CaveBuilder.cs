@@ -9,11 +9,6 @@ using UnityEditor.UIElements;
 
 public class CaveBuilder : MonoBehaviour
 {
-    [SerializeField]
-    MeshFilter floorMeshFilter;
-
-    [SerializeField]
-    MeshFilter wallMeshFilter;
 
     RidgedMultifractal ridgedMultifractal;
 
@@ -57,23 +52,10 @@ public class CaveBuilder : MonoBehaviour
             }
         }
 
-        CaveMeshGeneratorTemp caveMeshGen = GameObject.Find("Level").GetComponent<CaveMeshGeneratorTemp>();
+        CaveMeshGenerator caveMeshGen = GameObject.Find("Level").GetComponent<CaveMeshGenerator>();
 
 
-/*        int[,,] testmap = new int[10, 10, 10];
-        testmap[0, 0, 0] = 0;
-        testmap[1, 1, 1] = 0;
-        testmap[2, 2, 2] = 0;
-        testmap[3, 3, 3] = 0;
-        testmap[4, 4, 4] = 0;
-        testmap[5, 5, 5] = 0;
-        testmap[6, 6, 6] = 0;
-        testmap[7, 7, 7] = 0;
-        testmap[8, 8, 8] = 0;
-        testmap[9, 9, 9] = 0;*/
-
-
-        caveMeshGen.GenerateMesh(caveMap, 1, this.floorMeshFilter, this.wallMeshFilter);
+        caveMeshGen.GenerateMesh(caveMap, 1, GetComponent<MeshFilter>());
     }
 
     // Update is called once per frame
