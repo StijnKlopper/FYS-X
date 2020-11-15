@@ -9,6 +9,8 @@ public class CityGenerator : MonoBehaviour, Generator
 
     List<GameObject> points;
 
+    //List<Vector3> vertexBuffer = new List<Vector3>();
+
     TerrainGenerator terrainGenerator;
 
     // Start is called before the first frame update
@@ -26,6 +28,7 @@ public class CityGenerator : MonoBehaviour, Generator
 
     bool CheckValidPoint(Vector3 pointPosition)
     {
+        
         Vector2 cubePosition = new Vector2(-pointPosition.x, -pointPosition.z);
         Biome biome = terrainGenerator.GetBiomeByCoordinates(cubePosition);
 
@@ -33,21 +36,44 @@ public class CityGenerator : MonoBehaviour, Generator
         if (!(biome.biomeType is OceanBiomeType) && !(biome.biomeType is MountainBiomeType))
         {
 
+            int layerMask = 1 << 8;
+
+            // This would cast rays only against colliders in layer 8.
+            // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+            layerMask = ~layerMask;
+
             // Check height with Raycasting
             //Debug.Log(Physics.Raycast(cube.transform.position, -transform.up));
-            RaycastHit hit;
-            if (Physics.Raycast(pointPosition, transform.up, out hit))
+            RaycastHit Hit;
+            
+            if(Physics.Raycast(pointPosition, transform.up, out Hit, 20f, layerMask))
             {
-                Debug.Log(hit.transform.name);
-                Debug.Log(hit.distance);
-                Debug.Log("From: " + pointPosition + " To: " + hit.point);
+                Debug.Log("IT WORKED" + Hit.transform.name + " INDEX IS " + Hit.triangleIndex);
             }
-            Debug.Log("Point: " + cubePosition + " " + biome.biomeType);
+            Collider[] hitColliders = Physics.OverlapBox(pointPosition, transform.up);
+            foreach (var hit in hitColliders)
+            {
+                Debug.Log("From: " + pointPosition + " To: " + hit.transform.name + "Closestpoint: " + hit.ClosestPoint(pointPosition) + "Contact offset: " +  hit.contactOffset );
+                // List efficentier om te gebruiken??? handig voor optimization later
+                //vertexBuffer.Clear();
+                //hit.gameObject.GetComponent<MeshFilter>().sharedMesh.GetVertices(vertexBuffer)
+                foreach (Vector3 index in hit.gameObject.GetComponent<MeshFilter>().mesh.vertices)
+                {
+                    Debug.Log("Localposition of the Vertex: " + index + "Worldposition of the Vertex: " + GetVertexWorldPosition(index, hit.transform));
 
+                }
+
+
+            }
             return true;
         }
 
         return false;
+    }
+
+    public Vector3 GetVertexWorldPosition(Vector3 vertex, Transform owner)
+    {
+        return owner.localToWorldMatrix.MultiplyPoint3x4(vertex);
     }
 
     private float[,] generateCityNoiseMap(int mapWidth, int mapHeight, Vector2 offsets)
