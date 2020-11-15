@@ -58,6 +58,66 @@ void TriangulateCube(Cube cube) {
 
 }
 
+struct Triangle
+{
+    int vertexIndexA;
+    int vertexIndexB;
+    int vertexIndexC;
+    int vertices[100];
+
+    Triangle(int a, int b, int c)
+    {
+        vertexIndexA = a;
+        vertexIndexB = b;
+        vertexIndexC = c;
+
+        vertices = new int[3];
+        vertices[0] = a;
+        vertices[1] = b;
+        vertices[2] = c;
+    }
+
+    int this[int i]
+    {
+        get
+        {
+            return vertices[i];
+        }
+    }
+
+
+         bool Contains(int vertexIndex)
+        {
+            return vertexIndex == vertexIndexA || vertexIndex == vertexIndexB || vertexIndex == vertexIndexC;
+        }
+}
+
+void AssignVertices(Node points[100]) {
+
+}
+
+void CreateTriangle(Node a, Node b, Node c) {
+    triangles.Add(a.vertexIndex);
+    triangles.Add(b.vertexIndex);
+    triangles.Add(c.vertexIndex);
+
+    Triangle triangle = new Triangle(a.vertexIndex, b.vertexIndex, c.vertexIndex);
+    AddTriangleToDictionary(triangle.vertexIndexA, triangle);
+    AddTriangleToDictionary(triangle.vertexIndexB, triangle);
+    AddTriangleToDictionary(triangle.vertexIndexC, triangle);
+}
+
+void MeshFromPoints(Node points[100]) {
+    if (points.Length < 1) return;
+    AssignVertices(points);
+    for (int i = 0; i < points.Length; i += 3)
+    {
+        CreateTriangle(points[i], points[i + 1], points[i + 2]);
+    }
+}
+
+
+
 
 
 
@@ -123,7 +183,7 @@ void TriangulateCube2(Cube cube)
 
 
 
-void MeshFromPoints(List<Node> points)
+void MeshFromPoints2(List<Node> points)
 {
     if (points.Count < 1) return;
     AssignVertices(points);
@@ -133,7 +193,7 @@ void MeshFromPoints(List<Node> points)
     }
 }
 
-void AssignVertices(List<Node> points)
+void AssignVertices2(List<Node> points)
 {
     for (int i = 0; i < points.Count; i++)
     {
@@ -145,7 +205,7 @@ void AssignVertices(List<Node> points)
     }
 }
 
-void CreateTriangle(Node a, Node b, Node c)
+void CreateTriangle2(Node a, Node b, Node c)
 {
     triangles.Add(a.vertexIndex);
     triangles.Add(b.vertexIndex);
@@ -171,36 +231,4 @@ void AddTriangleToDictionary(int vertexIndexKey, Triangle triangle)
     }
 }
 
-struct Triangle
-{
-    public int vertexIndexA;
-    public int vertexIndexB;
-    public int vertexIndexC;
-    int[] vertices;
 
-    public Triangle(int a, int b, int c)
-    {
-        vertexIndexA = a;
-        vertexIndexB = b;
-        vertexIndexC = c;
-
-        vertices = new int[3];
-        vertices[0] = a;
-        vertices[1] = b;
-        vertices[2] = c;
-    }
-
-    public int this[int i]
-    {
-        get
-        {
-            return vertices[i];
-        }
-    }
-
-
-        public bool Contains(int vertexIndex)
-        {
-            return vertexIndex == vertexIndexA || vertexIndex == vertexIndexB || vertexIndex == vertexIndexC;
-        }
-}
