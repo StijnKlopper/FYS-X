@@ -14,13 +14,11 @@ public class CaveMeshGeneratorTemp : MonoBehaviour
     List<int> triangles;
 
     Dictionary<int, List<Triangle>> triangleDictionary = new Dictionary<int, List<Triangle>>();
-    List<List<int>> outlines = new List<List<int>>();
     HashSet<int> checkedVertices = new HashSet<int>();
 
     public void GenerateMesh(int[, ,] map, float squareSize, MeshFilter floorMeshFilter, MeshFilter wallMeshFilter)
     {
         triangleDictionary.Clear();
-        outlines.Clear();
         checkedVertices.Clear();
 
         cubeGrid = new CubeGrid(map, squareSize);
@@ -39,64 +37,18 @@ public class CaveMeshGeneratorTemp : MonoBehaviour
             }
         }
 
-        //Mesh floorMesh = new Mesh();
-        //floorMesh.vertices = vertices.ToArray();
-        //floorMesh.triangles = triangles.ToArray();
-
-        Mesh wallMesh = CreateWallMesh();
-
-        //floorMesh.RecalculateNormals();
-        wallMesh.RecalculateNormals();
-
-        //floorMeshFilter.mesh = floorMesh;
-        wallMeshFilter.mesh = wallMesh;
-
-
+        Mesh floorMesh = new Mesh();
+        floorMesh.vertices = vertices.ToArray();
+        floorMesh.triangles = triangles.ToArray();
+        wallMeshFilter.mesh = floorMesh;
 
     }
 
-    Mesh CreateWallMesh()
-    {
-        CalculateMeshOutlines();
-        
-        List<Vector3> wallVertices = new List<Vector3>();
-        List<int> wallTriangles = new List<int>();
-        Mesh wallMesh = new Mesh();
-        float wallHeight = 1;
-
-        foreach (List<int> outline in outlines)
-        {
-            for (int i = 0; i < outline.Count - 1; i++)
-            {
-                int startIndex = wallVertices.Count;
-                wallVertices.Add(vertices[outline[i]]); // left
-                wallVertices.Add(vertices[outline[i + 1]]); // right
-                wallVertices.Add(vertices[outline[i]] - Vector3.up * wallHeight); // bottom left
-                wallVertices.Add(vertices[outline[i + 1]] - Vector3.up * wallHeight); // bottom right
-
-                wallTriangles.Add(startIndex + 0);
-                wallTriangles.Add(startIndex + 2);
-                wallTriangles.Add(startIndex + 3);
-
-                wallTriangles.Add(startIndex + 3);
-                wallTriangles.Add(startIndex + 1);
-                wallTriangles.Add(startIndex + 0);
-            }
-        }
-        wallMesh.vertices = wallVertices.ToArray();
-        wallMesh.triangles = wallTriangles.ToArray();
-        return wallMesh;
-    }
 
     void TriangulateCube(Cube cube)
     {
         //int length = TriangleConnectionTable.GetLength(cube.configuration);
         int[] triangles = new int[16];
-
-        //if(cube.configuration != 255)
-        //{
-        //    Debug.Log("Bro");
-        //}
 
         for (int i = 0; i < 16; i++)
         {
@@ -150,90 +102,8 @@ public class CaveMeshGeneratorTemp : MonoBehaviour
             }
         }
         MeshFromPoints(edges);
-        //switch (cube.configuration)
-        //{
-        //    case 0:
-        //        break;
-
-        //    // 1 points:
-        //    case 1:
-        //        MeshFromPoints(cube.centreLeft, cube.centreBottom, cube.bottomLeft);
-        //        break;
-        //    case 2:
-        //        MeshFromPoints(cube.bottomRight, cube.centreBottom, cube.centreRight);
-        //        break;
-        //    case 4:
-        //        MeshFromPoints(cube.topRight, cube.centreRight, cube.centreTop);
-        //        break;
-        //    case 8:
-        //        MeshFromPoints(cube.topLeft, cube.centreTop, cube.centreLeft);
-        //        break;
-
-        //    // 2 points:
-        //    case 3:
-        //        MeshFromPoints(cube.centreRight, cube.bottomRight, cube.bottomLeft, cube.centreLeft);
-        //        break;
-        //    case 6:
-        //        MeshFromPoints(cube.centreTop, cube.topRight, cube.bottomRight, cube.centreBottom);
-        //        break;
-        //    case 9:
-        //        MeshFromPoints(cube.topLeft, cube.centreTop, cube.centreBottom, cube.bottomLeft);
-        //        break;
-        //    case 12:
-        //        MeshFromPoints(cube.topLeft, cube.topRight, cube.centreRight, cube.centreLeft);
-        //        break;
-        //    case 5:
-        //        MeshFromPoints(cube.centreTop, cube.topRight, cube.centreRight, cube.centreBottom, cube.bottomLeft, cube.centreLeft);
-        //        break;
-        //    case 10:
-        //        MeshFromPoints(cube.topLeft, cube.centreTop, square.centreRight, square.bottomRight, square.centreBottom, square.centreLeft);
-        //        break;
-
-        //    // 3 point:
-        //    case 7:
-        //        MeshFromPoints(square.centreTop, square.topRight, square.bottomRight, square.bottomLeft, square.centreLeft);
-        //        break;
-        //    case 11:
-        //        MeshFromPoints(square.topLeft, square.centreTop, square.centreRight, square.bottomRight, square.bottomLeft);
-        //        break;
-        //    case 13:
-        //        MeshFromPoints(square.topLeft, square.topRight, square.centreRight, square.centreBottom, square.bottomLeft);
-        //        break;
-        //    case 14:
-        //        MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.centreBottom, square.centreLeft);
-        //        break;
-
-        //    // 4 point:
-        //    case 15:
-        //        MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.bottomLeft);
-        //        checkedVertices.Add(square.topLeft.vertexIndex);
-        //        checkedVertices.Add(square.topRight.vertexIndex);
-        //        checkedVertices.Add(square.bottomRight.vertexIndex);
-        //        checkedVertices.Add(square.bottomLeft.vertexIndex);
-        //        break;
-        //}
 
     }
-
-    private static readonly int[] CubeEdgeFlags = new int[]
-        {
-        0x000, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c, 0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
-        0x190, 0x099, 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c, 0x99c, 0x895, 0xb9f, 0xa96, 0xd9a, 0xc93, 0xf99, 0xe90,
-        0x230, 0x339, 0x033, 0x13a, 0x636, 0x73f, 0x435, 0x53c, 0xa3c, 0xb35, 0x83f, 0x936, 0xe3a, 0xf33, 0xc39, 0xd30,
-        0x3a0, 0x2a9, 0x1a3, 0x0aa, 0x7a6, 0x6af, 0x5a5, 0x4ac, 0xbac, 0xaa5, 0x9af, 0x8a6, 0xfaa, 0xea3, 0xda9, 0xca0,
-        0x460, 0x569, 0x663, 0x76a, 0x066, 0x16f, 0x265, 0x36c, 0xc6c, 0xd65, 0xe6f, 0xf66, 0x86a, 0x963, 0xa69, 0xb60,
-        0x5f0, 0x4f9, 0x7f3, 0x6fa, 0x1f6, 0x0ff, 0x3f5, 0x2fc, 0xdfc, 0xcf5, 0xfff, 0xef6, 0x9fa, 0x8f3, 0xbf9, 0xaf0,
-        0x650, 0x759, 0x453, 0x55a, 0x256, 0x35f, 0x055, 0x15c, 0xe5c, 0xf55, 0xc5f, 0xd56, 0xa5a, 0xb53, 0x859, 0x950,
-        0x7c0, 0x6c9, 0x5c3, 0x4ca, 0x3c6, 0x2cf, 0x1c5, 0x0cc, 0xfcc, 0xec5, 0xdcf, 0xcc6, 0xbca, 0xac3, 0x9c9, 0x8c0,
-        0x8c0, 0x9c9, 0xac3, 0xbca, 0xcc6, 0xdcf, 0xec5, 0xfcc, 0x0cc, 0x1c5, 0x2cf, 0x3c6, 0x4ca, 0x5c3, 0x6c9, 0x7c0,
-        0x950, 0x859, 0xb53, 0xa5a, 0xd56, 0xc5f, 0xf55, 0xe5c, 0x15c, 0x055, 0x35f, 0x256, 0x55a, 0x453, 0x759, 0x650,
-        0xaf0, 0xbf9, 0x8f3, 0x9fa, 0xef6, 0xfff, 0xcf5, 0xdfc, 0x2fc, 0x3f5, 0x0ff, 0x1f6, 0x6fa, 0x7f3, 0x4f9, 0x5f0,
-        0xb60, 0xa69, 0x963, 0x86a, 0xf66, 0xe6f, 0xd65, 0xc6c, 0x36c, 0x265, 0x16f, 0x066, 0x76a, 0x663, 0x569, 0x460,
-        0xca0, 0xda9, 0xea3, 0xfaa, 0x8a6, 0x9af, 0xaa5, 0xbac, 0x4ac, 0x5a5, 0x6af, 0x7a6, 0x0aa, 0x1a3, 0x2a9, 0x3a0,
-        0xd30, 0xc39, 0xf33, 0xe3a, 0x936, 0x83f, 0xb35, 0xa3c, 0x53c, 0x435, 0x73f, 0x636, 0x13a, 0x033, 0x339, 0x230,
-        0xe90, 0xf99, 0xc93, 0xd9a, 0xa96, 0xb9f, 0x895, 0x99c, 0x69c, 0x795, 0x49f, 0x596, 0x29a, 0x393, 0x099, 0x190,
-        0xf00, 0xe09, 0xd03, 0xc0a, 0xb06, 0xa0f, 0x905, 0x80c, 0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x000
-        };
 
 
     private static readonly int[,] TriangleConnectionTable = new int[,]
@@ -544,82 +414,6 @@ public class CaveMeshGeneratorTemp : MonoBehaviour
         }
     }
 
-    void CalculateMeshOutlines()
-    {
-        for (int vertexIndex = 0; vertexIndex < vertices.Count; vertexIndex++)
-        {
-            if (!checkedVertices.Contains(vertexIndex))
-            {
-                int newOutlineVertex = GetConnectedOutlineVertex(vertexIndex);
-                if (newOutlineVertex != -1)
-                {
-                    checkedVertices.Add(vertexIndex);
-
-                    List<int> newOutline = new List<int>();
-                    newOutline.Add(vertexIndex);
-                    outlines.Add(newOutline);
-                    FollowOutline(newOutlineVertex, outlines.Count - 1);
-                    outlines[outlines.Count - 1].Add(vertexIndex);
-                }
-            }
-        }
-    }
-
-    void FollowOutline(int vertexIndex, int outlineIndex)
-    {
-        outlines[outlineIndex].Add(vertexIndex);
-        checkedVertices.Add(vertexIndex);
-        int nextVertexIndex = GetConnectedOutlineVertex(vertexIndex);
-
-        if (nextVertexIndex != -1)
-        {
-            FollowOutline(nextVertexIndex, outlineIndex);
-        }
-    }
-
-    int GetConnectedOutlineVertex(int vertexIndex)
-    {
-        List<Triangle> trianglesContainingVertex = triangleDictionary[vertexIndex];
-
-        for (int i = 0; i < trianglesContainingVertex.Count; i++)
-        {
-            Triangle triangle = trianglesContainingVertex[i];
-
-            for (int j = 0; j < 3; j++)
-            {
-                int vertexB = triangle[j];
-                if (vertexB != vertexIndex && !checkedVertices.Contains(vertexB))
-                {
-                    if (IsOutlineEdge(vertexIndex, vertexB))
-                    {
-                        return vertexB;
-                    }
-                }
-            }
-        }
-
-        return -1;
-    }
-
-    bool IsOutlineEdge(int vertexA, int vertexB)
-    {
-        List<Triangle> trianglesContainingVertexA = triangleDictionary[vertexA];
-        int sharedTriangleCount = 0;
-
-        for (int i = 0; i < trianglesContainingVertexA.Count; i++)
-        {
-            if (trianglesContainingVertexA[i].Contains(vertexB))
-            {
-                sharedTriangleCount++;
-                if (sharedTriangleCount > 1)
-                {
-                    break;
-                }
-            }
-        }
-        return sharedTriangleCount == 1;
-    }
-
     struct Triangle
     {
         public int vertexIndexA;
@@ -688,15 +482,14 @@ public class CaveMeshGeneratorTemp : MonoBehaviour
                 {
                     for (int z = 0; z < nodeCountZ - 1; z++) {
                         cubes[x, y, z] = new Cube(
-                            controlNodes[x, y, z + 1], 
-                            controlNodes[x + 1, y, z + 1], 
-                            controlNodes[x, y, z], 
-                            controlNodes[x + 1, y, z],
-                            controlNodes[x, y + 1, z + 1],
-                            controlNodes[x + 1, y + 1, z + 1],
-                            controlNodes[x, y + 1, z],
-                            controlNodes[x + 1, y + 1, z]
-
+                            controlNodes[x, y, z], //v0
+                            controlNodes[x, y + 1, z], //v1
+                            controlNodes[x + 1, y + 1, z], //v2
+                            controlNodes[x + 1, y, z], //v3
+                            controlNodes[x, y, z + 1], //v4
+                            controlNodes[x, y + 1, z + 1], //v5
+                            controlNodes[x + 1, y + 1, z + 1], //v6
+                            controlNodes[x + 1, y, z + 1] //v7
                             );
                     }
                 }
@@ -730,23 +523,26 @@ public class CaveMeshGeneratorTemp : MonoBehaviour
             centre1 = v1.toX;
             centre2 = v3.toY;
             centre3 = v0.toX;
+
             centre4 = v4.toY;
             centre5 = v5.toX;
             centre6 = v7.toY;
             centre7 = v4.toX;
+
             centre8 = v0.toZ;
             centre9 = v1.toZ;
             centre10 = v2.toZ;
             centre11 = v3.toZ;
 
-            if (v0.active) configuration += 128;
-            if (v1.active) configuration += 64;
-            if (v2.active) configuration += 32;
-            if (v3.active) configuration += 16;
-            if (v4.active) configuration += 8;
-            if (v5.active) configuration += 4;
-            if (v6.active) configuration += 2;
-            if (v7.active) configuration += 1;
+
+            if (v0.active) configuration += 1;
+            if (v1.active) configuration += 2;
+            if (v2.active) configuration += 4;
+            if (v3.active) configuration += 8;
+            if (v4.active) configuration += 16;
+            if (v5.active) configuration += 32;
+            if (v6.active) configuration += 64;
+            if (v7.active) configuration += 128;
 
         }
     }
@@ -771,8 +567,8 @@ public class CaveMeshGeneratorTemp : MonoBehaviour
         {
             active = _active;
             toX = new Node(position + Vector3.right * squareSize / 2f);
-            toZ = new Node(position + Vector3.forward * squareSize / 2f);
             toY = new Node(position + Vector3.up * squareSize / 2f);
+            toZ = new Node(position + Vector3.forward * squareSize / 2f);
         }
     }
 }

@@ -39,7 +39,7 @@ public class CaveBuilder : MonoBehaviour
         ridgedMultifractal = new RidgedMultifractal();
         ridgedMultifractal.OctaveCount = 3;
 
-        int height = 20;
+        int height = 30;
 
         int[, ,] caveMap = new int[size, height, size];
 
@@ -58,7 +58,21 @@ public class CaveBuilder : MonoBehaviour
         }
 
         CaveMeshGeneratorTemp caveMeshGen = GameObject.Find("Level").GetComponent<CaveMeshGeneratorTemp>();
-        
+
+
+/*        int[,,] testmap = new int[10, 10, 10];
+        testmap[0, 0, 0] = 0;
+        testmap[1, 1, 1] = 0;
+        testmap[2, 2, 2] = 0;
+        testmap[3, 3, 3] = 0;
+        testmap[4, 4, 4] = 0;
+        testmap[5, 5, 5] = 0;
+        testmap[6, 6, 6] = 0;
+        testmap[7, 7, 7] = 0;
+        testmap[8, 8, 8] = 0;
+        testmap[9, 9, 9] = 0;*/
+
+
         caveMeshGen.GenerateMesh(caveMap, 1, this.floorMeshFilter, this.wallMeshFilter);
     }
 

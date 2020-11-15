@@ -39,13 +39,13 @@ public class CaveMeshGenerator : MonoBehaviour
         floorMesh.vertices = vertices.ToArray();
         floorMesh.triangles = triangles.ToArray();
 
-        Mesh wallMesh = CreateWallMesh();
+        //Mesh wallMesh = CreateWallMesh();
 
         floorMesh.RecalculateNormals();
-        wallMesh.RecalculateNormals();
+        //wallMesh.RecalculateNormals();
 
-        floorMeshFilter.mesh = floorMesh;
-        wallMeshFilter.mesh = wallMesh;
+        //floorMeshFilter.mesh = floorMesh;
+        wallMeshFilter.mesh = floorMesh;
 
 
 
