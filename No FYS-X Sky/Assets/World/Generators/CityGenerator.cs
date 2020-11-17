@@ -9,14 +9,18 @@ public class CityGenerator : MonoBehaviour, Generator
 
     List<GameObject> points;
 
-    //List<Vector3> vertexBuffer = new List<Vector3>();
-
     TerrainGenerator terrainGenerator;
+
+    List<Vector3> possibleCoordsForCities;
+
+    public GameObject house;
 
     // Start is called before the first frame update
     void Start()
     {
         points = new List<GameObject>();
+        possibleCoordsForCities = new List<Vector3>();
+
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
     }
 
@@ -28,40 +32,51 @@ public class CityGenerator : MonoBehaviour, Generator
 
     bool CheckValidPoint(Vector3 pointPosition)
     {
-        
         Vector2 cubePosition = new Vector2(-pointPosition.x, -pointPosition.z);
         Biome biome = terrainGenerator.GetBiomeByCoordinates(cubePosition);
 
         // Check for not a Ocean or Mountain biome
         if (!(biome.biomeType is OceanBiomeType) && !(biome.biomeType is MountainBiomeType))
         {
-
-            int layerMask = 1 << 8;
-
-            // This would cast rays only against colliders in layer 8.
-            // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
-            layerMask = ~layerMask;
-
             // Check height with Raycasting
-            //Debug.Log(Physics.Raycast(cube.transform.position, -transform.up));
-            RaycastHit Hit;
-            
-            if(Physics.Raycast(pointPosition, transform.up, out Hit, 20f, layerMask))
-            {
-                Debug.Log("IT WORKED" + Hit.transform.name + " INDEX IS " + Hit.triangleIndex);
-            }
             Collider[] hitColliders = Physics.OverlapBox(pointPosition, transform.up);
             foreach (var hit in hitColliders)
             {
-                Debug.Log("From: " + pointPosition + " To: " + hit.transform.name + "Closestpoint: " + hit.ClosestPoint(pointPosition) + "Contact offset: " +  hit.contactOffset );
-                // List efficentier om te gebruiken??? handig voor optimization later
-                //vertexBuffer.Clear();
-                //hit.gameObject.GetComponent<MeshFilter>().sharedMesh.GetVertices(vertexBuffer)
-                foreach (Vector3 index in hit.gameObject.GetComponent<MeshFilter>().mesh.vertices)
-                {
-                    Debug.Log("Localposition of the Vertex: " + index + "Worldposition of the Vertex: " + GetVertexWorldPosition(index, hit.transform));
 
+                // Per box make it raining rays
+                Vector3 posi = hit.transform.position;
+                List<RaycastHit> rayHits = new List<RaycastHit>();
+                int radius = 10;
+                float margin = 1f;
+                for (int x = (int) posi.x - radius; x < posi.x + radius; x++)
+                {
+                    for (int z = (int)posi.z - radius; z < posi.z + radius; z++)
+                    {
+                        Vector3 rayPosition = new Vector3(x, 10, z);
+                        Ray ray = new Ray(rayPosition, Vector3.down);
+                        if (Physics.Raycast(ray, out RaycastHit hitInfo)) {
+
+                            // Check if hit is within height margin
+                            if (posi.y + margin >= hitInfo.point.y && posi.y - margin <= hitInfo.point.y)
+                            {
+                                // Ray with a possibility for a city
+                                rayHits.Add(hitInfo);
+                                possibleCoordsForCities.Add(hitInfo.point);
+
+                                // TODO
+                                int rand = Random.Range(1, 1000);
+                                if (rand <= 1)
+                                {
+                                    Instantiate(house, hitInfo.point, Quaternion.identity);
+                                }
+                            }
+
+                        }
+
+                    }
                 }
+
+
 
 
             }
@@ -189,6 +204,12 @@ public class CityGenerator : MonoBehaviour, Generator
         foreach (var cube in points)
         {
             Debug.DrawRay(cube.transform.position, -transform.up * 10, Color.green);
+        }
+
+        foreach (var coord in possibleCoordsForCities)
+        {
+            
+            Debug.DrawRay(coord, transform.up * 30, Color.green);
         }
     }
 

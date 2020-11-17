@@ -740,6 +740,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minimumCityDistanceRadius: 20
+  house: {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
 --- !u!1 &906747359
 GameObject:
   m_ObjectHideFlags: 0
