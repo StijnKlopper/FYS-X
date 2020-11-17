@@ -12,7 +12,7 @@ public class CityGenerator : MonoBehaviour, Generator
     TerrainGenerator terrainGenerator;
 
     List<Vector3> possibleCoordsForCities;
-
+    List<Vector3> impossibleCoordsForCities;
     public List<GameObject> houses;
 
     // Start is called before the first frame update
@@ -20,6 +20,7 @@ public class CityGenerator : MonoBehaviour, Generator
     {
         points = new List<GameObject>();
         possibleCoordsForCities = new List<Vector3>();
+        impossibleCoordsForCities = new List<Vector3>();
 
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
     }
@@ -38,27 +39,30 @@ public class CityGenerator : MonoBehaviour, Generator
         // Check for not a Ocean or Mountain biome
         if (!(biome.biomeType is OceanBiomeType) && !(biome.biomeType is MountainBiomeType))
         {
-            // Check height with Raycasting
-            Collider[] hitColliders = Physics.OverlapBox(pointPosition, transform.up);
-            foreach (var hit in hitColliders)
+            Vector3 startPosition = new Vector3(pointPosition.x, 10, pointPosition.z);
+            RaycastHit tileHit;
+            if (Physics.Raycast(startPosition, -transform.up, out tileHit, Mathf.Infinity))
             {
-
+                Debug.Log(tileHit.point);
                 // Per box make it raining rays
-                Vector3 posi = hit.transform.position;
+                Vector3 posi = tileHit.point;
                 List<RaycastHit> rayHits = new List<RaycastHit>();
-                int radius = 20;
+                int radius = 15;
                 float margin = 1f;
-                for (int x = (int) posi.x - radius; x < posi.x + radius; x++)
+                for (int x = (int)posi.x - (radius * 2); x <= posi.x; x++)
                 {
-                    for (int z = (int)posi.z - radius; z < posi.z + radius; z++)
+                    for (int z = (int)posi.z - (radius * 2); z <= posi.z; z++)
                     {
+
                         Vector3 rayPosition = new Vector3(x, 10, z);
-                        Ray ray = new Ray(rayPosition, Vector3.down);
-                        if (Physics.Raycast(ray, out RaycastHit hitInfo)) {
+                        Ray ray = new Ray(rayPosition, -transform.up);
+                        if (Physics.Raycast(ray, out RaycastHit hitInfo))
+                        {
 
                             // Check if hit is within height margin
                             if (posi.y + margin >= hitInfo.point.y && posi.y - margin <= hitInfo.point.y)
                             {
+                                //Debug.Log(hitInfo.point);
                                 // Ray with a possibility for a city
                                 rayHits.Add(hitInfo);
                                 possibleCoordsForCities.Add(hitInfo.point);
@@ -68,18 +72,19 @@ public class CityGenerator : MonoBehaviour, Generator
                                 if (rand <= 1)
                                 {
                                     int houseRand = Random.Range(0, houses.Count);
-                                    Debug.Log(houseRand);
                                     Instantiate(houses[houseRand], new Vector3(hitInfo.point.x, houses[houseRand].transform.position.y + hitInfo.point.y, hitInfo.point.z), Quaternion.identity);
                                 }
+                            }
+
+                            else
+                            {
+                                impossibleCoordsForCities.Add(hitInfo.point);
                             }
 
                         }
 
                     }
                 }
-
-
-
 
             }
             return true;
@@ -171,14 +176,11 @@ public class CityGenerator : MonoBehaviour, Generator
                             GameObject point = GameObject.CreatePrimitive(PrimitiveType.Cube);
                             point.transform.SetParent(parentObj.transform);
                             point.transform.position = possiblePointPosition;
-                            //point.GetComponent<Renderer>().enabled = false;
-
                             Physics.SyncTransforms();
-
                             points.Add(point);
                             break;
                         }
-                           
+
                     }
                 }
             }
@@ -210,19 +212,18 @@ public class CityGenerator : MonoBehaviour, Generator
 
         foreach (var coord in possibleCoordsForCities)
         {
-            
-            Debug.DrawRay(coord, transform.up * 30, Color.green);
+
+            Debug.DrawRay(coord, transform.up * 10, Color.green);
+
         }
+        foreach (var coord in impossibleCoordsForCities)
+        {
+
+            Debug.DrawRay(coord, transform.up * 10, Color.red);
+
+        }
+
     }
 
-    void getHeight(Vector2 position)
-    {
-        int scale = 10;
 
-        float sampleX = (position.x) / scale;
-        float sampleY = (position.y) / scale;
-
-        float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
-    }
-   
 }
