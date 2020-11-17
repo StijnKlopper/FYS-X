@@ -13,7 +13,7 @@ public class CityGenerator : MonoBehaviour, Generator
 
     List<Vector3> possibleCoordsForCities;
 
-    public GameObject house;
+    public List<GameObject> houses;
 
     // Start is called before the first frame update
     void Start()
@@ -46,7 +46,7 @@ public class CityGenerator : MonoBehaviour, Generator
                 // Per box make it raining rays
                 Vector3 posi = hit.transform.position;
                 List<RaycastHit> rayHits = new List<RaycastHit>();
-                int radius = 10;
+                int radius = 20;
                 float margin = 1f;
                 for (int x = (int) posi.x - radius; x < posi.x + radius; x++)
                 {
@@ -67,7 +67,9 @@ public class CityGenerator : MonoBehaviour, Generator
                                 int rand = Random.Range(1, 1000);
                                 if (rand <= 1)
                                 {
-                                    Instantiate(house, hitInfo.point, Quaternion.identity);
+                                    int houseRand = Random.Range(0, houses.Count);
+                                    Debug.Log(houseRand);
+                                    Instantiate(houses[houseRand], new Vector3(hitInfo.point.x, houses[houseRand].transform.position.y + hitInfo.point.y, hitInfo.point.z), Quaternion.identity);
                                 }
                             }
 
