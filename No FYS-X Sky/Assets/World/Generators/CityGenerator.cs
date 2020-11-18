@@ -14,6 +14,8 @@ public class CityGenerator : MonoBehaviour, Generator
 
     public Dictionary<Vector3, Color> coloredRays;
 
+    public Dictionary<Vector3, List<Vector3>> cityPoints;
+
     public List<GameObject> houses;
 
     GameObject parentObj;
