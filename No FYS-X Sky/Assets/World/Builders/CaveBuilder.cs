@@ -18,12 +18,12 @@ public class CaveBuilder : MonoBehaviour
         
     }
 
-    public int[,,] applyMesh() {
+/*    public int[,,] applyMesh() {
         return GenerateCaveMap();
-    }
+    }*/
 
 
-    public int[,,] GenerateCaveMap()
+    public int[] GenerateCaveMap()
     {
         int size = 11;
 
@@ -40,7 +40,7 @@ public class CaveBuilder : MonoBehaviour
 
         int height = 30;
 
-        int[, ,] caveMap = new int[size, height, size];
+        int[] caveMap = new int[size * height * size];
 
         for (int x = 0; x < size; x++) {
 
@@ -51,7 +51,7 @@ public class CaveBuilder : MonoBehaviour
                 {
                     double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, (y + addendum) / scale, (z + offsets.y + addendum) / scale);
                     int isCave = tempVal < 0.35 ? 0 : 1;
-                    caveMap[x, y, z] = isCave;
+                    caveMap[x + size * (y + height * z)] = isCave;
                 }
             }
         }

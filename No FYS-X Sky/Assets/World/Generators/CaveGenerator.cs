@@ -37,35 +37,47 @@ public class CaveGenerator : MonoBehaviour, Generator
 
         CaveBuilder caveBuilder = tile.GetComponent<CaveBuilder>();
 
-        int[,,] meshMap = caveBuilder.applyMesh();
+        //Debug.Log(caveBuilder.applyMesh());
 
-        NativeArray<Vector3> verticesResult = new NativeArray<Vector3>(10000, Allocator.TempJob);
-        NativeArray<int> trianglesResult = new NativeArray<int>(10000, Allocator.TempJob);
+        
 
 
-        CaveMeshGenerator caveMeshGen = GameObject.Find("Level").GetComponent<CaveMeshGenerator>();
+        int[] meshMap = caveBuilder.GenerateCaveMap();
+
+        NativeList<Vector3> verticesArray = new NativeList<Vector3>(Allocator.TempJob);
+        NativeList<int> trianglesArray = new NativeList<int>(Allocator.TempJob);
+        NativeArray<int> meshMapArray = new NativeArray<int>(meshMap, Allocator.TempJob);
+
+
+
+
         //GenerateMesh(meshMap, 1);
 
         meshGeneratorStruct job = new meshGeneratorStruct()
         {
-            meshMap = meshMap,
-            verticesArray = verticesResult,
-            trianglesArray = trianglesResult,
+            meshMapArray = meshMapArray,
+            verticesArray = verticesArray,
+            trianglesArray = trianglesArray,
         };
 
         JobHandle jobHandle = job.Schedule();
 
         jobHandle.Complete();
 
-        
+        verticesArray.Dispose();
+        trianglesArray.Dispose();
+        meshMapArray.Dispose();
 
-        Mesh caveMesh = new Mesh();
-        caveMesh.vertices = verticesResult.ToArray();
-        caveMesh.triangles = trianglesResult.ToArray();
-        tile.GetComponent<MeshFilter>().mesh = caveMesh;
 
-        verticesResult.Dispose();
-        trianglesResult.Dispose();
+
+
+
+        /* Mesh caveMesh = new Mesh();
+         caveMesh.vertices = verticesResult.ToArray();
+         caveMesh.triangles = trianglesResult.ToArray();
+         tile.GetComponent<MeshFilter>().mesh = caveMesh;*/
+
+
 
         tile.transform.SetParent(this.transform);
         return tile;
@@ -78,25 +90,20 @@ public class CaveGenerator : MonoBehaviour, Generator
     {
         //CubeGrid cubeGrid;
 
-        List<Vector3> vertices;
-        List<int> triangles;
-        public int[,,] meshMap;
-
-        public NativeArray<Vector3> verticesArray;
-        public NativeArray<int> trianglesArray;
+        public NativeList<Vector3> verticesArray; 
+        public NativeList<int> trianglesArray; 
+        public NativeArray<int> meshMapArray;
 
         public void Execute()
         {
-            GenerateMesh(meshMap, 1);
+            GenerateMesh(meshMapArray, 1);
         }
 
-        void GenerateMesh(int[,,] map, float squareSize)
+        void GenerateMesh(NativeArray<int> map, float squareSize)
         {
 
             CubeGrid cubeGrid  = new CubeGrid(map, squareSize);
-
-            vertices = new List<Vector3>();
-            triangles = new List<int>();
+            /*
 
             for (int x = 0; x < cubeGrid.cubes.GetLength(0); x++)
             {
@@ -107,7 +114,7 @@ public class CaveGenerator : MonoBehaviour, Generator
                         TriangulateCube(cubeGrid.cubes[x, y, z]);
                     }
                 }
-            }
+            }*/
 
 
             /*  Mesh caveMesh = new Mesh();
@@ -117,7 +124,7 @@ public class CaveGenerator : MonoBehaviour, Generator
 
 
 
-  */
+  *//*
             for (int i = 0; i < vertices.Count; i++) {
                 verticesArray[i] = vertices[i];
 
@@ -127,7 +134,7 @@ public class CaveGenerator : MonoBehaviour, Generator
             {
                 trianglesArray[i] = triangles[i];
 
-            }
+            }*/
 
         }
 
@@ -470,17 +477,17 @@ public class CaveGenerator : MonoBehaviour, Generator
             {
                 if (points[i].vertexIndex == -1)
                 {
-                    points[i].vertexIndex = vertices.Count;
-                    vertices.Add(points[i].position);
+                    /*points[i].vertexIndex = verticesArray.Length;
+                    verticesArray.Add(points[i].position);*/
                 }
             }
         }
 
         void CreateTriangle(Node a, Node b, Node c)
         {
-            triangles.Add(a.vertexIndex);
-            triangles.Add(b.vertexIndex);
-            triangles.Add(c.vertexIndex);
+            /*trianglesArray.Add(a.vertexIndex);
+            trianglesArray.Add(b.vertexIndex);
+            trianglesArray.Add(c.vertexIndex);*/
         }
 
 
@@ -489,16 +496,20 @@ public class CaveGenerator : MonoBehaviour, Generator
         {
             public Cube[,,] cubes;
 
-            public CubeGrid(int[,,] map, float squareSize)
+            public CubeGrid(NativeArray<int> map, float squareSize)
             {
-                int nodeCountX = map.GetLength(0);
-                int nodeCountY = map.GetLength(1);
-                int nodeCountZ = map.GetLength(2);
+                int nodeCountX = map.Length;
+                int nodeCountY = 5;
+                int nodeCountZ = map.Length;
+
+                
+
                 float mapWidth = nodeCountX * squareSize;
                 float mapHeight = nodeCountZ * squareSize;
 
-                ControlNode[,,] controlNodes = new ControlNode[nodeCountX, nodeCountY, nodeCountZ];
+                ControlNode[] controlNodes = new ControlNode[nodeCountX * nodeCountY * nodeCountZ];
 
+                /*
 
                 for (int x = 0; x < nodeCountX; x++)
                 {
@@ -507,7 +518,7 @@ public class CaveGenerator : MonoBehaviour, Generator
                         for (int z = 0; z < nodeCountZ; z++)
                         {
                             Vector3 pos = new Vector3(-mapWidth / 2 + x * squareSize + squareSize / 2, -mapWidth / 2 + y * squareSize + squareSize / 2, -mapHeight / 2 + z * squareSize + squareSize / 2);
-                            controlNodes[x, y, z] = new ControlNode(pos, map[x, y, z] == 0, squareSize);
+                            controlNodes[x, y, z] = new ControlNode(pos, map[x + (int)mapWidth * (y + (int)mapHeight * z)] == 0, squareSize);
                         }
                     }
                 }
@@ -531,7 +542,7 @@ public class CaveGenerator : MonoBehaviour, Generator
                                 );
                         }
                     }
-                }
+                } */
             }
         }
         public class Cube
@@ -557,7 +568,7 @@ public class CaveGenerator : MonoBehaviour, Generator
                 v6 = _v6;
                 v7 = _v7;
 
-                centre0 = v0.toY;
+/*                centre0 = v0.toY;
                 centre1 = v1.toX;
                 centre2 = v3.toY;
                 centre3 = v0.toX;
@@ -580,7 +591,7 @@ public class CaveGenerator : MonoBehaviour, Generator
                 if (v4.active) configuration += 16;
                 if (v5.active) configuration += 32;
                 if (v6.active) configuration += 64;
-                if (v7.active) configuration += 128;
+                if (v7.active) configuration += 128;*/
 
             }
         }
@@ -595,18 +606,18 @@ public class CaveGenerator : MonoBehaviour, Generator
             }
         }
 
-        public class ControlNode : Node
+        public class ControlNode 
         {
-            public bool active;
-            public Node toX, toY, toZ;
+/*            public bool active;
+            public Node toX, toY, toZ;*/
 
 
-            public ControlNode(Vector3 _pos, bool _active, float squareSize) : base(_pos)
+            public ControlNode()
             {
-                active = _active;
+                /*active = _active;
                 toX = new Node(position + Vector3.right * squareSize / 2f);
                 toY = new Node(position + Vector3.up * squareSize / 2f);
-                toZ = new Node(position + Vector3.forward * squareSize / 2f);
+                toZ = new Node(position + Vector3.forward * squareSize / 2f);*/
             }
         }
     }
