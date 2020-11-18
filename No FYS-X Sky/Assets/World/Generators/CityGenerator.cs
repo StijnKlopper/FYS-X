@@ -8,8 +8,6 @@ public class CityGenerator : MonoBehaviour, Generator
     [SerializeField]
     public float minimumCityDistanceRadius = 20f;
 
-    List<GameObject> points;
-
     TerrainGenerator terrainGenerator;
 
     public Dictionary<Vector3, Color> coloredRays;
@@ -23,8 +21,8 @@ public class CityGenerator : MonoBehaviour, Generator
     // Start is called before the first frame update
     void Start()
     {
-        points = new List<GameObject>();
         coloredRays = new Dictionary<Vector3, Color>();
+        cityPoints = new Dictionary<Vector3, List<Vector3>>();
 
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         parentObj = GameObject.Find("CityPoints");
@@ -38,7 +36,6 @@ public class CityGenerator : MonoBehaviour, Generator
 
     bool CheckValidPoint(Vector3 pointPosition)
     {
-
         Vector2 cubePosition = new Vector2(-pointPosition.x, -pointPosition.z);
         Biome biome = terrainGenerator.GetBiomeByCoordinates(cubePosition);
 
@@ -50,7 +47,7 @@ public class CityGenerator : MonoBehaviour, Generator
             {
                 // Per box make it raining rays
                 Vector3 posi = tileHit.point;
-                List<Vector3> rayHits = new List<Vector3>();
+                cityPoints.Add(posi, new List<Vector3>());
                 int radius = 10;
                 float margin = 0.3f;
                 int minimumCitySize = 20;
@@ -64,17 +61,17 @@ public class CityGenerator : MonoBehaviour, Generator
                             Ray ray = new Ray(rayPosition, -transform.up);
                             if (Physics.Raycast(ray, out RaycastHit hitInfo))
                             {
-
                                 // Check if hit is within height margin
                                 if (posi.y + margin >= hitInfo.point.y && posi.y - margin <= hitInfo.point.y && posi.y >= 0)
                                 {
                                     // Ray with a possibility for a city
-                                    rayHits.Add(hitInfo.point);
+                                    cityPoints[posi].Add(hitInfo.point);
                                     if (coloredRays.ContainsKey(hitInfo.point)) coloredRays[hitInfo.point] = Color.green;
                                     else coloredRays.Add(hitInfo.point, Color.green);
                                 }
                                 else
                                 {
+                                    // Invalid map coord positions
                                     if (coloredRays.ContainsKey(hitInfo.point)) coloredRays[hitInfo.point] = Color.red;
                                     else coloredRays.Add(hitInfo.point, Color.red);
                                 }
@@ -84,59 +81,11 @@ public class CityGenerator : MonoBehaviour, Generator
                         }
                     }
 
-                    // TODO: Now only one house will spawn, this should be random (maybe based on size of city?)
                     // Check if the city is large enough. If it is it will generate a city.
-                    if (rayHits.Count >= minimumCitySize)
+                    if (cityPoints[posi].Count >= minimumCitySize)
                     {
-                        int fakeY = 0;
-                        int randomHouseIndex = UnityEngine.Random.Range(0, houses.Count);
-                        int randomLocationIndex = UnityEngine.Random.Range(0, rayHits.Count);
-
-                        List<Vector3> rayHitsFakeY = new List<Vector3>();
-                        foreach (var coord in rayHits)
-                        {
-                            rayHitsFakeY.Add(new Vector3(coord.x, fakeY, coord.z));
-                        }
-
-                        Vector3 houseBounds = CalculateBounds(houses[randomHouseIndex]);
-                        Vector3 location = rayHits[randomLocationIndex];
-
-                        Vector3 cornerCheck1 = new Vector3((float)Math.Round(location.x - houseBounds.x), fakeY, (float)Math.Round(location.z - houseBounds.z));
-                        Vector3 cornerCheck2 = new Vector3((float)Math.Round(location.x + houseBounds.x), fakeY, (float)Math.Round(location.z + houseBounds.z));
-                        Vector3 cornerCheck3 = new Vector3((float)Math.Round(location.x + houseBounds.x), fakeY, (float)Math.Round(location.z - houseBounds.z));
-                        Vector3 cornerCheck4 = new Vector3((float)Math.Round(location.x - houseBounds.x), fakeY, (float)Math.Round(location.z + houseBounds.z));
-
-                        //Debug.Log("Location: " + location + ", houseBounds: " + houseBounds);
-                        //Debug.Log("cornerCheck1: " + cornerCheck1 + ", cornerCheck2: " + cornerCheck2 + ", cornerCheck3: " + cornerCheck3 + ", cornerCheck4: " + cornerCheck4);
-
-                        Color color = Color.blue;
-                        if (coloredRays.ContainsKey(cornerCheck1)) coloredRays[cornerCheck1] = color;
-                        else coloredRays.Add(cornerCheck1, color);
-                        if (coloredRays.ContainsKey(cornerCheck2)) coloredRays[cornerCheck2] = color;
-                        else coloredRays.Add(cornerCheck2, color);
-                        if (coloredRays.ContainsKey(cornerCheck3)) coloredRays[cornerCheck3] = color;
-                        else coloredRays.Add(cornerCheck3, color);
-                        if (coloredRays.ContainsKey(cornerCheck4)) coloredRays[cornerCheck4] = color;
-                        else coloredRays.Add(cornerCheck4, color);
-
-                        // Check for every corner if it is within the green rays
-                        if (rayHitsFakeY.Contains(cornerCheck1) && rayHitsFakeY.Contains(cornerCheck2) && rayHitsFakeY.Contains(cornerCheck3) && rayHitsFakeY.Contains(cornerCheck4))
-                        {
-                            color = Color.white;
-                            if (coloredRays.ContainsKey(cornerCheck1)) coloredRays[cornerCheck1] = color;
-                            else coloredRays.Add(cornerCheck1, color);
-                            if (coloredRays.ContainsKey(cornerCheck2)) coloredRays[cornerCheck2] = color;
-                            else coloredRays.Add(cornerCheck2, color);
-                            if (coloredRays.ContainsKey(cornerCheck3)) coloredRays[cornerCheck3] = color;
-                            else coloredRays.Add(cornerCheck3, color);
-                            if (coloredRays.ContainsKey(cornerCheck4)) coloredRays[cornerCheck4] = color;
-                            else coloredRays.Add(cornerCheck4, color);
-
-                            // TODO: Rotation
-                            Instantiate(houses[randomHouseIndex], new Vector3(location.x, houses[randomHouseIndex].transform.position.y + location.y, location.z), Quaternion.identity, parentObj.transform.GetChild(0).transform);
-                       
-                        }
-
+                        // TODO: Now only one house will spawn, this should be random (maybe based on size of city?)
+                        GenerateBuilding(posi);
                     }
                 }));
             }
@@ -144,6 +93,61 @@ public class CityGenerator : MonoBehaviour, Generator
         }
 
         return false;
+    }
+
+
+    public void GenerateBuilding(Vector3 cityCubeLocation)
+    {
+        List<Vector3> rayHits = cityPoints[cityCubeLocation]; // TODO: Test if not null
+
+        int fakeY = 0;
+        int randomHouseIndex = UnityEngine.Random.Range(0, houses.Count);
+        int randomLocationIndex = UnityEngine.Random.Range(0, rayHits.Count);
+
+        List<Vector3> rayHitsFakeY = new List<Vector3>();
+        foreach (var coord in rayHits)
+        {
+            rayHitsFakeY.Add(new Vector3(coord.x, fakeY, coord.z));
+        }
+
+        Vector3 houseBounds = CalculateBounds(houses[randomHouseIndex]);
+        Vector3 location = rayHits[randomLocationIndex];
+
+        Vector3 cornerCheck1 = new Vector3((float)Math.Round(location.x - houseBounds.x), fakeY, (float)Math.Round(location.z - houseBounds.z));
+        Vector3 cornerCheck2 = new Vector3((float)Math.Round(location.x + houseBounds.x), fakeY, (float)Math.Round(location.z + houseBounds.z));
+        Vector3 cornerCheck3 = new Vector3((float)Math.Round(location.x + houseBounds.x), fakeY, (float)Math.Round(location.z - houseBounds.z));
+        Vector3 cornerCheck4 = new Vector3((float)Math.Round(location.x - houseBounds.x), fakeY, (float)Math.Round(location.z + houseBounds.z));
+
+        //Debug.Log("Location: " + location + ", houseBounds: " + houseBounds);
+        //Debug.Log("cornerCheck1: " + cornerCheck1 + ", cornerCheck2: " + cornerCheck2 + ", cornerCheck3: " + cornerCheck3 + ", cornerCheck4: " + cornerCheck4);
+
+        Color color = Color.blue;
+        if (coloredRays.ContainsKey(cornerCheck1)) coloredRays[cornerCheck1] = color;
+        else coloredRays.Add(cornerCheck1, color);
+        if (coloredRays.ContainsKey(cornerCheck2)) coloredRays[cornerCheck2] = color;
+        else coloredRays.Add(cornerCheck2, color);
+        if (coloredRays.ContainsKey(cornerCheck3)) coloredRays[cornerCheck3] = color;
+        else coloredRays.Add(cornerCheck3, color);
+        if (coloredRays.ContainsKey(cornerCheck4)) coloredRays[cornerCheck4] = color;
+        else coloredRays.Add(cornerCheck4, color);
+
+        // Check for every corner if it is within the green rays
+        if (rayHitsFakeY.Contains(cornerCheck1) && rayHitsFakeY.Contains(cornerCheck2) && rayHitsFakeY.Contains(cornerCheck3) && rayHitsFakeY.Contains(cornerCheck4))
+        {
+            color = Color.white;
+            if (coloredRays.ContainsKey(cornerCheck1)) coloredRays[cornerCheck1] = color;
+            else coloredRays.Add(cornerCheck1, color);
+            if (coloredRays.ContainsKey(cornerCheck2)) coloredRays[cornerCheck2] = color;
+            else coloredRays.Add(cornerCheck2, color);
+            if (coloredRays.ContainsKey(cornerCheck3)) coloredRays[cornerCheck3] = color;
+            else coloredRays.Add(cornerCheck3, color);
+            if (coloredRays.ContainsKey(cornerCheck4)) coloredRays[cornerCheck4] = color;
+            else coloredRays.Add(cornerCheck4, color);
+
+            // TODO: Rotation
+            Instantiate(houses[randomHouseIndex], new Vector3(location.x, houses[randomHouseIndex].transform.position.y + location.y, location.z), Quaternion.identity, parentObj.transform.GetChild(0).transform);
+
+        }
     }
 
   
@@ -215,13 +219,12 @@ public class CityGenerator : MonoBehaviour, Generator
         return noiseMap;
     }
 
-    //Create starting search points for city
+    // Create starting search points for city and place a cube
     public void DrawCityLocations(int mapWidth, int mapHeight, Vector2 offsets)
     {
-        
         float[,] noiseMap = generateCityNoiseMap(mapWidth, mapHeight, offsets);
-
         float pointHeight = 0.00f;
+
         for (int y = 0; y < mapHeight; y++)
         {
             for (int x = 0; x < mapWidth; x++)
@@ -244,7 +247,6 @@ public class CityGenerator : MonoBehaviour, Generator
                             point.transform.SetParent(parentObj.transform.GetChild(1).transform);
                             point.transform.position = possiblePointPosition;
                             Physics.SyncTransforms();
-                            points.Add(point);
                             break;
                         }
 
@@ -252,7 +254,6 @@ public class CityGenerator : MonoBehaviour, Generator
                 }
             }
         }
-
     }
 
     IEnumerator<WaitForSeconds> PerformActionAfterTime(float delayAmount, System.Action action)
@@ -260,6 +261,7 @@ public class CityGenerator : MonoBehaviour, Generator
         yield return new WaitForSeconds(delayAmount);
         action();
     }
+
     //Raycast a sphere and check for nearby gameobjects
     private bool checkNearbyPoints(Vector3 center, float radius)
     {
@@ -277,17 +279,10 @@ public class CityGenerator : MonoBehaviour, Generator
 
     private void DebugPoints()
     {
-        foreach (var cube in points)
-        {
-            Debug.DrawRay(cube.transform.position, -transform.up * 10, Color.green);
-        }
-
         foreach (var ray in coloredRays)
         {
             Debug.DrawRay(ray.Key, transform.up * 10, ray.Value);
         }
-
     }
-
 
 }
