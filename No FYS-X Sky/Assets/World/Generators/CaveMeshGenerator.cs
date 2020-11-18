@@ -13,7 +13,7 @@ public class CaveMeshGenerator : MonoBehaviour
     List<Vector3> vertices;
     List<int> triangles;
 
-    public void GenerateMesh(int[, ,] map, float squareSize, MeshFilter caveMeshFilter)
+    public void GenerateMesh(int[, ,] map, float squareSize)
     {
 
         cubeGrid = new CubeGrid(map, squareSize);
@@ -35,9 +35,20 @@ public class CaveMeshGenerator : MonoBehaviour
         Mesh caveMesh = new Mesh();
         caveMesh.vertices = vertices.ToArray();
         caveMesh.triangles = triangles.ToArray();
-        caveMeshFilter.mesh = caveMesh;
+        //caveMeshFilter.mesh = caveMesh;
+
+        result value = new result
+        {
+            vertices = vertices.ToArray(),
+            triangles = triangles.ToArray(),
+        };
 
     }
+
+    struct result {
+        public Vector3[] vertices;
+        public int[] triangles;
+    };
 
 
     void TriangulateCube(Cube cube)

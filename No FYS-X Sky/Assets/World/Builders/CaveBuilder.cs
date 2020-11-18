@@ -15,11 +15,15 @@ public class CaveBuilder : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GenerateCaveMap();
+        
+    }
+
+    public int[,,] applyMesh() {
+        return GenerateCaveMap();
     }
 
 
-    public void GenerateCaveMap()
+    public int[,,] GenerateCaveMap()
     {
         int size = 11;
 
@@ -52,11 +56,22 @@ public class CaveBuilder : MonoBehaviour
             }
         }
 
-        CaveMeshGenerator caveMeshGen = GameObject.Find("Level").GetComponent<CaveMeshGenerator>();
+        //CaveMeshGenerator caveMeshGen = GameObject.Find("Level").GetComponent<CaveMeshGenerator>();
 
 
-        caveMeshGen.GenerateMesh(caveMap, 1, GetComponent<MeshFilter>());
+        return caveMap;
+
+        //caveMeshGen.GenerateMesh(caveMap, 1, GetComponent<MeshFilter>());
     }
+
+
+
+
+
+
+
+
+
 
     // Update is called once per frame
     void Update()
