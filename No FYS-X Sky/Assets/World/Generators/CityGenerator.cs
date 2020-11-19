@@ -1,15 +1,20 @@
 ﻿using Assets.World.Generator;
 using System;
 using System.Collections.Generic;
+using UnityEditor.Profiling;
 using UnityEngine;
 
 public class CityGenerator : MonoBehaviour, Generator
 {
     [SerializeField]
     public float minimumCityDistanceRadius = 20f;
+
     public int minimumCitySize = 20;
-    int cityRadius = 15;
+
+    public int cityRadius = 15;
+
     float margin = 0.5f;
+
 
     public bool raysDebug = true;
 
@@ -17,11 +22,15 @@ public class CityGenerator : MonoBehaviour, Generator
 
     public Dictionary<Vector3, Color> coloredRays;
 
+    public Dictionary<Vector3, GameObject> cubes;
+
     public Dictionary<Vector3, List<Vector3>> cityPoints;
 
     public List<GameObject> houses;
 
     GameObject parentObj;
+
+    private int chunkDistance;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +40,10 @@ public class CityGenerator : MonoBehaviour, Generator
 
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         parentObj = GameObject.Find("CityPoints");
+        cubes = new Dictionary<Vector3, GameObject>();
     }
+
+  
 
     // Update is called once per frame
     void Update()
@@ -39,6 +51,14 @@ public class CityGenerator : MonoBehaviour, Generator
         DebugPoints();
     }
 
+
+    public void generateCube(Vector3 pos)
+    {
+        //this.chunkDistance = RenderDistance - cityRadius;
+        //if()
+
+
+    }
     public void Generate(int mapWidth, int mapHeight, Vector2 offsets)
     {
         List<Vector3> cubePoints = DrawCityLocations(mapWidth, mapHeight, offsets);
@@ -46,7 +66,7 @@ public class CityGenerator : MonoBehaviour, Generator
         // Loop through the cubes and check with rays if possible locations
         foreach (Vector3 cubePoint in cubePoints)
         {
-            StartCoroutine(PerformActionAfterTime(0.1f, () => {
+            StartCoroutine(PerformActionAfterTime(0.5f, () => {
                 CheckCoordinatesAroundBox(cubePoint);
                 GenerateCity(cubePoint);
             }));
@@ -125,8 +145,9 @@ public class CityGenerator : MonoBehaviour, Generator
         {
             rayHitsFakeY.Add(new Vector3(coord.x, fakeY, coord.z));
         }
-
-        Vector3 houseBounds = CalculateBounds(houses[randomHouseIndex]);
+        //Kan netter
+        Bounds houseB = CalculateBounds(houses[randomHouseIndex]);
+        Vector3 houseBounds = houseB.size;
         Vector3 location = rayHits[randomLocationIndex];
 
         // All coordinates (corners) to check within
@@ -144,6 +165,7 @@ public class CityGenerator : MonoBehaviour, Generator
                 if (rayHitsFakeY.Contains(vectorToCheck)) 
                 {
                     coloredRays[vectorToCheck] = Color.white;
+                    
                 }
                 else
                 {
@@ -155,13 +177,17 @@ public class CityGenerator : MonoBehaviour, Generator
 
         if (valid)
         {
-            // TODO: houses should be placed from the centre of a prefab, highestX and highestZ should be replaced by location.x and location.z
-            Instantiate(houses[randomHouseIndex], new Vector3(highestX, houses[randomHouseIndex].transform.position.y + location.y, highestZ), Quaternion.LookRotation(cityCubeLocation), parentObj.transform.GetChild(0).transform);
+            // TODO: houses should be placed from the centre of a prefab, highestX and highestZ should be replaced by location.x and location.z GEFIXT I THINK 
+
+            // Make House only rotate on Y axis.
+            Instantiate(houses[randomHouseIndex], new Vector3(location.x - houseB.center.x, houses[randomHouseIndex].transform.position.y + location.y, location.z - houseB.center.z), Quaternion.identity, parentObj.transform.GetChild(0).transform);
+            GameObject house = Instantiate(houses[randomHouseIndex], new Vector3(location.x, houses[randomHouseIndex].transform.position.y + location.y, location.z), Quaternion.identity, parentObj.transform.GetChild(0).transform) as GameObject;
+            house.transform.localRotation.SetLookRotation(cityCubeLocation);
         }
 
     }
 
-    public Vector3 CalculateBounds(GameObject go)
+    public Bounds CalculateBounds(GameObject go)
     {
         Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
 
@@ -172,17 +198,32 @@ public class CityGenerator : MonoBehaviour, Generator
             {
                 bounds.Encapsulate(renderers[i].bounds);
             }
-            return bounds.size;
+            return bounds;
         }
         else
         {
-            return new Bounds().size;
+            return new Bounds();
         }
     }
 
     public Vector3 GetVertexWorldPosition(Vector3 vertex, Transform owner)
     {
         return owner.localToWorldMatrix.MultiplyPoint3x4(vertex);
+    }
+
+    public void addToCubeDict(GameObject go)
+    {
+        StartCoroutine(PerformActionAfterTime(0.1f, () => {
+            if (Physics.Raycast(new Vector3(go.transform.position.x,50,go.transform.position.z), -transform.up, out RaycastHit tileHit, Mathf.Infinity))
+            {
+                Vector3 id = new Vector3 (Mathf.FloorToInt(tileHit.transform.gameObject.transform.localPosition.x / 10) * 10, 
+                    tileHit.transform.gameObject.transform.localPosition.y, 
+                    Mathf.FloorToInt(tileHit.transform.gameObject.transform.localPosition.z / 10) * 10);
+                cubes.Add(id, go);
+                
+            }
+        }));
+      
     }
 
     private float[,] generateCityNoiseMap(int mapWidth, int mapHeight, Vector2 offsets)
@@ -264,11 +305,15 @@ public class CityGenerator : MonoBehaviour, Generator
                             GameObject point = GameObject.CreatePrimitive(PrimitiveType.Cube);
                             point.transform.SetParent(parentObj.transform.GetChild(1).transform);
                             point.transform.position = possiblePointPosition;
+                            point.layer = LayerMask.NameToLayer("Ignore Raycast");
+                            point.GetComponent<Renderer>().enabled = false;
                             Physics.SyncTransforms();
 
                             // Add the cube point to an array
                             cityPoints.Add(cubePoint, new List<Vector3>());
                             cubePoints.Add(cubePoint);
+                            addToCubeDict(point);
+
                             break;
                         }
                     }

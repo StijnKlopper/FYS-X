@@ -1,10 +1,7 @@
-﻿using Microsoft.Win32;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine;
-using UnityEngine.UI;
+
 
 namespace Assets.World
 {
@@ -12,11 +9,15 @@ namespace Assets.World
     {
         private TerrainGenerator terrainGenerator;
 
+        private CityGenerator cityGenerator;
+
         private int chunkSize;
 
         private int chunkRenderDistance;
 
         private int regionRenderDistance;
+
+        private int cityRenderDistance;
 
         public WorldBuilder()
         {
@@ -24,6 +25,10 @@ namespace Assets.World
             this.chunkRenderDistance = 100;
             this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
             this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+            this.cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
+            this.cityRenderDistance = this.chunkRenderDistance - cityGenerator.cityRadius;
+
+
         }
 
         public void LoadRegions(Vector3 position)
@@ -87,6 +92,14 @@ namespace Assets.World
             {
                 if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
                 {
+                    Debug.Log(tile.Key);
+                    if (cityGenerator.cubes.ContainsKey(tile.Key))
+                    {
+                        UnityEngine.MonoBehaviour.Destroy(cityGenerator.cubes[tile.Key]);
+                        cityGenerator.cubes.Remove(tile.Key);
+                        
+                    }
+                   
                     terrainGenerator.DestroyTile(tile.Value);
                     terrainGenerator.tileDict.Remove(tile.Key);
                 }
@@ -111,6 +124,19 @@ namespace Assets.World
             boundaries.zMax = z + renderDistance;
 
             return boundaries;
+        }
+
+        public void UnloadCityPoints(Vector3 position)
+        {
+            (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, cityRenderDistance, chunkSize);
+
+            foreach (KeyValuePair<Vector3, List<Vector3>> points in cityGenerator.cityPoints.ToList())
+            {
+                if (points.Key.x < xMin || points.Key.x > xMax || points.Key.z < zMin || points.Key.z > zMax)
+                {
+                    cityGenerator.cityPoints.Remove(points.Key);
+                }
+            }
         }
 
         private int CalcCoord(float coordinate, int size)

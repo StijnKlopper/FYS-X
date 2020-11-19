@@ -16,6 +16,10 @@ public class GameController : MonoBehaviour
         worldBuilder = new WorldBuilder();
     }
 
+    private void FixedUpdate()
+    {
+        
+    }
     // Update is called once per frame
     void Update()
     {
@@ -25,7 +29,7 @@ public class GameController : MonoBehaviour
         worldBuilder.LoadTiles(position);
         worldBuilder.UnloadTiles(position);
         worldBuilder.UnloadRegions(position);
-
+        //worldBuilder.UnloadCityPoints(position);
     }
 
 }
