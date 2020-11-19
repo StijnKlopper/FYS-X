@@ -58,7 +58,7 @@ public class TileBuilder : MonoBehaviour
         //oceanTile.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
 
         //Spawning city points
-        cityGenerator.DrawCityLocations(tileWidth, tileHeight, offsets);
+        cityGenerator.Generate(tileWidth, tileHeight, offsets);
     }
 
     private Texture2DArray BuildTexture(Vector2 offsets)

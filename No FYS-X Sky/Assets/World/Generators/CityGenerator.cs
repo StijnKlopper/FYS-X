@@ -8,6 +8,10 @@ public class CityGenerator : MonoBehaviour, Generator
     [SerializeField]
     public float minimumCityDistanceRadius = 20f;
 
+    public int minimumCitySize = 20;
+
+    public bool raysDebug = true;
+
     TerrainGenerator terrainGenerator;
 
     public Dictionary<Vector3, Color> coloredRays;
@@ -34,7 +38,21 @@ public class CityGenerator : MonoBehaviour, Generator
         DebugPoints();
     }
 
-    bool CheckValidPoint(Vector3 pointPosition)
+    public void Generate(int mapWidth, int mapHeight, Vector2 offsets)
+    {
+        List<Vector3> cubePoints = DrawCityLocations(mapWidth, mapHeight, offsets);
+
+        // Loop through the cubes and check with rays if possible locations
+        foreach (Vector3 cubePoint in cubePoints)
+        {
+            StartCoroutine(PerformActionAfterTime(0.1f, () => {
+                CheckCoordinatesAroundBox(cubePoint);
+                GenerateCity(cubePoint);
+            }));
+        }
+    }
+
+    Vector3 CheckValidCityPoint(Vector3 pointPosition)
     {
         Vector2 cubePosition = new Vector2(-pointPosition.x, -pointPosition.z);
         Biome biome = terrainGenerator.GetBiomeByCoordinates(cubePosition);
@@ -45,56 +63,56 @@ public class CityGenerator : MonoBehaviour, Generator
             Vector3 startPosition = new Vector3(pointPosition.x, 10, pointPosition.z);
             if (Physics.Raycast(startPosition, -transform.up, out RaycastHit tileHit, Mathf.Infinity))
             {
-                // Per box make it raining rays
-                Vector3 posi = tileHit.point;
-                cityPoints.Add(posi, new List<Vector3>());
-                int radius = 10;
-                float margin = 0.3f;
-                int minimumCitySize = 20;
-                StartCoroutine(PerformActionAfterTime(0.1f, () =>
-                {
-                    for (int x = (int)posi.x + radius; x >= posi.x - radius; x--)
-                    {
-                        for (int z = (int)posi.z + radius; z >= posi.z - radius; z--)
-                        {
-                            Vector3 rayPosition = new Vector3(x, 10, z);
-                            Ray ray = new Ray(rayPosition, -transform.up);
-                            if (Physics.Raycast(ray, out RaycastHit hitInfo))
-                            {
-                                // Check if hit is within height margin
-                                if (posi.y + margin >= hitInfo.point.y && posi.y - margin <= hitInfo.point.y && posi.y >= 0)
-                                {
-                                    // Ray with a possibility for a city
-                                    cityPoints[posi].Add(hitInfo.point);
-                                    if (coloredRays.ContainsKey(hitInfo.point)) coloredRays[hitInfo.point] = Color.green;
-                                    else coloredRays.Add(hitInfo.point, Color.green);
-                                }
-                                else
-                                {
-                                    // Invalid map coord positions
-                                    if (coloredRays.ContainsKey(hitInfo.point)) coloredRays[hitInfo.point] = Color.red;
-                                    else coloredRays.Add(hitInfo.point, Color.red);
-                                }
-
-                            }
-
-                        }
-                    }
-
-                    // Check if the city is large enough. If it is it will generate a city.
-                    if (cityPoints[posi].Count >= minimumCitySize)
-                    {
-                        // TODO: Now only one house will spawn, this should be random (maybe based on size of city?)
-                        GenerateBuilding(posi);
-                    }
-                }));
+                return tileHit.point;
             }
-            return true;
         }
-
-        return false;
+        return Vector3.zero;
     }
 
+    public void CheckCoordinatesAroundBox(Vector3 cubePosition)
+    {
+        // Per box make it raining rays to check for valid points
+        int radius = 10;
+        float margin = 0.3f;
+        
+        for (int x = (int)cubePosition.x + radius; x >= cubePosition.x - radius; x--)
+        {
+            for (int z = (int)cubePosition.z + radius; z >= cubePosition.z - radius; z--)
+            {
+                Vector3 rayPosition = new Vector3(x, 10, z);
+                Ray ray = new Ray(rayPosition, -transform.up);
+                if (Physics.Raycast(ray, out RaycastHit hitInfo))
+                {
+                    // Check if hit is within height margin
+                    if (cubePosition.y + margin >= hitInfo.point.y && cubePosition.y - margin <= hitInfo.point.y && cubePosition.y >= 0)
+                    {
+                        // Ray with a possibility for a city
+                        cityPoints[cubePosition].Add(hitInfo.point);
+                        if (coloredRays.ContainsKey(hitInfo.point)) coloredRays[hitInfo.point] = Color.green;
+                        else coloredRays.Add(hitInfo.point, Color.green);
+                    }
+                    else
+                    {
+                        // Invalid map coord positions
+                        if (coloredRays.ContainsKey(hitInfo.point)) coloredRays[hitInfo.point] = Color.red;
+                        else coloredRays.Add(hitInfo.point, Color.red);
+                    }
+
+                }
+
+            }
+        }
+    }
+
+    public void GenerateCity(Vector3 cityCubeLocation)
+    {
+        // Check if the city is large enough. If it is it will generate a city.
+        if (cityPoints[cityCubeLocation].Count >= minimumCitySize)
+        {
+            // TODO: Now only one house will spawn, this should be random (maybe based on size of city?)
+            GenerateBuilding(cityCubeLocation);
+        }
+    }
 
     public void GenerateBuilding(Vector3 cityCubeLocation)
     {
@@ -131,6 +149,7 @@ public class CityGenerator : MonoBehaviour, Generator
         if (coloredRays.ContainsKey(cornerCheck4)) coloredRays[cornerCheck4] = color;
         else coloredRays.Add(cornerCheck4, color);
 
+        // TODO: Check within the four corners if everything is in the array instead of only checking the corners
         // Check for every corner if it is within the green rays
         if (rayHitsFakeY.Contains(cornerCheck1) && rayHitsFakeY.Contains(cornerCheck2) && rayHitsFakeY.Contains(cornerCheck3) && rayHitsFakeY.Contains(cornerCheck4))
         {
@@ -150,7 +169,6 @@ public class CityGenerator : MonoBehaviour, Generator
         }
     }
 
-  
     public Vector3 CalculateBounds(GameObject go)
     {
         // TODO: Make this method better...
@@ -220,8 +238,9 @@ public class CityGenerator : MonoBehaviour, Generator
     }
 
     // Create starting search points for city and place a cube
-    public void DrawCityLocations(int mapWidth, int mapHeight, Vector2 offsets)
+    public List<Vector3> DrawCityLocations(int mapWidth, int mapHeight, Vector2 offsets)
     {
+        List<Vector3> cubePoints = new List<Vector3>();
         float[,] noiseMap = generateCityNoiseMap(mapWidth, mapHeight, offsets);
         float pointHeight = 0.00f;
 
@@ -240,20 +259,26 @@ public class CityGenerator : MonoBehaviour, Generator
                     }
                     else
                     {
-
-                        if (CheckValidPoint(possiblePointPosition))
+                        Vector3 cubePoint = CheckValidCityPoint(possiblePointPosition);
+                        if (cubePoint != Vector3.zero)
                         {
+                            // Make a cube on the valid location
                             GameObject point = GameObject.CreatePrimitive(PrimitiveType.Cube);
                             point.transform.SetParent(parentObj.transform.GetChild(1).transform);
                             point.transform.position = possiblePointPosition;
                             Physics.SyncTransforms();
+
+                            // Add the cube point to an array
+                            cityPoints.Add(cubePoint, new List<Vector3>());
+                            cubePoints.Add(cubePoint);
                             break;
                         }
-
                     }
                 }
             }
         }
+
+        return cubePoints;
     }
 
     IEnumerator<WaitForSeconds> PerformActionAfterTime(float delayAmount, System.Action action)
@@ -268,7 +293,7 @@ public class CityGenerator : MonoBehaviour, Generator
         Collider[] hitColliders = Physics.OverlapSphere(center, radius);
         foreach (var hitCollider in hitColliders)
         {
-            //If gameobject is a cube then return true
+            // If gameobject is a cube then return true
             if (hitCollider.gameObject.name == ("Cube"))
             {
                 return true;
@@ -279,9 +304,12 @@ public class CityGenerator : MonoBehaviour, Generator
 
     private void DebugPoints()
     {
-        foreach (var ray in coloredRays)
+        if (raysDebug)
         {
-            Debug.DrawRay(ray.Key, transform.up * 10, ray.Value);
+            foreach (var ray in coloredRays)
+            {
+                Debug.DrawRay(ray.Key, transform.up * 10, ray.Value);
+            }
         }
     }
 
