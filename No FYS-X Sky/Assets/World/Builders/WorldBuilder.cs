@@ -70,14 +70,14 @@ namespace Assets.World
             {
                 for (int j = zMin; j < zMax; j += chunkSize)
                 {
-                    List<GameObject> tileList = new List<GameObject>();
+                    Dictionary<TerrainGenerator.TileType, GameObject> tileDict = new Dictionary<TerrainGenerator.TileType, GameObject>();
                     Vector3 newChunkPosition = new Vector3(i, 0, j);
                     if (!terrainGenerator.tileDict.ContainsKey(newChunkPosition))
                     {
-                        tileList.Add(terrainGenerator.GenerateTile(newChunkPosition));
-                        tileList.Add(caveGenerator.GenerateTile(newChunkPosition));
+                        tileDict.Add(TerrainGenerator.TileType.Terrain, terrainGenerator.GenerateTile(newChunkPosition));
+                        tileDict.Add(TerrainGenerator.TileType.Cave, caveGenerator.GenerateTile(newChunkPosition));
 
-                        terrainGenerator.tileDict.Add(newChunkPosition, tileList);
+                        terrainGenerator.tileDict.Add(newChunkPosition, tileDict);
                     }
                 }
             }
@@ -88,7 +88,7 @@ namespace Assets.World
             (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
 
             // Next step, loop through coordinates for tiles and have the value be a list of gameobjects which is looped through to delete them
-            foreach (KeyValuePair<Vector3, List<GameObject>> tile in terrainGenerator.tileDict.ToList())
+            foreach (KeyValuePair<Vector3, Dictionary<TerrainGenerator.TileType, GameObject>> tile in terrainGenerator.tileDict.ToList())
             {
                 if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
                 {
@@ -98,11 +98,11 @@ namespace Assets.World
             }
         }
 
-        private void DestroyTiles(List<GameObject> tiles)
+        private void DestroyTiles(Dictionary<TerrainGenerator.TileType, GameObject> tiles)
         {
-            foreach (GameObject tile in tiles)
+            foreach (KeyValuePair<TerrainGenerator.TileType, GameObject> tile in tiles)
             {
-                terrainGenerator.DestroyTile(tile);
+                terrainGenerator.DestroyTile(tile.Value);
             }
         }
 

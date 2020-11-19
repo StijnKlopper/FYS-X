@@ -12,9 +12,12 @@ public class CaveBuilder : MonoBehaviour
 
     RidgedMultifractal ridgedMultifractal;
 
+    TerrainGenerator terrainGenerator;
+
     // Start is called before the first frame update
     void Start()
     {
+        terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         GenerateCaveMap();
     }
 
@@ -36,11 +39,12 @@ public class CaveBuilder : MonoBehaviour
 
         int height = 30;
 
+        //GameObject go = terrainGenerator.tileDict[new Vector3(offsets.x, 0, offsets.y)];
         int[, ,] caveMap = new int[size, height, size];
 
         for (int x = 0; x < size; x++) {
 
-            // Cave height
+            // Cave height make height dynamic based on heightmap[x,z]
             for (int y = 0; y < height; y++)
             {
                 for (int z = 0; z < size; z++)
@@ -53,7 +57,6 @@ public class CaveBuilder : MonoBehaviour
         }
 
         CaveMeshGenerator caveMeshGen = GameObject.Find("Level").GetComponent<CaveMeshGenerator>();
-
 
         caveMeshGen.GenerateMesh(caveMap, 1, GetComponent<MeshFilter>());
     }
