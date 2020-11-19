@@ -7,8 +7,9 @@ public class CityGenerator : MonoBehaviour, Generator
 {
     [SerializeField]
     public float minimumCityDistanceRadius = 20f;
-
     public int minimumCitySize = 20;
+    int cityRadius = 15;
+    float margin = 0.5f;
 
     public bool raysDebug = true;
 
@@ -71,13 +72,10 @@ public class CityGenerator : MonoBehaviour, Generator
 
     public void CheckCoordinatesAroundBox(Vector3 cubePosition)
     {
-        // Per box make it raining rays to check for valid points
-        int radius = 10;
-        float margin = 0.3f;
-        
-        for (int x = (int)cubePosition.x + radius; x >= cubePosition.x - radius; x--)
+        // Per box make it raining rays to check for valid points        
+        for (int x = (int)cubePosition.x + cityRadius; x >= cubePosition.x - cityRadius; x--)
         {
-            for (int z = (int)cubePosition.z + radius; z >= cubePosition.z - radius; z--)
+            for (int z = (int)cubePosition.z + cityRadius; z >= cubePosition.z - cityRadius; z--)
             {
                 Vector3 rayPosition = new Vector3(x, 10, z);
                 Ray ray = new Ray(rayPosition, -transform.up);
@@ -131,55 +129,55 @@ public class CityGenerator : MonoBehaviour, Generator
         Vector3 houseBounds = CalculateBounds(houses[randomHouseIndex]);
         Vector3 location = rayHits[randomLocationIndex];
 
-        Vector3 cornerCheck1 = new Vector3((float)Math.Round(location.x - houseBounds.x), fakeY, (float)Math.Round(location.z - houseBounds.z));
-        Vector3 cornerCheck2 = new Vector3((float)Math.Round(location.x + houseBounds.x), fakeY, (float)Math.Round(location.z + houseBounds.z));
-        Vector3 cornerCheck3 = new Vector3((float)Math.Round(location.x + houseBounds.x), fakeY, (float)Math.Round(location.z - houseBounds.z));
-        Vector3 cornerCheck4 = new Vector3((float)Math.Round(location.x - houseBounds.x), fakeY, (float)Math.Round(location.z + houseBounds.z));
+        // All coordinates (corners) to check within
+        int smallestX = (int)Math.Round(location.x - (houseBounds.x / 2));
+        int highestX = (int)Math.Round(location.x + (houseBounds.x / 2));
+        int smallestZ = (int)Math.Round(location.z - (houseBounds.z / 2));
+        int highestZ = (int)Math.Round(location.z + (houseBounds.z / 2));
 
-        //Debug.Log("Location: " + location + ", houseBounds: " + houseBounds);
-        //Debug.Log("cornerCheck1: " + cornerCheck1 + ", cornerCheck2: " + cornerCheck2 + ", cornerCheck3: " + cornerCheck3 + ", cornerCheck4: " + cornerCheck4);
-
-        Color color = Color.blue;
-        if (coloredRays.ContainsKey(cornerCheck1)) coloredRays[cornerCheck1] = color;
-        else coloredRays.Add(cornerCheck1, color);
-        if (coloredRays.ContainsKey(cornerCheck2)) coloredRays[cornerCheck2] = color;
-        else coloredRays.Add(cornerCheck2, color);
-        if (coloredRays.ContainsKey(cornerCheck3)) coloredRays[cornerCheck3] = color;
-        else coloredRays.Add(cornerCheck3, color);
-        if (coloredRays.ContainsKey(cornerCheck4)) coloredRays[cornerCheck4] = color;
-        else coloredRays.Add(cornerCheck4, color);
-
-        // TODO: Check within the four corners if everything is in the array instead of only checking the corners
-        // Check for every corner if it is within the green rays
-        if (rayHitsFakeY.Contains(cornerCheck1) && rayHitsFakeY.Contains(cornerCheck2) && rayHitsFakeY.Contains(cornerCheck3) && rayHitsFakeY.Contains(cornerCheck4))
+        bool valid = true;
+        for (int x = smallestX; x <= highestX; x++)
         {
-            color = Color.white;
-            if (coloredRays.ContainsKey(cornerCheck1)) coloredRays[cornerCheck1] = color;
-            else coloredRays.Add(cornerCheck1, color);
-            if (coloredRays.ContainsKey(cornerCheck2)) coloredRays[cornerCheck2] = color;
-            else coloredRays.Add(cornerCheck2, color);
-            if (coloredRays.ContainsKey(cornerCheck3)) coloredRays[cornerCheck3] = color;
-            else coloredRays.Add(cornerCheck3, color);
-            if (coloredRays.ContainsKey(cornerCheck4)) coloredRays[cornerCheck4] = color;
-            else coloredRays.Add(cornerCheck4, color);
-
-            // TODO: Rotation
-            Instantiate(houses[randomHouseIndex], new Vector3(location.x, houses[randomHouseIndex].transform.position.y + location.y, location.z), Quaternion.identity, parentObj.transform.GetChild(0).transform);
-
+            for (int z = smallestZ; z <= highestZ; z++)
+            {
+                Vector3 vectorToCheck = new Vector3(x, fakeY, z);
+                if (rayHitsFakeY.Contains(vectorToCheck)) 
+                {
+                    coloredRays[vectorToCheck] = Color.white;
+                }
+                else
+                {
+                    coloredRays.Add(vectorToCheck, Color.blue);
+                    valid = false;
+                }
+            }
         }
+
+        if (valid)
+        {
+            // TODO: houses should be placed from the centre of a prefab, highestX and highestZ should be replaced by location.x and location.z
+            Instantiate(houses[randomHouseIndex], new Vector3(highestX, houses[randomHouseIndex].transform.position.y + location.y, highestZ), Quaternion.LookRotation(cityCubeLocation), parentObj.transform.GetChild(0).transform);
+        }
+
     }
 
     public Vector3 CalculateBounds(GameObject go)
     {
-        // TODO: Make this method better...
-        Bounds bounds = new Bounds();
-        //go.size = Vector3.zero; // reset
-        Collider[] colliders = go.GetComponentsInChildren<Collider>();
-        foreach (Collider col in colliders)
+        Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
+
+        if (renderers.Length > 0)
         {
-            bounds.Encapsulate(col.bounds);
+            Bounds bounds = renderers[0].bounds;
+            for (int i = 1, ni = renderers.Length; i < ni; i++)
+            {
+                bounds.Encapsulate(renderers[i].bounds);
+            }
+            return bounds.size;
         }
-        return bounds.size;
+        else
+        {
+            return new Bounds().size;
+        }
     }
 
     public Vector3 GetVertexWorldPosition(Vector3 vertex, Transform owner)
