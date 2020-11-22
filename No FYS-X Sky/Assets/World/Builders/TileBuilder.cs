@@ -17,8 +17,7 @@ public class TileBuilder : MonoBehaviour
 
     public AnimationCurve heightCurve;
 
-    [System.NonSerialized]
-    public float[,] heightMap;
+    private float[,] heightMap;
 
     TerrainGenerator terrainGenerator;
 
@@ -37,7 +36,6 @@ public class TileBuilder : MonoBehaviour
 
     private void GenerateTile()
     {
-        
         Vector3[] meshVertices = this.meshFilter.mesh.vertices;
         int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
         int tileWidth = tileHeight;
@@ -169,6 +167,7 @@ public class TileBuilder : MonoBehaviour
                 heightMap[x, y] = noiseHeight;
             }
         }
+        WorldBuilder.tileDict[new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5))].heightMap = heightMap;
         this.heightMap = heightMap;
     }
 
