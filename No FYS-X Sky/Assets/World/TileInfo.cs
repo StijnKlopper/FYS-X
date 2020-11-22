@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile
+public class TileInfo
 {
     public enum TileType
     {
@@ -15,7 +15,7 @@ public class Tile
 
     public float[,] heightMap;
 
-    public Tile()
+    public TileInfo()
     {
          loadedTilesDict = new Dictionary<TileType, GameObject>();
     }

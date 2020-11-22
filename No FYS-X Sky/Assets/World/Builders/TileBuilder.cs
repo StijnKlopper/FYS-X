@@ -17,7 +17,7 @@ public class TileBuilder : MonoBehaviour
 
     public AnimationCurve heightCurve;
 
-    private float[,] heightMap;
+    public float[,] heightMap;
 
     TerrainGenerator terrainGenerator;
 

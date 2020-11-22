@@ -15,7 +15,7 @@ class WorldBuilder
 
     private int regionRenderDistance;
 
-    public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
+    public static Dictionary<Vector3, TileInfo> tileDict = new Dictionary<Vector3, TileInfo>();
 
     public WorldBuilder()
     {
@@ -69,12 +69,12 @@ class WorldBuilder
                 Vector3 newChunkPosition = new Vector3(i, 0, j);
                 if (!tileDict.ContainsKey(newChunkPosition))
                 {
-                    Tile tile = new Tile();
-                    Dictionary<Tile.TileType, GameObject> loadedTilesDict = new Dictionary<Tile.TileType, GameObject>();
+                    TileInfo tile = new TileInfo();
+                    Dictionary<TileInfo.TileType, GameObject> loadedTilesDict = new Dictionary<TileInfo.TileType, GameObject>();
                     tile.loadedTilesDict = loadedTilesDict;
-                    loadedTilesDict[Tile.TileType.Terrain] = terrainGenerator.GenerateTile(newChunkPosition);
+                    loadedTilesDict[TileInfo.TileType.Terrain] = terrainGenerator.GenerateTile(newChunkPosition);
                     //Make the tiles a parent of the Level GameObject to have a clean hierarchy.
-                    loadedTilesDict[Tile.TileType.Terrain].transform.SetParent(terrainGenerator.transform);
+                    loadedTilesDict[TileInfo.TileType.Terrain].transform.SetParent(terrainGenerator.transform);
                     tileDict.Add(newChunkPosition, tile);
                 }
             }
@@ -85,7 +85,7 @@ class WorldBuilder
     {
         (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
 
-        foreach (KeyValuePair<Vector3, Tile> tile in tileDict.ToList())
+        foreach (KeyValuePair<Vector3, TileInfo> tile in tileDict.ToList())
         {
             if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
             {
@@ -95,9 +95,9 @@ class WorldBuilder
         }
     }
 
-    private void DestroyTiles(Dictionary<Tile.TileType, GameObject> loadedTilesDict)
+    private void DestroyTiles(Dictionary<TileInfo.TileType, GameObject> loadedTilesDict)
     {
-        foreach (KeyValuePair<Tile.TileType, GameObject> tile in loadedTilesDict.ToList())
+        foreach (KeyValuePair<TileInfo.TileType, GameObject> tile in loadedTilesDict.ToList())
         {
             terrainGenerator.DestroyTile(tile.Value);
         }
