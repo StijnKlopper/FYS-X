@@ -51,14 +51,6 @@ public class CityGenerator : MonoBehaviour, Generator
         DebugPoints();
     }
 
-
-    public void generateCube(Vector3 pos)
-    {
-        //this.chunkDistance = RenderDistance - cityRadius;
-        //if()
-
-
-    }
     public void Generate(int mapWidth, int mapHeight, Vector2 offsets)
     {
         List<Vector3> cubePoints = DrawCityLocations(mapWidth, mapHeight, offsets);
@@ -211,6 +203,10 @@ public class CityGenerator : MonoBehaviour, Generator
         return owner.localToWorldMatrix.MultiplyPoint3x4(vertex);
     }
 
+    //Add cubes to dict this way we can unload cubes using the unload tiles method in Worldbuilder
+    //TO-DO: Een manier vinden om Raycast een keer in te laden met de gewenste render distance. 
+    //Misschien door middel van de Player position op te vragen en dan te kijken 
+    //of de cube binnen een bepaalde distance is en dan de cube een checked status meegeven zodat we weten dat die gechecked is en niet steeds geraycast wordt
     public void addToCubeDict(GameObject go)
     {
         StartCoroutine(PerformActionAfterTime(0.1f, () => {
