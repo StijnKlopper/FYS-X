@@ -15,9 +15,10 @@ public class TileBuilder : MonoBehaviour
     [SerializeField]
     private MeshCollider meshCollider;
 
-    public AnimationCurve heightCurve;
-
+    [System.NonSerialized]
     public float[,] heightMap;
+
+    public AnimationCurve heightCurve;
 
     TerrainGenerator terrainGenerator;
 

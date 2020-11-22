@@ -15,7 +15,7 @@ class WorldBuilder
 
     private int regionRenderDistance;
 
-    public static Dictionary<Vector3, TileInfo> tileDict = new Dictionary<Vector3, TileInfo>();
+    public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
 
     public WorldBuilder()
     {
@@ -29,7 +29,6 @@ class WorldBuilder
     {
         (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize, true);
 
-        //Debug.Log("x1: " + xMin + ", x2: " + xMax + ", z1: " + zMin + ", z2: " + zMax);
         // Loop through current region and the surrounding regions
         for (int i = xMin; i < xMax; i += Region.regionSize)
         {
@@ -38,7 +37,6 @@ class WorldBuilder
                 Vector3 regionPosition = new Vector3(i, 0, j);
                 if(!terrainGenerator.regionDict.ContainsKey(regionPosition))
                 {
-                    //Debug.Log(regionPosition);
                     terrainGenerator.regionDict.Add(regionPosition, new Region(i, j));
                 }
             }
@@ -69,12 +67,11 @@ class WorldBuilder
                 Vector3 newChunkPosition = new Vector3(i, 0, j);
                 if (!tileDict.ContainsKey(newChunkPosition))
                 {
-                    TileInfo tile = new TileInfo();
-                    Dictionary<TileInfo.TileType, GameObject> loadedTilesDict = new Dictionary<TileInfo.TileType, GameObject>();
-                    tile.loadedTilesDict = loadedTilesDict;
-                    loadedTilesDict[TileInfo.TileType.Terrain] = terrainGenerator.GenerateTile(newChunkPosition);
+                    Tile tile = new Tile();
+                    GameObject terrain = terrainGenerator.GenerateTile(newChunkPosition);
                     //Make the tiles a parent of the Level GameObject to have a clean hierarchy.
-                    loadedTilesDict[TileInfo.TileType.Terrain].transform.SetParent(terrainGenerator.transform);
+                    terrain.transform.SetParent(terrainGenerator.transform);
+                    tile.AddObject(terrain);
                     tileDict.Add(newChunkPosition, tile);
                 }
             }
@@ -85,21 +82,13 @@ class WorldBuilder
     {
         (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
 
-        foreach (KeyValuePair<Vector3, TileInfo> tile in tileDict.ToList())
+        foreach (KeyValuePair<Vector3, Tile> tile in tileDict.ToList())
         {
             if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
             {
-                DestroyTiles(tile.Value.loadedTilesDict);
+                tile.Value.DestroyObjects();
                 tileDict.Remove(tile.Key);
             }
-        }
-    }
-
-    private void DestroyTiles(Dictionary<TileInfo.TileType, GameObject> loadedTilesDict)
-    {
-        foreach (KeyValuePair<TileInfo.TileType, GameObject> tile in loadedTilesDict.ToList())
-        {
-            terrainGenerator.DestroyTile(tile.Value);
         }
     }
 
