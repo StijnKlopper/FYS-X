@@ -39,15 +39,18 @@ public class CaveBuilder : MonoBehaviour
 
         int height = 30;
 
-        //GameObject go = terrainGenerator.tileDict[new Vector3(offsets.x, 0, offsets.y)];
-        int[, ,] caveMap = new int[size, height, size];
+        Tile tile = WorldBuilder.GetTile(new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5)));
+        float[,] heightMap = tile.heightMap;
+        int[, ,] caveMap = new int[size, height * 2, size];
 
-        for (int x = 0; x < size; x++) {
-
-            // Cave height make height dynamic based on heightmap[x,z]
-            for (int y = 0; y < height; y++)
+        for (int x = 0; x < size; x++)
+        {
+            for (int z = 0; z < size; z++)
             {
-                for (int z = 0; z < size; z++)
+                int coordinateHeight = Mathf.FloorToInt(heightMap[x, z]);
+                int caveHeight = coordinateHeight + height;
+                // Cave height make height dynamic based on heightmap[x,z]
+                for (int y = 0; y < caveHeight; y++)
                 {
                     double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, (y + addendum) / scale, (z + offsets.y + addendum) / scale);
                     int isCave = tempVal < 0.35 ? 0 : 1;
