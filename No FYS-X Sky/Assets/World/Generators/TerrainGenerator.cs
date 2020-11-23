@@ -24,15 +24,6 @@ public class TerrainGenerator : MonoBehaviour, Generator
     public int[] randomNumbers;
 
     [System.NonSerialized]
-    public Dictionary<Vector3, Dictionary<TileType, GameObject>> tileDict = new Dictionary<Vector3, Dictionary<TileType, GameObject>>();
-
-    public enum TileType {
-        Terrain,
-        Cave,
-        Ocean
-    }
-
-    [System.NonSerialized]
     public Dictionary<Vector3, Region> regionDict = new Dictionary<Vector3, Region>();
 
     // Start is called before the first frame update
