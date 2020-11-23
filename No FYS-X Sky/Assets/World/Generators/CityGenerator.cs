@@ -15,35 +15,26 @@ public class CityGenerator : MonoBehaviour, Generator
 
     float margin = 0.5f;
 
-
-    public bool raysDebug = true;
+    public bool raysDebug = false;
 
     TerrainGenerator terrainGenerator;
 
     public Dictionary<Vector3, Color> coloredRays;
 
-    public Dictionary<Vector3, GameObject> cubes;
-
-    public Dictionary<Vector3, List<Vector3>> cityPoints;
+    public Dictionary<Vector3, CityPoint> cityPoints;
 
     public List<GameObject> houses;
 
     GameObject parentObj;
 
-    private int chunkDistance;
-
-    // Start is called before the first frame update
     void Start()
     {
         coloredRays = new Dictionary<Vector3, Color>();
-        cityPoints = new Dictionary<Vector3, List<Vector3>>();
+        cityPoints = new Dictionary<Vector3, CityPoint>();
 
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         parentObj = GameObject.Find("CityPoints");
-        cubes = new Dictionary<Vector3, GameObject>();
     }
-
-  
 
     // Update is called once per frame
     void Update()
@@ -53,16 +44,51 @@ public class CityGenerator : MonoBehaviour, Generator
 
     public void Generate(int mapWidth, int mapHeight, Vector2 offsets)
     {
-        List<Vector3> cubePoints = DrawCityLocations(mapWidth, mapHeight, offsets);
+        // Check from center of tile if there is a city point that needs to be updated
+        CheckForUpdateNearbyCityPoints(new Vector3( -(offsets.x + (mapWidth / 2)), 0, -(offsets.y + (mapHeight / 2))));
 
         // Loop through the cubes and check with rays if possible locations
+        List<Vector3> cubePoints = DrawCityLocations(mapWidth, mapHeight, offsets);
         foreach (Vector3 cubePoint in cubePoints)
         {
-            StartCoroutine(PerformActionAfterTime(0.5f, () => {
-                CheckCoordinatesAroundBox(cubePoint);
-                GenerateCity(cubePoint);
-            }));
+            UpdateCoordinatesAroundBox(cubePoint);
+            GenerateCity(cubePoint);
         }
+    }
+
+    public void CheckForUpdateNearbyCityPoints(Vector3 coordinateToCheck)
+    {
+        CityPoint nearestCityLocation = GetNearestCityLocation(coordinateToCheck);
+
+        // If a nearby city exists and is nearby enough
+        if (nearestCityLocation != null)
+        {
+            UpdateCoordinatesAroundBox(nearestCityLocation.cubePosition);
+        }
+    }
+
+    public CityPoint GetNearestCityLocation(Vector3 nearbyCoordinate)
+    {
+        // Get the closest city cube location
+        CityPoint closestCityPoint = null;
+        float distanceClosestCityPoint = float.NaN;
+        foreach (var cityPoint in cityPoints)
+        {
+            float distance = Vector3.Distance(nearbyCoordinate, cityPoint.Key);
+            if (distance != 0 && (float.IsNaN(distanceClosestCityPoint) || distance < distanceClosestCityPoint))
+            {
+                closestCityPoint = cityPoint.Value;
+                distanceClosestCityPoint = distance;
+            }
+        }
+
+        // Only returns if city is actually close
+        if (distanceClosestCityPoint <= cityRadius * 1.5)
+        {
+            return closestCityPoint;
+        }
+
+        return null;
     }
 
     Vector3 CheckValidCityPoint(Vector3 pointPosition)
@@ -82,12 +108,12 @@ public class CityGenerator : MonoBehaviour, Generator
         return Vector3.zero;
     }
 
-    public void CheckCoordinatesAroundBox(Vector3 cubePosition)
+    public void UpdateCoordinatesAroundBox(Vector3 cubePosition)
     {
-        // Per box make it raining rays to check for valid points        
-        for (int x = (int)cubePosition.x + cityRadius; x >= cubePosition.x - cityRadius; x--)
+        // Per box make it raining rays to check for valid points
+        for (int x = (int)cubePosition.x + cityRadius; x >= (int)cubePosition.x - cityRadius; x--)
         {
-            for (int z = (int)cubePosition.z + cityRadius; z >= cubePosition.z - cityRadius; z--)
+            for (int z = (int)cubePosition.z + cityRadius; z >= (int)cubePosition.z - cityRadius; z--)
             {
                 Vector3 rayPosition = new Vector3(x, 10, z);
                 Ray ray = new Ray(rayPosition, -transform.up);
@@ -97,15 +123,12 @@ public class CityGenerator : MonoBehaviour, Generator
                     if (cubePosition.y + margin >= hitInfo.point.y && cubePosition.y - margin <= hitInfo.point.y && cubePosition.y >= 0)
                     {
                         // Ray with a possibility for a city
-                        cityPoints[cubePosition].Add(hitInfo.point);
-                        if (coloredRays.ContainsKey(hitInfo.point)) coloredRays[hitInfo.point] = Color.green;
-                        else coloredRays.Add(hitInfo.point, Color.green);
+                        ReplaceOrAddCityPointCoordinateAndRays(true, cubePosition, hitInfo.point, Color.green);
                     }
                     else
                     {
                         // Invalid map coord positions
-                        if (coloredRays.ContainsKey(hitInfo.point)) coloredRays[hitInfo.point] = Color.red;
-                        else coloredRays.Add(hitInfo.point, Color.red);
+                        ReplaceOrAddCityPointCoordinateAndRays(false, cubePosition, hitInfo.point, Color.red);
                     }
 
                 }
@@ -114,10 +137,30 @@ public class CityGenerator : MonoBehaviour, Generator
         }
     }
 
+    public void ReplaceOrAddCityPointCoordinateAndRays(bool validCoord, Vector3 cubePosition, Vector3 coordinate, Color rayColor)
+    {
+        cityPoints[cubePosition].ReplaceOrAddCityPointCoordinate(validCoord, coordinate);
+
+        // Add colored ray if is set
+        if (rayColor != null && raysDebug == true)
+        {
+            if (coloredRays.ContainsKey(coordinate))
+            {
+                coloredRays[coordinate] = rayColor;
+            }
+            else
+            {
+                coloredRays.Add(coordinate, rayColor);
+            }
+        }
+    }
+
     public void GenerateCity(Vector3 cityCubeLocation)
     {
+        int cityRaySize = cityPoints[cityCubeLocation].cityCoordinates.Count;
+
         // Check if the city is large enough. If it is it will generate a city.
-        if (cityPoints[cityCubeLocation].Count >= minimumCitySize)
+        if (cityRaySize >= minimumCitySize)
         {
             // TODO: Now only one house will spawn, this should be random (maybe based on size of city?)
             GenerateBuilding(cityCubeLocation);
@@ -126,7 +169,9 @@ public class CityGenerator : MonoBehaviour, Generator
 
     public void GenerateBuilding(Vector3 cityCubeLocation)
     {
-        List<Vector3> rayHits = cityPoints[cityCubeLocation]; // TODO: Test if not null
+        List<Vector3> rayHits = cityPoints[cityCubeLocation].cityCoordinates;
+
+        if (rayHits == null) return;
 
         int fakeY = 0;
         int randomHouseIndex = UnityEngine.Random.Range(0, houses.Count);
@@ -137,6 +182,7 @@ public class CityGenerator : MonoBehaviour, Generator
         {
             rayHitsFakeY.Add(new Vector3(coord.x, fakeY, coord.z));
         }
+
         //Kan netter
         Bounds houseB = CalculateBounds(houses[randomHouseIndex]);
         Vector3 houseBounds = houseB.size;
@@ -154,14 +200,14 @@ public class CityGenerator : MonoBehaviour, Generator
             for (int z = smallestZ; z <= highestZ; z++)
             {
                 Vector3 vectorToCheck = new Vector3(x, fakeY, z);
+                
                 if (rayHitsFakeY.Contains(vectorToCheck)) 
                 {
-                    coloredRays[vectorToCheck] = Color.white;
-                    
+                    ReplaceOrAddCityPointCoordinateAndRays(true, cityCubeLocation, vectorToCheck, Color.white);
                 }
                 else
                 {
-                    coloredRays.Add(vectorToCheck, Color.blue);
+                    ReplaceOrAddCityPointCoordinateAndRays(false, cityCubeLocation, vectorToCheck, Color.blue);
                     valid = false;
                 }
             }
@@ -169,12 +215,15 @@ public class CityGenerator : MonoBehaviour, Generator
 
         if (valid)
         {
-            // TODO: houses should be placed from the centre of a prefab, highestX and highestZ should be replaced by location.x and location.z GEFIXT I THINK 
+            // Houses are placed from the centre of a prefab
+            Tile tile = WorldBuilder.GetTile(new Vector3(location.x, 0, location.z));
 
             // Make House only rotate on Y axis.
-            Instantiate(houses[randomHouseIndex], new Vector3(location.x - houseB.center.x, houses[randomHouseIndex].transform.position.y + location.y, location.z - houseB.center.z), Quaternion.identity, parentObj.transform.GetChild(0).transform);
-            GameObject house = Instantiate(houses[randomHouseIndex], new Vector3(location.x, houses[randomHouseIndex].transform.position.y + location.y, location.z), Quaternion.identity, parentObj.transform.GetChild(0).transform) as GameObject;
+            Vector3 housePosition = new Vector3(location.x - houseB.center.x, houses[randomHouseIndex].transform.position.y + location.y, location.z - houseB.center.z);
+            GameObject house = Instantiate(houses[randomHouseIndex], housePosition, Quaternion.identity, parentObj.transform.GetChild(0).transform) as GameObject;
             house.transform.localRotation.SetLookRotation(cityCubeLocation);
+
+            tile.AddObject(house);
         }
 
     }
@@ -200,26 +249,8 @@ public class CityGenerator : MonoBehaviour, Generator
 
     public Vector3 GetVertexWorldPosition(Vector3 vertex, Transform owner)
     {
+        // TODO: Method mag weg?
         return owner.localToWorldMatrix.MultiplyPoint3x4(vertex);
-    }
-
-    //Add cubes to dict this way we can unload cubes using the unload tiles method in Worldbuilder
-    //TO-DO: Een manier vinden om Raycast een keer in te laden met de gewenste render distance. 
-    //Misschien door middel van de Player position op te vragen en dan te kijken 
-    //of de cube binnen een bepaalde distance is en dan de cube een checked status meegeven zodat we weten dat die gechecked is en niet steeds geraycast wordt
-    public void addToCubeDict(GameObject go)
-    {
-        StartCoroutine(PerformActionAfterTime(0.1f, () => {
-            if (Physics.Raycast(new Vector3(go.transform.position.x,50,go.transform.position.z), -transform.up, out RaycastHit tileHit, Mathf.Infinity))
-            {
-                Vector3 id = new Vector3 (Mathf.FloorToInt(tileHit.transform.gameObject.transform.localPosition.x / 10) * 10, 
-                    tileHit.transform.gameObject.transform.localPosition.y, 
-                    Mathf.FloorToInt(tileHit.transform.gameObject.transform.localPosition.z / 10) * 10);
-                cubes.Add(id, go);
-                
-            }
-        }));
-      
     }
 
     private float[,] generateCityNoiseMap(int mapWidth, int mapHeight, Vector2 offsets)
@@ -306,9 +337,8 @@ public class CityGenerator : MonoBehaviour, Generator
                             Physics.SyncTransforms();
 
                             // Add the cube point to an array
-                            cityPoints.Add(cubePoint, new List<Vector3>());
+                            cityPoints.Add(cubePoint, new CityPoint(cubePoint));
                             cubePoints.Add(cubePoint);
-                            addToCubeDict(point);
 
                             break;
                         }
@@ -326,7 +356,7 @@ public class CityGenerator : MonoBehaviour, Generator
         action();
     }
 
-    //Raycast a sphere and check for nearby gameobjects
+    // Raycast a sphere and check for nearby gameobjects
     private bool checkNearbyPoints(Vector3 center, float radius)
     {
         Collider[] hitColliders = Physics.OverlapSphere(center, radius);

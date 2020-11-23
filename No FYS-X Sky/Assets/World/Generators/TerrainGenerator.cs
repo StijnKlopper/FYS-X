@@ -24,9 +24,6 @@ public class TerrainGenerator : MonoBehaviour, Generator
     public int[] randomNumbers;
 
     [System.NonSerialized]
-    public Dictionary<Vector3, GameObject> tileDict = new Dictionary<Vector3, GameObject>();
-
-    [System.NonSerialized]
     public Dictionary<Vector3, Region> regionDict = new Dictionary<Vector3, Region>();
 
     // Start is called before the first frame update
@@ -47,7 +44,6 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
     public GameObject GenerateTile(Vector3 position)
     {
-       
         Vector3 tilePosition = new Vector3(position.x + tileOffset, this.gameObject.transform.position.y, position.z + tileOffset);
         GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
         return tile;

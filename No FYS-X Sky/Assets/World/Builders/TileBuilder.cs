@@ -15,10 +15,10 @@ public class TileBuilder : MonoBehaviour
     [SerializeField]
     private MeshCollider meshCollider;
 
-    public AnimationCurve heightCurve;
-
     [System.NonSerialized]
     public float[,] heightMap;
+
+    public AnimationCurve heightCurve;
 
     TerrainGenerator terrainGenerator;
 
@@ -40,7 +40,6 @@ public class TileBuilder : MonoBehaviour
 
     private void GenerateTile()
     {
-        
         Vector3[] meshVertices = this.meshFilter.mesh.vertices;
         int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
         int tileWidth = tileHeight;
@@ -57,7 +56,7 @@ public class TileBuilder : MonoBehaviour
         //oceanTile = terrainGenerator.GenerateOcean(tileRenderer.gameObject.transform.position);
         //oceanTile.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
 
-        //Spawning city points
+        // Spawning city points
         cityGenerator.Generate(tileWidth, tileHeight, offsets);
     }
 
@@ -175,6 +174,7 @@ public class TileBuilder : MonoBehaviour
                 heightMap[x, y] = noiseHeight;
             }
         }
+        WorldBuilder.tileDict[new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5))].heightMap = heightMap;
         this.heightMap = heightMap;
     }
 
