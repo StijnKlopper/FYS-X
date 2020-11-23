@@ -11,7 +11,7 @@ public class CityGenerator : MonoBehaviour, Generator
 
     public int minimumCitySize = 20;
 
-    public int cityRadius = 15;
+    public int cityRadius = 20;
 
     float margin = 0.5f;
 
@@ -162,8 +162,13 @@ public class CityGenerator : MonoBehaviour, Generator
         // Check if the city is large enough. If it is it will generate a city.
         if (cityRaySize >= minimumCitySize)
         {
-            // TODO: Now only one house will spawn, this should be random (maybe based on size of city?)
-            GenerateBuilding(cityCubeLocation);
+            // TODO: Now hardcoded spawns, this should be random (maybe based on size of city?)
+            for (int i = 0; i <= 10; i++)
+            {
+                GenerateBuilding(cityCubeLocation);
+                // TODO: Call method below to update coords of city so no buildings can be inside eachother, this isn't working correctly atm 
+                //UpdateCoordinatesAroundBox(cityCubeLocation);
+            }
         }
     }
 
@@ -350,12 +355,6 @@ public class CityGenerator : MonoBehaviour, Generator
         return cubePoints;
     }
 
-    IEnumerator<WaitForSeconds> PerformActionAfterTime(float delayAmount, System.Action action)
-    {
-        yield return new WaitForSeconds(delayAmount);
-        action();
-    }
-
     // Raycast a sphere and check for nearby gameobjects
     private bool checkNearbyPoints(Vector3 center, float radius)
     {
@@ -379,6 +378,25 @@ public class CityGenerator : MonoBehaviour, Generator
             {
                 Debug.DrawRay(ray.Key, transform.up * 10, ray.Value);
             }
+
+            /*
+            foreach (var cityPoint in cityPoints)
+            {
+
+                // Valid city coordinates
+                foreach (var coordinate in cityPoint.Value.cityCoordinates)
+                {
+                    Debug.DrawRay(coordinate, transform.up * 10, Color.green);
+                }
+
+                // Invalid city coordinates
+                foreach (var coordinate in cityPoint.Value.invalidCityCoordinates)
+                {
+                    Debug.DrawRay(coordinate, transform.up * 10, Color.red);
+                }
+
+            }
+            */
         }
     }
 
