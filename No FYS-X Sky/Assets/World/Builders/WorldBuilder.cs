@@ -1,8 +1,7 @@
 ﻿using Microsoft.Win32;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.UI;
 class WorldBuilder
@@ -80,10 +79,12 @@ public void UnloadRegions(Vector3 position)
                     tile.AddObject(terrain);
                     tile.AddObject(cave);
                     tileDict.Add(newChunkPosition, tile);
+
                 }
             }
         }
     }
+
 
     public void UnloadTiles(Vector3 position)
     {

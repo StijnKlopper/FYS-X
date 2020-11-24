@@ -44,20 +44,22 @@ public class TileBuilder : MonoBehaviour
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
 
         // Instead of generating height map:
-        GenerateHeightMap(tileWidth, tileHeight, offsets);
+        //GenerateHeightMap(tileWidth, tileHeight, offsets);
 
-        Texture2DArray splatmaps = BuildTexture(offsets);
-        this.tileRenderer.material.SetTexture("_SplatMaps", splatmaps);
+        /*Texture2DArray splatmaps = BuildTexture(offsets);
+        this.tileRenderer.material.SetTexture("_SplatMaps", splatmaps);*/
 
-        UpdateMeshVertices(heightMap, offsets);
-        oceanTile = terrainGenerator.GenerateOcean(tileRenderer.gameObject.transform.position);
-        oceanTile.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
+        //applyHeightMap(tileWidth, tileHeight, offsets);
+
+       
+        /*oceanTile = terrainGenerator.GenerateOcean(tileRenderer.gameObject.transform.position);
+        oceanTile.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);*/
     }
 
-    private Texture2DArray BuildTexture(Vector2 offsets)
+    private Texture2DArray BuildTexture(Vector2 offsets, float[,] heightMap)
     {
-        int tileHeight = this.heightMap.GetLength(0);
-        int tileWidth = this.heightMap.GetLength(1);
+        int tileHeight = heightMap.GetLength(0);
+        int tileWidth = heightMap.GetLength(1);
 
         int splatmapSize = tileHeight * tileWidth;
 
@@ -101,6 +103,129 @@ public class TileBuilder : MonoBehaviour
 
         return splatmapsArray;
     }
+
+
+    public static float[,] GenerateAndReturnHeightMap(int[] randomNumbers, int width, int height, Vector2 offsets)
+    {
+        float[,] heightMap = new float[width, height];
+
+        float maxPossibleHeight = 0f;
+        float amplitude = 1f;
+        float persistance = 0.5f;
+        float lacunarity = 2f;
+
+        int octaves = 12;
+        int scale = 50;
+        int heightMultiplier = 10;
+
+        for (int i = 0; i < octaves; i++)
+        {
+            maxPossibleHeight += amplitude;
+            amplitude *= 0.5f;
+        }
+
+        // Loop through all coordinates on the tile, for every coordinate calculate a height value using octaves
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                amplitude = 1;
+                float frequency = 1;
+                float noiseHeight = 0;
+
+                // Needs to ask terraingenerator what the biome is using offsets + x / y
+                //Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(offsets.x + x, offsets.y + y));
+
+                for (int i = 0; i < octaves; i++)
+                {
+                    // Add large number to the sample coordinates to prevent feeding negative numbers into the Perlin Noise function
+                    // Prevents the mandela effect around (0,0)
+                    float sampleX = (x + offsets.x) / scale * frequency + randomNumbers[i];
+                    float sampleY = (y + offsets.y) / scale * frequency + randomNumbers[i];
+
+                    // Because we * 2 - 1 this value, we stretch out the noise from [0,1] to [-1,1]
+                    float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
+
+                    // Add octave value to the perlin noise once for every octave
+                    noiseHeight += perlinValue * amplitude;
+
+                    // Amplitude decreases every octave
+                    amplitude *= persistance;
+
+                    // Frequency increases every octave
+                    frequency *= lacunarity;
+
+                }
+
+                // Normalise noise map between minimum and maximum noise heights
+                noiseHeight = (noiseHeight + 1) / (2f * maxPossibleHeight / 1.75f);
+
+                heightMap[x, y] = noiseHeight;
+            }
+            
+        }
+
+        return heightMap;
+    }
+
+    public void ApplyHeightMap(float[,] heightMap, int width, int height, Vector2 offsets)
+    {
+        int heightMultiplier = 10;
+
+        int tileHeight = heightMap.GetLength(0);
+        int tileWidth = heightMap.GetLength(1);
+
+        int splatmapSize = tileHeight * tileWidth;
+
+        Color[] splatMap1 = new Color[splatmapSize];
+        Color[] splatMap2 = new Color[splatmapSize];
+        Color[] splatMap3 = new Color[splatmapSize];
+
+        Color[] oceanMap = new Color[splatmapSize];
+
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+
+                int colorIndex = y * tileWidth + x;
+
+                terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+
+                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
+
+                float noiseHeight = biome.biomeType.heightCurve.Evaluate(heightMap[x, y]) * heightMultiplier;
+                heightMap[x, y] = noiseHeight;
+
+                splatMap1[colorIndex] = biome.biomeType.color;
+                splatMap2[colorIndex] = biome.biomeType.color2;
+                splatMap3[colorIndex] = biome.biomeType.color3;
+
+                oceanMap[colorIndex] = biome.biomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
+            }
+        }
+
+        UpdateMeshVertices(heightMap, offsets);
+
+        Texture2DArray splatmapsArray = new Texture2DArray(tileWidth, tileHeight, 3, TextureFormat.RGBA32, true);
+        oceanSplatmap = new Texture2D(tileHeight, tileWidth);
+
+        splatmapsArray.SetPixels(splatMap1, 0);
+        splatmapsArray.SetPixels(splatMap2, 1);
+        splatmapsArray.SetPixels(splatMap3, 2);
+
+        oceanSplatmap.SetPixels(oceanMap);
+        oceanSplatmap.wrapMode = TextureWrapMode.Clamp;
+        oceanSplatmap.Apply();
+
+        splatmapsArray.wrapMode = TextureWrapMode.Clamp;
+        splatmapsArray.Apply();
+
+        //Texture2DArray splatmaps = BuildTexture(offsets, heightMap);
+        this.tileRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
+    }
+
 
     public void GenerateHeightMap(int width, int height, Vector2 offsets)
     {

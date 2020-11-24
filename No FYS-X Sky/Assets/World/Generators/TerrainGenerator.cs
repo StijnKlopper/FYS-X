@@ -43,8 +43,15 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
     public GameObject GenerateTile(Vector3 position)
     {
+
+        float[,] heightmap = TileBuilder.GenerateAndReturnHeightMap(randomNumbers, 11, 11, new Vector2(-position.x, -position.z));
+
         Vector3 tilePosition = new Vector3(position.x + tileOffset, this.gameObject.transform.position.y, position.z + tileOffset);
+
         GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
+
+        tile.GetComponent<TileBuilder>().ApplyHeightMap(heightmap, 11, 11, new Vector2(-position.x, -position.z));
+
         tile.transform.SetParent(this.transform);
         return tile;
     }

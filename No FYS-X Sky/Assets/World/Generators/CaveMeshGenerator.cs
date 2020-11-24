@@ -13,13 +13,37 @@ public class CaveMeshGenerator : MonoBehaviour
     List<Vector3> vertices;
     List<int> triangles;
 
-    public void GenerateMesh(int[, ,] map, float squareSize, MeshFilter caveMeshFilter)
+    public void GenerateMesh(float[, ,] map, float squareSize, MeshFilter caveMeshFilter)
     {
 
         cubeGrid = new CubeGrid(map, squareSize);
 
         vertices = new List<Vector3>();
         triangles = new List<int>();
+
+/*        for (int x = 0; x < cubeGrid.cubes.GetLength(0); x++)
+        {
+            for (int y = 0; y < cubeGrid.cubes.GetLength(1); y++)
+            {
+                for (int z = 0; z < cubeGrid.cubes.GetLength(2); z++)
+                {
+                    TriangulateCube(cubeGrid.cubes[x, y, z]);
+                }
+            }
+        }*/
+
+        StartCoroutine("Fuck");
+
+        Mesh caveMesh = new Mesh();
+        caveMesh.vertices = vertices.ToArray();
+        caveMesh.triangles = triangles.ToArray();
+        caveMeshFilter.mesh = caveMesh;
+
+    }
+
+    IEnumerator Fuck()
+    {
+        Debug.Log("Bro");
 
         for (int x = 0; x < cubeGrid.cubes.GetLength(0); x++)
         {
@@ -31,12 +55,7 @@ public class CaveMeshGenerator : MonoBehaviour
                 }
             }
         }
-
-        Mesh caveMesh = new Mesh();
-        caveMesh.vertices = vertices.ToArray();
-        caveMesh.triangles = triangles.ToArray();
-        caveMeshFilter.mesh = caveMesh;
-
+        yield return null;
     }
 
 
@@ -396,7 +415,7 @@ public class CaveMeshGenerator : MonoBehaviour
     {
         public Cube[, ,] cubes;
 
-        public CubeGrid(int[, ,] map, float squareSize)
+        public CubeGrid(float[, ,] map, float squareSize)
         {
             int nodeCountX = map.GetLength(0);
             int nodeCountY = map.GetLength(1);
@@ -439,6 +458,11 @@ public class CaveMeshGenerator : MonoBehaviour
             }
         }
     }
+
+
+
+
+
     public class Cube
     {
         //public ControlNode topLeft, topRight, bottomLeft, bottomRight;
