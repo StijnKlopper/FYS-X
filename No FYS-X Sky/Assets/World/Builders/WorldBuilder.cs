@@ -120,9 +120,17 @@ public void UnloadRegions(Vector3 position)
         return boundaries;
     }
 
-    private int CalcCoord(float coordinate, int size)
+    public static int CalcCoord(float coordinate, int size)
     {
         // Input: 220, 200. Output: 200, gives corners of current location, rounds to the nearest size number
         return Mathf.FloorToInt(coordinate / size) * size;
+    }
+
+    public static Tile GetTile(Vector3 coordinate)
+    {
+        int x = CalcCoord(coordinate.x, 10);
+        int z = CalcCoord(coordinate.z, 10);
+
+        return tileDict[new Vector3(x, 0, z)];
     }
 }

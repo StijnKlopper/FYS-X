@@ -28,8 +28,7 @@ public class CaveBuilder : MonoBehaviour
     IEnumerator UpdateMesh(Vector2 offsets)
     {
         Mesh caveMesh = new Mesh();
-        SafeMesh safemesh = null;
-        safemesh = this.GenerateCaveMap(offsets, caveMesh);
+        SafeMesh safemesh = this.GenerateCaveMap(offsets, caveMesh);
 
         Mesh mesh = GetComponent<MeshFilter>().mesh;
 
@@ -57,23 +56,26 @@ public class CaveBuilder : MonoBehaviour
         // Coordinates are divided by scale, larger scale = larger/more spread out caves
         float scale = 20f;
 
-       
-
         ridgedMultifractal = new RidgedMultifractal();
         ridgedMultifractal.OctaveCount = 3;
 
         int height = 20;
 
-        //GameObject go = terrainGenerator.tileDict[new Vector3(offsets.x, 0, offsets.y)];
-        float[,,] caveMap = new float[size, height, size];
+        Tile tile = WorldBuilder.GetTile(new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5)));
+
+
+        float[,] heightMap = tile.heightMap;
+
+        float[, ,] caveMap = new float[size, height * 2, size];
 
         for (int x = 0; x < size; x++)
         {
-
-            // Cave height make height dynamic based on heightmap[x,z]
-            for (int y = 0; y < height; y++)
+            for (int z = 0; z < size; z++)
             {
-                for (int z = 0; z < size; z++)
+                int coordinateHeight = Mathf.FloorToInt(heightMap[x, z]);
+                int caveHeight = coordinateHeight + height;
+                // Cave height make height dynamic based on heightmap[x,z]
+                for (int y = 0; y < caveHeight; y++)
                 {
                     double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, (y + addendum) / scale, (z + offsets.y + addendum) / scale);
                     int isCave = tempVal < 0.35 ? 0 : 1;
@@ -81,21 +83,9 @@ public class CaveBuilder : MonoBehaviour
                 }
             }
         }
-/*
-        CaveMeshGenerator caveMeshGen = GameObject.Find("Level").GetComponent<CaveMeshGenerator>();
-
-        caveMeshGen.GenerateMesh(caveMap, 1, GetComponent<MeshFilter>());*/
 
         SafeMesh safeMesh = MarchingCubes.BuildMesh(caveMap);
 
-        
-        /*caveMesh.vertices = safeMesh.Vertices;
-        caveMesh.triangles = safeMesh.Triangles;*/
-        /* caveMesh.uv = new Vector2[(int)caveMesh.vertices.Length];
-         caveMesh.Optimize();
-         caveMesh.RecalculateNormals();*/
-
-        //GetComponent<MeshFilter>().mesh = caveMesh;
 
         return safeMesh;
     }
