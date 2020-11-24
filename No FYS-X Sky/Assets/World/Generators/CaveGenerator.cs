@@ -29,4 +29,7 @@ public class CaveGenerator : MonoBehaviour, Generator
         tile.transform.SetParent(this.transform);
         return tile;
     }
+
+
+
 }

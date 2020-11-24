@@ -10,6 +10,8 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
+using CielaSpike;
+
 public class CaveBuilder : MonoBehaviour
 {
 
@@ -17,32 +19,38 @@ public class CaveBuilder : MonoBehaviour
 
     TerrainGenerator terrainGenerator;
 
+    SafeMesh safemesh;
+
     // Start is called before the first frame update
     void Start()
     {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
-        StartCoroutine("UpdateMesh", offsets);
+        StartCoroutine(updateCaveMesh());
     }
 
-    IEnumerator UpdateMesh(Vector2 offsets)
-    {
+    public IEnumerator updateCaveMesh() {
+        Task task;
         Mesh caveMesh = new Mesh();
-        SafeMesh safemesh = this.GenerateCaveMap(offsets, caveMesh);
+        Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
+        this.StartCoroutineAsync(generateCaveMap(caveMesh, offsets), out task);
+        yield return StartCoroutine(task.Wait());
 
         Mesh mesh = GetComponent<MeshFilter>().mesh;
+        MeshCollider meshCollider = GetComponent<MeshCollider>();
 
         mesh.vertices = safemesh.Vertices;
         mesh.triangles = safemesh.Triangles;
         mesh.uv = new Vector2[(int)mesh.vertices.Length];
         mesh.Optimize();
         mesh.RecalculateNormals();
-        //base.transform.localPosition = new Vector3((float)this.ChunkX, (float)this.ChunkY, (float)this.ChunkZ);
-        /*        this.Filter.mesh = this.mesh;
-                this.Collider.sharedMesh = null;
-                this.Collider.sharedMesh = this.mesh;*/
+        meshCollider.sharedMesh = null;
+        meshCollider.sharedMesh = mesh;
+    }
 
-        yield return null;
+    IEnumerator generateCaveMap(Mesh caveMesh, Vector2 offsets)
+    {
+        safemesh = this.GenerateCaveMap(offsets, caveMesh);
+        yield return safemesh;
     }
 
 

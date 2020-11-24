@@ -15,14 +15,6 @@ public static class MarchingCubes {
 
 	private static float[,] edgeDirection;
 
-	private static int[,] tetrahedronEdgeConnection;
-
-	private static int[,] tetrahedronsInACube;
-
-	private static int[] tetrahedronEdgeFlags;
-
-	private static int[,] tetrahedronTriangles;
-
 	private static int[] cubeEdgeFlags;
 
 	private static int[,] triangleConnectionTable;

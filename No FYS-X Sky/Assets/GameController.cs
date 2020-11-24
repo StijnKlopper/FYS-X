@@ -11,8 +11,12 @@ public class GameController : MonoBehaviour
     public GameObject player;
     WorldBuilder worldBuilder;
 
+    //public int targetFrameRate = 10;
+
     void Start()
     {
+        QualitySettings.vSyncCount = 0;
+        //Application.targetFrameRate = targetFrameRate;
         worldBuilder = new WorldBuilder();
     }
 
