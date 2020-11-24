@@ -67,7 +67,7 @@ public class CaveBuilder : MonoBehaviour
         ridgedMultifractal = new RidgedMultifractal();
         ridgedMultifractal.OctaveCount = 3;
 
-        int height = 20;
+        int height = 30;
 
         Tile tile = WorldBuilder.GetTile(new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5)));
 
