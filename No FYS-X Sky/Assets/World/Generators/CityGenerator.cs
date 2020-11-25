@@ -15,11 +15,9 @@ public class CityGenerator : MonoBehaviour, Generator
 
     float margin = 0.5f;
 
-    public bool raysDebug = false;
+    public bool raysDebug;
 
     TerrainGenerator terrainGenerator;
-
-    public Dictionary<Vector3, Color> coloredRays;
 
     public Dictionary<Vector3, CityPoint> cityPoints;
 
@@ -29,14 +27,14 @@ public class CityGenerator : MonoBehaviour, Generator
 
     void Start()
     {
-        coloredRays = new Dictionary<Vector3, Color>();
+        raysDebug = true;
+
         cityPoints = new Dictionary<Vector3, CityPoint>();
 
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         parentObj = GameObject.Find("CityPoints");
     }
 
-    // Update is called once per frame
     void Update()
     {
         DebugPoints();
@@ -123,34 +121,16 @@ public class CityGenerator : MonoBehaviour, Generator
                     if (cubePosition.y + margin >= hitInfo.point.y && cubePosition.y - margin <= hitInfo.point.y && cubePosition.y >= 0)
                     {
                         // Ray with a possibility for a city
-                        ReplaceOrAddCityPointCoordinateAndRays(true, cubePosition, hitInfo.point, Color.green);
+                        cityPoints[cubePosition].ReplaceOrAddCityPointCoordinate(true, hitInfo.point);
                     }
                     else
                     {
                         // Invalid map coord positions
-                        ReplaceOrAddCityPointCoordinateAndRays(false, cubePosition, hitInfo.point, Color.red);
+                        cityPoints[cubePosition].ReplaceOrAddCityPointCoordinate(false, hitInfo.point);
                     }
 
                 }
 
-            }
-        }
-    }
-
-    public void ReplaceOrAddCityPointCoordinateAndRays(bool validCoord, Vector3 cubePosition, Vector3 coordinate, Color rayColor)
-    {
-        cityPoints[cubePosition].ReplaceOrAddCityPointCoordinate(validCoord, coordinate);
-
-        // Add colored ray if is set
-        if (rayColor != null && raysDebug == true)
-        {
-            if (coloredRays.ContainsKey(coordinate))
-            {
-                coloredRays[coordinate] = rayColor;
-            }
-            else
-            {
-                coloredRays.Add(coordinate, rayColor);
             }
         }
     }
@@ -162,13 +142,25 @@ public class CityGenerator : MonoBehaviour, Generator
         // Check if the city is large enough. If it is it will generate a city.
         if (cityRaySize >= minimumCitySize)
         {
-            // TODO: Now hardcoded spawns, this should be random (maybe based on size of city?)
-            for (int i = 0; i <= 10; i++)
+
+            /* Place buildings untill no more space in the area
+            int tries = 0;
+            int currentCitySize = cityRaySize;
+            while (currentCitySize >= minimumCitySize || tries < 10)
             {
                 GenerateBuilding(cityCubeLocation);
-                // TODO: Call method below to update coords of city so no buildings can be inside eachother, this isn't working correctly atm 
-                //UpdateCoordinatesAroundBox(cityCubeLocation);
+                currentCitySize = cityPoints[cityCubeLocation].cityCoordinates.Count;
+                tries += 1;
+                Debug.Log("Build house: coords left=" + currentCitySize);
             }
+            */
+            GenerateBuilding(cityCubeLocation);
+
+        }
+        else
+        {
+            // Delete city because it isn't big enough
+            cityPoints.Remove(cityCubeLocation);
         }
     }
 
@@ -208,11 +200,11 @@ public class CityGenerator : MonoBehaviour, Generator
                 
                 if (rayHitsFakeY.Contains(vectorToCheck)) 
                 {
-                    ReplaceOrAddCityPointCoordinateAndRays(true, cityCubeLocation, vectorToCheck, Color.white);
+                    cityPoints[cityCubeLocation].ReplaceOrAddCityPointCoordinate(true, vectorToCheck);
                 }
                 else
                 {
-                    ReplaceOrAddCityPointCoordinateAndRays(false, cityCubeLocation, vectorToCheck, Color.blue);
+                    cityPoints[cityCubeLocation].ReplaceOrAddCityPointCoordinate(false, vectorToCheck);
                     valid = false;
                 }
             }
@@ -229,6 +221,10 @@ public class CityGenerator : MonoBehaviour, Generator
             house.transform.localRotation.SetLookRotation(cityCubeLocation);
 
             tile.AddObject(house);
+
+            // Update coordinates
+            // TODO: Call method below to update coords of city so no buildings can be inside eachother, this isn't working correctly atm 
+            UpdateCoordinatesAroundBox(cityCubeLocation);
         }
 
     }
@@ -250,12 +246,6 @@ public class CityGenerator : MonoBehaviour, Generator
         {
             return new Bounds();
         }
-    }
-
-    public Vector3 GetVertexWorldPosition(Vector3 vertex, Transform owner)
-    {
-        // TODO: Method mag weg?
-        return owner.localToWorldMatrix.MultiplyPoint3x4(vertex);
     }
 
     private float[,] generateCityNoiseMap(int mapWidth, int mapHeight, Vector2 offsets)
@@ -374,15 +364,8 @@ public class CityGenerator : MonoBehaviour, Generator
     {
         if (raysDebug)
         {
-            foreach (var ray in coloredRays)
-            {
-                Debug.DrawRay(ray.Key, transform.up * 10, ray.Value);
-            }
-
-            /*
             foreach (var cityPoint in cityPoints)
             {
-
                 // Valid city coordinates
                 foreach (var coordinate in cityPoint.Value.cityCoordinates)
                 {
@@ -394,9 +377,7 @@ public class CityGenerator : MonoBehaviour, Generator
                 {
                     Debug.DrawRay(coordinate, transform.up * 10, Color.red);
                 }
-
             }
-            */
         }
     }
 
