@@ -8,7 +8,7 @@ using UnityEngine;
 public class CityGenerator : MonoBehaviour, Generator
 {
     [SerializeField]
-    public float minimumCityDistanceRadius = 150f; // TODO: Werkt niet? Cities moeten verder van elkaar af maar lijkt wel of dit niet werkt
+    public float minimumCityDistanceRadius; // Is serialized, Value in Unity Editor(CityPoints) is dominant
 
     public int minimumCitySize = 20;
 
@@ -28,7 +28,6 @@ public class CityGenerator : MonoBehaviour, Generator
 
     void Start()
     {
-        raysDebug = true; 
 
         cityPoints = new Dictionary<Vector3, CityPoint>();
 
@@ -175,10 +174,10 @@ public class CityGenerator : MonoBehaviour, Generator
         // TODO: Probleem is dat we niet huizen kunnen generen "random", ik dacht aan de seed die gebruikt kon worden maar dat kan niet want dan alsnog komt er in elke city dezelfde huizen.
         // Lijkt erop dat die cityCubeLocation.x en cityCubeLocation.z niet iets randoms genereren voor verschillende cities?
         int randomHouseIndex = (int)Math.Round(Mathf.PerlinNoise(cityCubeLocation.x, cityCubeLocation.z) * houses.Count);
-        Debug.Log(Mathf.PerlinNoise(cityCubeLocation.x, cityCubeLocation.z)); // Tussen 0 en 1
-        Debug.Log(houses.Count); // 2
-        Debug.Log(randomHouseIndex); // 1
-        Debug.Log("---");
+        //Debug.Log(Mathf.PerlinNoise(cityCubeLocation.x, cityCubeLocation.z)); // Tussen 0 en 1
+        //Debug.Log(houses.Count); // 2
+        //Debug.Log(randomHouseIndex); // 1
+        //Debug.Log("---");
         int randomLocationIndex = (int)Math.Round(Mathf.PerlinNoise(cityCubeLocation.x * seed, cityCubeLocation.z * seed) * rayHits.Count);
 
         List<Vector3> rayHitsFakeY = new List<Vector3>();
@@ -321,7 +320,7 @@ public class CityGenerator : MonoBehaviour, Generator
                 {
                     Vector3 possiblePointPosition = new Vector3(-(x + offsets.x), 0, -(y + offsets.y));
 
-                    if (checkNearbyPoints(possiblePointPosition, minimumCityDistanceRadius))
+                    if (checkNearbyPoints(possiblePointPosition, this.minimumCityDistanceRadius))
                     {
                         break;
                     }
@@ -334,8 +333,8 @@ public class CityGenerator : MonoBehaviour, Generator
                             GameObject point = GameObject.CreatePrimitive(PrimitiveType.Cube);
                             point.transform.SetParent(parentObj.transform.GetChild(1).transform);
                             point.transform.position = possiblePointPosition;
-                            point.layer = LayerMask.NameToLayer("Ignore Raycast");
-                            point.GetComponent<Renderer>().enabled = false;
+                            //point.layer = LayerMask.NameToLayer("Ignore Raycast");
+                            //point.GetComponent<Renderer>().enabled = true;
                             Physics.SyncTransforms();
 
                             // Add the cube point to an array
@@ -355,13 +354,16 @@ public class CityGenerator : MonoBehaviour, Generator
     // Raycast a sphere and check for nearby gameobjects
     private bool checkNearbyPoints(Vector3 center, float radius)
     {
-        Collider[] hitColliders = Physics.OverlapSphere(center, radius);
-        foreach (var hitCollider in hitColliders)
         {
-            // If gameobject is a cube then return true
-            if (hitCollider.gameObject.name == ("Cube"))
+            Collider[] hitColliders = Physics.OverlapSphere(center, radius);
+            foreach (var hitCollider in hitColliders)
             {
-                return true;
+                //Debug.Log(hitCollider+"-"+hitCollider.transform.position);
+                // If gameobject is a cube then return true
+                if (hitCollider.gameObject.name == ("Cube"))
+                {
+                    return true;
+                }
             }
         }
         return false;

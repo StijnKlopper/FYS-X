@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3381892}
   - component: {fileID: 2353268}
   - component: {fileID: 6526432}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1D (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ GameObject:
   - component: {fileID: 3362432}
   - component: {fileID: 2366900}
   - component: {fileID: 6528186}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_Window_1B (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 3332382}
   - component: {fileID: 2397684}
   - component: {fileID: 6531758}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1C (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -297,7 +297,7 @@ GameObject:
   - component: {fileID: 3321130}
   - component: {fileID: 2332458}
   - component: {fileID: 6566838}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1C (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 3340148}
   - component: {fileID: 2350672}
   - component: {fileID: 6505506}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1B (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -487,7 +487,7 @@ GameObject:
   - component: {fileID: 3378270}
   - component: {fileID: 2379264}
   - component: {fileID: 6546974}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1C (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -582,7 +582,7 @@ GameObject:
   - component: {fileID: 3323998}
   - component: {fileID: 2389800}
   - component: {fileID: 6449624}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Roof_1D (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -678,7 +678,7 @@ GameObject:
   - component: {fileID: 3301340}
   - component: {fileID: 2345710}
   - component: {fileID: 6402682}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Roof_1D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -774,7 +774,7 @@ GameObject:
   - component: {fileID: 3365232}
   - component: {fileID: 2339330}
   - component: {fileID: 6513226}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1B (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -869,7 +869,7 @@ GameObject:
   - component: {fileID: 3310602}
   - component: {fileID: 2308462}
   - component: {fileID: 6535876}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_Window_1B (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -964,7 +964,7 @@ GameObject:
   - component: {fileID: 3320050}
   - component: {fileID: 2376718}
   - component: {fileID: 6422084}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_Door_1A3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1060,7 +1060,7 @@ GameObject:
   - component: {fileID: 3353062}
   - component: {fileID: 2363134}
   - component: {fileID: 6586500}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1155,7 +1155,7 @@ GameObject:
   - component: {fileID: 3315392}
   - component: {fileID: 2385230}
   - component: {fileID: 6532958}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1C (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1250,7 +1250,7 @@ GameObject:
   - component: {fileID: 3363000}
   - component: {fileID: 2331184}
   - component: {fileID: 6552172}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1C (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1345,7 +1345,7 @@ GameObject:
   - component: {fileID: 3305260}
   - component: {fileID: 2346032}
   - component: {fileID: 6591658}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1B (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1440,7 +1440,7 @@ GameObject:
   - component: {fileID: 3322938}
   - component: {fileID: 2343126}
   - component: {fileID: 6554376}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1D (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1535,7 +1535,7 @@ GameObject:
   - component: {fileID: 3321882}
   - component: {fileID: 2301174}
   - component: {fileID: 6595700}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1B
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1630,7 +1630,7 @@ GameObject:
   - component: {fileID: 3334472}
   - component: {fileID: 2308740}
   - component: {fileID: 6542252}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1B (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1725,7 +1725,7 @@ GameObject:
   - component: {fileID: 3351044}
   - component: {fileID: 2315508}
   - component: {fileID: 6479488}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_Door_1B4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1821,7 +1821,7 @@ GameObject:
   - component: {fileID: 3327876}
   - component: {fileID: 2312890}
   - component: {fileID: 6596042}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_Window_1B
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1916,7 +1916,7 @@ GameObject:
   - component: {fileID: 3370228}
   - component: {fileID: 2384702}
   - component: {fileID: 6520762}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_Window_1B (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2011,7 +2011,7 @@ GameObject:
   - component: {fileID: 3329954}
   - component: {fileID: 2331138}
   - component: {fileID: 6561554}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2106,7 +2106,7 @@ GameObject:
   - component: {fileID: 3392774}
   - component: {fileID: 2385882}
   - component: {fileID: 6511200}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_Window_1B (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2198,7 +2198,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 447400}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: 1_M.E. House_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2261,7 +2261,7 @@ GameObject:
   - component: {fileID: 3366758}
   - component: {fileID: 2329580}
   - component: {fileID: 6513260}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1B (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2356,7 +2356,7 @@ GameObject:
   - component: {fileID: 3327436}
   - component: {fileID: 2301406}
   - component: {fileID: 6514762}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1C
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2451,7 +2451,7 @@ GameObject:
   - component: {fileID: 3377976}
   - component: {fileID: 2379284}
   - component: {fileID: 6525922}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_Window_1B (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2546,7 +2546,7 @@ GameObject:
   - component: {fileID: 3310598}
   - component: {fileID: 2354084}
   - component: {fileID: 6531702}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1C (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2641,7 +2641,7 @@ GameObject:
   - component: {fileID: 3313558}
   - component: {fileID: 2336268}
   - component: {fileID: 6588136}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_Window_1B (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2736,7 +2736,7 @@ GameObject:
   - component: {fileID: 3381804}
   - component: {fileID: 2367872}
   - component: {fileID: 6591752}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1C (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2831,7 +2831,7 @@ GameObject:
   - component: {fileID: 3339614}
   - component: {fileID: 2326688}
   - component: {fileID: 6540064}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: House_Wall_1D (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

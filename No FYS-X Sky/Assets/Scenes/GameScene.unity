@@ -741,7 +741,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e6a3dd7ffa46c54daed857f141ebdfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minimumCityDistanceRadius: 20
+  minimumCityDistanceRadius: 300
+  minimumCitySize: 20
+  cityRadius: 20
+  raysDebug: 0
   houses:
   - {fileID: 4875836682623532385, guid: 54f44e8e1a76f5e4f8bba4c338620140, type: 3}
   - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}

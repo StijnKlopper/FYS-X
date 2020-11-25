@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6854300119861363539}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: HouseSmall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,6 +45,10 @@ PrefabInstance:
     - target: {fileID: 129652, guid: 87b7609d6bdd828418e0683654cede03, type: 3}
       propertyPath: m_Name
       value: House_Wall_Door_1B4 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 129652, guid: 87b7609d6bdd828418e0683654cede03, type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 477266, guid: 87b7609d6bdd828418e0683654cede03, type: 3}
       propertyPath: m_LocalPosition.x
@@ -108,6 +112,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: House_Wall_Door_1B4
       objectReference: {fileID: 0}
+    - target: {fileID: 129652, guid: 87b7609d6bdd828418e0683654cede03, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 477266, guid: 87b7609d6bdd828418e0683654cede03, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.03
@@ -169,6 +177,10 @@ PrefabInstance:
     - target: {fileID: 119504, guid: 8788c47ca714a0a4ba42bbe5ca58fbb7, type: 3}
       propertyPath: m_Name
       value: House_Roof_1A
+      objectReference: {fileID: 0}
+    - target: {fileID: 119504, guid: 8788c47ca714a0a4ba42bbe5ca58fbb7, type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 482906, guid: 8788c47ca714a0a4ba42bbe5ca58fbb7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -244,6 +256,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: House_Wall_1A2
       objectReference: {fileID: 0}
+    - target: {fileID: 100860, guid: faa5c0de257092c4eabb33ab09273eba, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 468538, guid: faa5c0de257092c4eabb33ab09273eba, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.0897117
@@ -305,6 +321,10 @@ PrefabInstance:
     - target: {fileID: 100860, guid: faa5c0de257092c4eabb33ab09273eba, type: 3}
       propertyPath: m_Name
       value: House_Wall_1A2 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 100860, guid: faa5c0de257092c4eabb33ab09273eba, type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 468538, guid: faa5c0de257092c4eabb33ab09273eba, type: 3}
       propertyPath: m_LocalPosition.x
