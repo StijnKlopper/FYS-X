@@ -31,8 +31,6 @@ public class CaveBuilder : MonoBehaviour
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         caveGenerator = GameObject.Find("Level").GetComponent<CaveGenerator>();
         StartCoroutine(updateCaveMesh());
-        
-
     }
 
     public IEnumerator updateCaveMesh() {
@@ -49,7 +47,7 @@ public class CaveBuilder : MonoBehaviour
 
         mesh.vertices = safemesh.Vertices;
         mesh.triangles = safemesh.Triangles;
-        mesh.uv = new Vector2[(int)mesh.vertices.Length];
+
         mesh.Optimize();
         mesh.RecalculateNormals();
         meshCollider.sharedMesh = null;
