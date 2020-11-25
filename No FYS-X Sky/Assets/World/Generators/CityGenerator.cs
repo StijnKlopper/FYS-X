@@ -8,7 +8,7 @@ using UnityEngine;
 public class CityGenerator : MonoBehaviour, Generator
 {
     [SerializeField]
-    public float minimumCityDistanceRadius = 20f;
+    public float minimumCityDistanceRadius = 150f; // TODO: Werkt niet? Cities moeten verder van elkaar af maar lijkt wel of dit niet werkt
 
     public int minimumCitySize = 20;
 
@@ -138,6 +138,7 @@ public class CityGenerator : MonoBehaviour, Generator
 
     public void GenerateCity(Vector3 cityCubeLocation)
     {
+        int maxBuildingsPerCity = 4;
         int cityRaySize = cityPoints[cityCubeLocation].cityCoordinates.Count;
 
         // Check if the city is large enough. If it is it will generate a city.
@@ -147,16 +148,13 @@ public class CityGenerator : MonoBehaviour, Generator
              //Place buildings untill no more space in the area
             int tries = 0;
             int currentCitySize = cityRaySize;
-            while (currentCitySize >= minimumCitySize && tries < 10)
+            while (currentCitySize >= minimumCitySize && tries <= maxBuildingsPerCity)
             {
-                GenerateBuilding(cityCubeLocation);
-                currentCitySize = cityPoints[cityCubeLocation].cityCoordinates.Count;
                 tries += 1;
-                //Debug.Log("Build house: coords left=" + currentCitySize);
+                GenerateBuilding(cityCubeLocation, tries);
+                currentCitySize = cityPoints[cityCubeLocation].cityCoordinates.Count;
             }
             
-            //GenerateBuilding(cityCubeLocation);
-
         }
         else
         {
@@ -165,17 +163,23 @@ public class CityGenerator : MonoBehaviour, Generator
         }
     }
 
-    public void GenerateBuilding(Vector3 cityCubeLocation)
+    public void GenerateBuilding(Vector3 cityCubeLocation, int seed=1)
     {
+        if (seed <= 0) seed = 1;
+
         List<Vector3> rayHits = cityPoints[cityCubeLocation].cityCoordinates;
 
         if (rayHits == null) return;
 
         int fakeY = 0;
-        int randomHouseIndex = 1;
-        //int randomHouseIndex = (int)Math.Round(Mathf.PerlinNoise(cityCubeLocation.x, cityCubeLocation.z) * houses.Count );
-
-        int randomLocationIndex = (int)Math.Round(Mathf.PerlinNoise(cityCubeLocation.x, cityCubeLocation.z) * rayHits.Count);
+        // TODO: Probleem is dat we niet huizen kunnen generen "random", ik dacht aan de seed die gebruikt kon worden maar dat kan niet want dan alsnog komt er in elke city dezelfde huizen.
+        // Lijkt erop dat die cityCubeLocation.x en cityCubeLocation.z niet iets randoms genereren voor verschillende cities?
+        int randomHouseIndex = (int)Math.Round(Mathf.PerlinNoise(cityCubeLocation.x, cityCubeLocation.z) * houses.Count);
+        Debug.Log(Mathf.PerlinNoise(cityCubeLocation.x, cityCubeLocation.z)); // Tussen 0 en 1
+        Debug.Log(houses.Count); // 2
+        Debug.Log(randomHouseIndex); // 1
+        Debug.Log("---");
+        int randomLocationIndex = (int)Math.Round(Mathf.PerlinNoise(cityCubeLocation.x * seed, cityCubeLocation.z * seed) * rayHits.Count);
 
         List<Vector3> rayHitsFakeY = new List<Vector3>();
         foreach (var coord in rayHits)
@@ -183,12 +187,11 @@ public class CityGenerator : MonoBehaviour, Generator
             rayHitsFakeY.Add(new Vector3(coord.x, fakeY, coord.z));
         }
 
-        //Kan netter
+        // Calculate bounds of the house
         Bounds houseB = CalculateBounds(houses[randomHouseIndex]);
         Vector3 houseBounds = houseB.size;
         Vector3 location = rayHits[randomLocationIndex];
  
-
         // All coordinates (corners) to check within
         int smallestX = (int)Math.Round(location.x - (houseBounds.x / 2));
         int highestX = (int)Math.Round(location.x + (houseBounds.x / 2));
@@ -222,8 +225,9 @@ public class CityGenerator : MonoBehaviour, Generator
             // Make House only rotate on Y axis.
             Vector3 housePosition = new Vector3(location.x - houseB.center.x, houses[randomHouseIndex].transform.position.y + location.y, location.z - houseB.center.z);
             GameObject house = Instantiate(houses[randomHouseIndex], housePosition, Quaternion.identity, parentObj.transform.GetChild(0).transform) as GameObject;
-            house.transform.localRotation.SetLookRotation(cityCubeLocation);
-            house.transform.Rotate(0, (cityCubeLocation.y), 0);
+            Vector3 targetPostition = new Vector3(cityCubeLocation.x, house.transform.position.y, cityCubeLocation.z);
+            house.transform.LookAt(targetPostition);
+
             tile.AddObject(house);
 
             // Update coordinates
