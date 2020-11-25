@@ -600,7 +600,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.795
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -919,6 +919,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cavePrefab: {fileID: 5849594575968623539, guid: 414f10da3431ef44f88a77f5c556f3b2, type: 3}
+  caveFloorPrefab: {fileID: 2528839107603556626, guid: 743602873ebc2524da812b9d05d64299, type: 3}
 --- !u!1 &1469793297
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,20 +19,29 @@ public class CaveBuilder : MonoBehaviour
 
     TerrainGenerator terrainGenerator;
 
+    CaveGenerator caveGenerator;
+
     SafeMesh safemesh;
+
+    GameObject caveFloor;
 
     // Start is called before the first frame update
     void Start()
     {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        caveGenerator = GameObject.Find("Level").GetComponent<CaveGenerator>();
         StartCoroutine(updateCaveMesh());
+        
+
     }
 
     public IEnumerator updateCaveMesh() {
+        int height = 30;
+
         Task task;
         Mesh caveMesh = new Mesh();
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
-        this.StartCoroutineAsync(generateCaveMap(caveMesh, offsets), out task);
+        this.StartCoroutineAsync(generateCaveMap(caveMesh, offsets, height), out task);
         yield return StartCoroutine(task.Wait());
 
         Mesh mesh = GetComponent<MeshFilter>().mesh;
@@ -45,16 +54,17 @@ public class CaveBuilder : MonoBehaviour
         mesh.RecalculateNormals();
         meshCollider.sharedMesh = null;
         meshCollider.sharedMesh = mesh;
+        caveFloor = caveGenerator.GenerateCaveFloor(new Vector3(this.gameObject.transform.position.x - 5, -height, this.gameObject.transform.position.z - 5));
     }
 
-    IEnumerator generateCaveMap(Mesh caveMesh, Vector2 offsets)
+    IEnumerator generateCaveMap(Mesh caveMesh, Vector2 offsets, int height)
     {
-        safemesh = this.GenerateCaveMap(offsets, caveMesh);
+        safemesh = this.GenerateCaveMap(offsets, caveMesh, height);
         yield return safemesh;
     }
 
 
-    public SafeMesh GenerateCaveMap(Vector2 offsets, Mesh caveMesh)
+    public SafeMesh GenerateCaveMap(Vector2 offsets, Mesh caveMesh, int height)
     {
         int size = 11;
 
@@ -67,9 +77,9 @@ public class CaveBuilder : MonoBehaviour
         ridgedMultifractal = new RidgedMultifractal();
         ridgedMultifractal.OctaveCount = 3;
 
-        int height = 30;
+        
 
-        Tile tile = WorldBuilder.GetTile(new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5)));
+        Tile tile = WorldBuilder.GetTile(new Vector3(-(offsets.x ), 0, -(offsets.y )));
 
 
         float[,] heightMap = tile.heightMap;
@@ -98,9 +108,8 @@ public class CaveBuilder : MonoBehaviour
         return safeMesh;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDestroy()
     {
-
+        Destroy(caveFloor);
     }
 }

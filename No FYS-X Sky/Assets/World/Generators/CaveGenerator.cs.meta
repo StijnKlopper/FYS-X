@@ -3,7 +3,9 @@ guid: c603bd3a4f019124a965f8783c8c80a0
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - cavePrefab: {instanceID: 0}
+  - caveFloorPrefab: {fileID: 2528839107603556626, guid: 743602873ebc2524da812b9d05d64299, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
