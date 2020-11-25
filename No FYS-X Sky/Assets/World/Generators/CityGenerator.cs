@@ -1,6 +1,7 @@
 ﻿using Assets.World.Generator;
 using System;
 using System.Collections.Generic;
+using TreeEditor;
 using UnityEditor.Profiling;
 using UnityEngine;
 
@@ -27,7 +28,7 @@ public class CityGenerator : MonoBehaviour, Generator
 
     void Start()
     {
-        raysDebug = true;
+        raysDebug = true; 
 
         cityPoints = new Dictionary<Vector3, CityPoint>();
 
@@ -143,18 +144,18 @@ public class CityGenerator : MonoBehaviour, Generator
         if (cityRaySize >= minimumCitySize)
         {
 
-            /* Place buildings untill no more space in the area
+             //Place buildings untill no more space in the area
             int tries = 0;
             int currentCitySize = cityRaySize;
-            while (currentCitySize >= minimumCitySize || tries < 10)
+            while (currentCitySize >= minimumCitySize && tries < 10)
             {
                 GenerateBuilding(cityCubeLocation);
                 currentCitySize = cityPoints[cityCubeLocation].cityCoordinates.Count;
                 tries += 1;
-                Debug.Log("Build house: coords left=" + currentCitySize);
+                //Debug.Log("Build house: coords left=" + currentCitySize);
             }
-            */
-            GenerateBuilding(cityCubeLocation);
+            
+            //GenerateBuilding(cityCubeLocation);
 
         }
         else
@@ -171,8 +172,10 @@ public class CityGenerator : MonoBehaviour, Generator
         if (rayHits == null) return;
 
         int fakeY = 0;
-        int randomHouseIndex = UnityEngine.Random.Range(0, houses.Count);
-        int randomLocationIndex = UnityEngine.Random.Range(0, rayHits.Count);
+        int randomHouseIndex = 1;
+        //int randomHouseIndex = (int)Math.Round(Mathf.PerlinNoise(cityCubeLocation.x, cityCubeLocation.z) * houses.Count );
+
+        int randomLocationIndex = (int)Math.Round(Mathf.PerlinNoise(cityCubeLocation.x, cityCubeLocation.z) * rayHits.Count);
 
         List<Vector3> rayHitsFakeY = new List<Vector3>();
         foreach (var coord in rayHits)
@@ -184,6 +187,7 @@ public class CityGenerator : MonoBehaviour, Generator
         Bounds houseB = CalculateBounds(houses[randomHouseIndex]);
         Vector3 houseBounds = houseB.size;
         Vector3 location = rayHits[randomLocationIndex];
+ 
 
         // All coordinates (corners) to check within
         int smallestX = (int)Math.Round(location.x - (houseBounds.x / 2));
@@ -219,11 +223,10 @@ public class CityGenerator : MonoBehaviour, Generator
             Vector3 housePosition = new Vector3(location.x - houseB.center.x, houses[randomHouseIndex].transform.position.y + location.y, location.z - houseB.center.z);
             GameObject house = Instantiate(houses[randomHouseIndex], housePosition, Quaternion.identity, parentObj.transform.GetChild(0).transform) as GameObject;
             house.transform.localRotation.SetLookRotation(cityCubeLocation);
-
+            house.transform.Rotate(0, (cityCubeLocation.y), 0);
             tile.AddObject(house);
 
             // Update coordinates
-            // TODO: Call method below to update coords of city so no buildings can be inside eachother, this isn't working correctly atm 
             UpdateCoordinatesAroundBox(cityCubeLocation);
         }
 
