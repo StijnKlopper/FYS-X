@@ -32,15 +32,4 @@ public class CaveGenerator : MonoBehaviour, Generator
         tile.transform.SetParent(this.transform);
         return tile;
     }
-
-    public GameObject GenerateCaveFloor(Vector3 position) {
-        Vector3 tilePosition = new Vector3(position.x + tileOffset, position.y, position.z + tileOffset);
-
-        GameObject tile = Instantiate(caveFloorPrefab, tilePosition, Quaternion.Euler(0, 180, 0)) as GameObject;
-        tile.transform.SetParent(this.transform);
-        return tile;
-    }
-
-
-
 }

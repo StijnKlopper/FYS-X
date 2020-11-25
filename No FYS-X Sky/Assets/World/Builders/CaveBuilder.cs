@@ -30,10 +30,10 @@ public class CaveBuilder : MonoBehaviour
     {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         caveGenerator = GameObject.Find("Level").GetComponent<CaveGenerator>();
-        StartCoroutine(updateCaveMesh());
+        StartCoroutine(UpdateCaveMesh());
     }
 
-    public IEnumerator updateCaveMesh() {
+    public IEnumerator UpdateCaveMesh() {
         int height = 30;
 
         Task task;
@@ -52,7 +52,7 @@ public class CaveBuilder : MonoBehaviour
         mesh.RecalculateNormals();
         meshCollider.sharedMesh = null;
         meshCollider.sharedMesh = mesh;
-        caveFloor = caveGenerator.GenerateCaveFloor(new Vector3(this.gameObject.transform.position.x - 5, -height, this.gameObject.transform.position.z - 5));
+        //caveFloor = caveGenerator.GenerateCaveFloor(new Vector3(this.gameObject.transform.position.x - 5, -height, this.gameObject.transform.position.z - 5));
     }
 
     IEnumerator generateCaveMap(Mesh caveMesh, Vector2 offsets, int height)
@@ -75,8 +75,6 @@ public class CaveBuilder : MonoBehaviour
         ridgedMultifractal = new RidgedMultifractal();
         ridgedMultifractal.OctaveCount = 3;
 
-        
-
         Tile tile = WorldBuilder.GetTile(new Vector3(-(offsets.x ), 0, -(offsets.y )));
 
 
@@ -93,9 +91,24 @@ public class CaveBuilder : MonoBehaviour
                 // Cave height make height dynamic based on heightmap[x,z]
                 for (int y = 0; y < caveHeight; y++)
                 {
-                    double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, (y + addendum) / scale, (z + offsets.y + addendum) / scale);
-                    int isCave = tempVal < 0.35 ? 0 : 1;
-                    caveMap[x, y, z] = isCave;
+
+                    if (y == 0)
+                    {
+                        caveMap[x, y, z] = 1;
+                    }
+
+                    else if (y <= 2)
+                    {
+                        double tempVal = ridgedMultifractal.GetValue((z + offsets.y + addendum) / scale, (y + addendum) / scale, (x + offsets.x + addendum) / scale);
+                        int isCave = tempVal < 0 ? 0 : 1;
+                        caveMap[x, y, z] = isCave;
+                    }
+
+                    else {
+                        double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, (y + addendum) / scale, (z + offsets.y + addendum) / scale);
+                        int isCave = tempVal < 0.35 ? 0 : 1;
+                        caveMap[x, y, z] = isCave;
+                    }
                 }
             }
         }
@@ -105,9 +118,9 @@ public class CaveBuilder : MonoBehaviour
 
         return safeMesh;
     }
-
+/*
     private void OnDestroy()
     {
         Destroy(caveFloor);
-    }
+    }*/
 }
