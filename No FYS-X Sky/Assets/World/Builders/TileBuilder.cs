@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Schema;
-using UnityEditor;
+﻿using CielaSpike;
+using System.Collections;
 using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
@@ -30,14 +28,24 @@ public class TileBuilder : MonoBehaviour
 
     private Texture2D oceanSplatmap;
 
+    private bool hasOcean;
+
     // Start is called before the first frame update
     void Start()
     {
-        terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        GenerateTile();
+        
+        
     }
 
-    private void GenerateTile()
+
+    public float[,] instantiate() {
+        terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        hasOcean = false;
+        StartCoroutine("GenerateTile");
+        return heightMap;
+    }
+
+    private IEnumerator GenerateTile()
     {
         Vector3[] meshVertices = this.meshFilter.mesh.vertices;
         int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
@@ -51,13 +59,20 @@ public class TileBuilder : MonoBehaviour
         this.tileRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
 
         UpdateMeshVertices(heightMap, offsets);
-        oceanTile = terrainGenerator.GenerateOcean(tileRenderer.gameObject.transform.position);
-        oceanTile.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
+        /*oceanTile = terrainGenerator.GenerateOcean(tileRenderer.gameObject.transform.position);
+        oceanTile.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);*/
+
+        GameObject ocean = this.transform.GetChild(0).gameObject;
+        ocean.SetActive(hasOcean);
+        ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
+        ocean.transform.position = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
+        yield return null;
     }
 
 
     public void GenerateHeightMap(int width, int height, Vector2 offsets)
     {
+
         int tileHeight = width;
         int tileWidth = height;
 
@@ -135,6 +150,14 @@ public class TileBuilder : MonoBehaviour
                 splatMap2[colorIndex] = biome.biomeType.color2;
                 splatMap3[colorIndex] = biome.biomeType.color3;
 
+                if (biome.biomeType is OceanBiomeType)
+                {
+                    oceanMap[colorIndex] = new Color(1, 0, 0);
+                    hasOcean = true;
+                }
+
+                else { oceanMap[colorIndex] = new Color(0, 1, 0); }
+
                 oceanMap[colorIndex] = biome.biomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
 
                 tileTextureData[x + y * height] = biome.biomeType.biomeTypeId;
@@ -160,7 +183,7 @@ public class TileBuilder : MonoBehaviour
 
         
 
-        WorldBuilder.tileDict[new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5))].heightMap = heightMap;
+        //WorldBuilder.tileDict[new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5))].heightMap = heightMap;
         this.heightMap = heightMap;
     }
 

@@ -1,14 +1,6 @@
-﻿using Assets.World.Generator;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
-using LibNoise;
 using LibNoise.Generator;
-using LibNoise.Operator;
-using UnityEditor.UIElements;
-using System;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 using CielaSpike;
 
@@ -16,24 +8,16 @@ public class CaveBuilder : MonoBehaviour
 {
 
     RidgedMultifractal ridgedMultifractal;
-
-    TerrainGenerator terrainGenerator;
-
-    CaveGenerator caveGenerator;
-
     SafeMesh safemesh;
+    float[,] heightmap;
 
-    GameObject caveFloor;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        caveGenerator = GameObject.Find("Level").GetComponent<CaveGenerator>();
+    public void initiate(float[,] heightmap) {
+        this.heightmap = heightmap;
         StartCoroutine(UpdateCaveMesh());
     }
 
-    public IEnumerator UpdateCaveMesh() {
+    public IEnumerator UpdateCaveMesh()
+    {
         int height = 30;
 
         Task task;
@@ -44,15 +28,18 @@ public class CaveBuilder : MonoBehaviour
 
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         MeshCollider meshCollider = GetComponent<MeshCollider>();
-
+        mesh.Clear();
         mesh.vertices = safemesh.Vertices;
         mesh.triangles = safemesh.Triangles;
+
+        mesh.uv = GenerateUV.CalculateUVs(safemesh.Vertices, 1);
 
         mesh.Optimize();
         mesh.RecalculateNormals();
         meshCollider.sharedMesh = null;
         meshCollider.sharedMesh = mesh;
-        //caveFloor = caveGenerator.GenerateCaveFloor(new Vector3(this.gameObject.transform.position.x - 5, -height, this.gameObject.transform.position.z - 5));
+
+        yield return null;
     }
 
     IEnumerator generateCaveMap(Mesh caveMesh, Vector2 offsets, int height)
@@ -61,9 +48,9 @@ public class CaveBuilder : MonoBehaviour
         yield return safemesh;
     }
 
-
     public SafeMesh GenerateCaveMap(Vector2 offsets, Mesh caveMesh, int height)
     {
+
         int size = 11;
 
         // Gets added to coordinates, is a decimal to make sure it does not end up at an integer
@@ -75,10 +62,11 @@ public class CaveBuilder : MonoBehaviour
         ridgedMultifractal = new RidgedMultifractal();
         ridgedMultifractal.OctaveCount = 3;
 
-        Tile tile = WorldBuilder.GetTile(new Vector3(-(offsets.x ), 0, -(offsets.y )));
+        //Tile tile = WorldBuilder.GetTile(new Vector3(-(offsets.x ), 0, -(offsets.y )));
 
+        //Debug.Log(tile.heightMap);*/
 
-        float[,] heightMap = tile.heightMap;
+        //float[,] heightMap = tile.heightMap;
 
         float[, ,] caveMap = new float[size, height * 2, size];
 
@@ -86,7 +74,7 @@ public class CaveBuilder : MonoBehaviour
         {
             for (int z = 0; z < size; z++)
             {
-                int coordinateHeight = Mathf.FloorToInt(heightMap[x, z]);
+                int coordinateHeight = Mathf.FloorToInt(heightmap[x, z]);
                 int caveHeight = coordinateHeight + height;
                 // Cave height make height dynamic based on heightmap[x,z]
                 for (int y = 0; y < caveHeight; y++)
@@ -104,7 +92,8 @@ public class CaveBuilder : MonoBehaviour
                         caveMap[x, y, z] = isCave;
                     }
 
-                    else {
+                    else
+                    {
                         double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, (y + addendum) / scale, (z + offsets.y + addendum) / scale);
                         int isCave = tempVal < 0.35 ? 0 : 1;
                         caveMap[x, y, z] = isCave;
@@ -114,13 +103,6 @@ public class CaveBuilder : MonoBehaviour
         }
 
         SafeMesh safeMesh = MarchingCubes.BuildMesh(caveMap);
-
-
         return safeMesh;
     }
-/*
-    private void OnDestroy()
-    {
-        Destroy(caveFloor);
-    }*/
 }
