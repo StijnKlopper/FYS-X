@@ -950,7 +950,6 @@ GameObject:
   - component: {fileID: 1284178399}
   - component: {fileID: 1284178401}
   - component: {fileID: 1284178400}
-  - component: {fileID: 1284178402}
   m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
@@ -1033,18 +1032,6 @@ MonoBehaviour:
   oceanPrefab: {fileID: 8703873624021677109, guid: b4c854845c276c3409741edef1149a9d, type: 3}
   terrainGenerator: {fileID: 1284178397}
   caveGenerator: {fileID: 1284178400}
---- !u!114 &1284178402
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1284178396}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70365a30f07f3b845b85aeeb4341c8a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1469793297
 GameObject:
   m_ObjectHideFlags: 0

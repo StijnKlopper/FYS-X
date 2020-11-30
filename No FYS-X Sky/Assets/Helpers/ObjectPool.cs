@@ -7,17 +7,29 @@ public class ObjectPool : MonoBehaviour
     public List<GameObject> caveObjectPool;
     public List<GameObject> terrainObjectPool;
     public List<GameObject> oceanObjectPool;
+
+    public enum GameObjectType
+    {
+        Cave,
+        Terrain,
+        Ocean
+    }
+
+    private Dictionary<GameObjectType, List<GameObject>> gameObjectDict;
+
     public int poolAmount;
-    public GameObject cavePrefab;
     public GameObject terrainPrefab;
+    public GameObject cavePrefab;
     public GameObject oceanPrefab;
 
     public TerrainGenerator terrainGenerator;
-    public CaveGenerator caveGenerator;
 
     // Start is called before the first frame update
     void Start()
     {
+        gameObjectDict = new Dictionary<GameObjectType, List<GameObject>>();
+
+
         for (int i = 0; i < poolAmount; i++ )
         {
             GameObject cave = (GameObject)Instantiate(cavePrefab);
@@ -25,7 +37,7 @@ public class ObjectPool : MonoBehaviour
             GameObject ocean = (GameObject)Instantiate(oceanPrefab);
 
             terrain.transform.SetParent(terrainGenerator.transform);
-            cave.transform.SetParent(caveGenerator.transform);
+            cave.transform.SetParent(terrainGenerator.transform);
             ocean.transform.SetParent(terrain.transform);
             cave.transform.rotation = Quaternion.Euler(0, 180, 0);
 
@@ -36,58 +48,33 @@ public class ObjectPool : MonoBehaviour
             terrainObjectPool.Add(terrain);
             oceanObjectPool.Add(ocean);
 
+            
+
         }
+
+        gameObjectDict.Add(GameObjectType.Terrain, terrainObjectPool);
+        gameObjectDict.Add(GameObjectType.Cave, caveObjectPool);
+        gameObjectDict.Add(GameObjectType.Ocean, oceanObjectPool);
     }
 
-    public GameObject GetPooledCaveObject()
+    public GameObject GetPooledObject(GameObjectType gameObjectType)
     {
+        List<GameObject> objectList = gameObjectDict[gameObjectType];
 
-        for (int i = 0; i < caveObjectPool.Count; i++)
+        for (int i = 0; i < objectList.Count; i++)
         {
-            if (!caveObjectPool[i].activeInHierarchy)
+            if (!objectList[i].activeInHierarchy)
             {
-                caveObjectPool[i].SetActive(true);
-                return caveObjectPool[i];
+                objectList[i].SetActive(true);
+                return objectList[i];
             }
         }
 
-        Debug.Log("BRO NIET BEST");
+        Debug.Log("POOL IS EMPTY " + gameObjectType.ToString());
         return null;
     }
 
-    public GameObject GetPooledTerrainObject()
-    {
-
-        for (int i = 0; i < terrainObjectPool.Count; i++)
-        {
-            if (!terrainObjectPool[i].activeInHierarchy)
-            {
-                terrainObjectPool[i].SetActive(true);
-                return terrainObjectPool[i];
-            }
-        }
-
-        Debug.Log("BRO NIET BEST WTFF");
-        return null;
-    }
-
-    public GameObject GetPooledOceanObject()
-    {
-
-        for (int i = 0; i < oceanObjectPool.Count; i++)
-        {
-            if (!oceanObjectPool[i].activeInHierarchy)
-            {
-                oceanObjectPool[i].SetActive(true);
-                return oceanObjectPool[i];
-            }
-        }
-
-        Debug.Log("BRO NIET BEST WTFF");
-        return null;
-    }
-
-    public void unloadPooledObject(GameObject gameObject) {
+    public void UnloadPooledObject(GameObject gameObject) {
         gameObject.SetActive(false);
     }
 }

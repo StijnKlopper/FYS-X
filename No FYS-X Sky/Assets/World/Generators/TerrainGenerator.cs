@@ -14,8 +14,6 @@ public class TerrainGenerator : MonoBehaviour, Generator
     [SerializeField]
     private GameObject oceanPrefab;
 
-    private int tileOffset = 5;
-
     public int seed;
 
     public TextureData textureData;
@@ -39,21 +37,6 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
         //set shared texture array for all tiles to use to preserve loading and unloading too many textures
         textureData.ApplyToMaterial(tilePrefab.GetComponent<Renderer>().sharedMaterial);
-    }
-
-    public GameObject GenerateTile(Vector3 position)
-    {
-        Vector3 tilePosition = new Vector3(position.x + tileOffset, this.gameObject.transform.position.y, position.z + tileOffset);
-        GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
-        tile.transform.SetParent(this.transform);
-        return tile;
-    }
-
-    public GameObject GenerateOcean(Vector3 position) {
-        Vector3 tilePosition = new Vector3(position.x, this.gameObject.transform.position.y, position.z);
-        GameObject oceanTile = Instantiate(oceanPrefab, tilePosition, Quaternion.identity) as GameObject;
-        oceanTile.transform.SetParent(this.transform);
-        return oceanTile;
     }
 
     public Biome GetBiomeByCoordinates(Vector2 coordinates)

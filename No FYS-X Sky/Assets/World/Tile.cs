@@ -22,7 +22,7 @@ public class Tile
 
         foreach (GameObject obj in loadedObjects)
         {
-            objectPool.unloadPooledObject(obj);
+            objectPool.UnloadPooledObject(obj);
         }
     }
 }

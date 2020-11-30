@@ -31,14 +31,9 @@ public class TileBuilder : MonoBehaviour
     private bool hasOcean;
 
     // Start is called before the first frame update
-    void Start()
-    {
-        
-        
-    }
 
 
-    public float[,] instantiate() {
+    public float[,] Instantiate() {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         hasOcean = false;
         StartCoroutine("GenerateTile");
@@ -59,8 +54,6 @@ public class TileBuilder : MonoBehaviour
         this.tileRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
 
         UpdateMeshVertices(heightMap, offsets);
-        /*oceanTile = terrainGenerator.GenerateOcean(tileRenderer.gameObject.transform.position);
-        oceanTile.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);*/
 
         GameObject ocean = this.transform.GetChild(0).gameObject;
         ocean.SetActive(hasOcean);

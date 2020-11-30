@@ -11,7 +11,7 @@ public class CaveBuilder : MonoBehaviour
     SafeMesh safemesh;
     float[,] heightmap;
 
-    public void initiate(float[,] heightmap) {
+    public void Instantiate(float[,] heightmap) {
         this.heightmap = heightmap;
         StartCoroutine(UpdateCaveMesh());
     }
@@ -23,7 +23,7 @@ public class CaveBuilder : MonoBehaviour
         Task task;
         Mesh caveMesh = new Mesh();
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
-        this.StartCoroutineAsync(generateCaveMap(caveMesh, offsets, height), out task);
+        this.StartCoroutineAsync(GenerateCaveMap(caveMesh, offsets, height), out task);
         yield return StartCoroutine(task.Wait());
 
         Mesh mesh = GetComponent<MeshFilter>().mesh;
@@ -36,13 +36,15 @@ public class CaveBuilder : MonoBehaviour
 
         mesh.Optimize();
         mesh.RecalculateNormals();
+
+        //Find out what this does
         meshCollider.sharedMesh = null;
         meshCollider.sharedMesh = mesh;
 
         yield return null;
     }
 
-    IEnumerator generateCaveMap(Mesh caveMesh, Vector2 offsets, int height)
+    IEnumerator GenerateCaveMap(Mesh caveMesh, Vector2 offsets, int height)
     {
         safemesh = this.GenerateCaveMap(offsets, caveMesh, height);
         yield return safemesh;
@@ -61,12 +63,6 @@ public class CaveBuilder : MonoBehaviour
 
         ridgedMultifractal = new RidgedMultifractal();
         ridgedMultifractal.OctaveCount = 3;
-
-        //Tile tile = WorldBuilder.GetTile(new Vector3(-(offsets.x ), 0, -(offsets.y )));
-
-        //Debug.Log(tile.heightMap);*/
-
-        //float[,] heightMap = tile.heightMap;
 
         float[, ,] caveMap = new float[size, height * 2, size];
 
