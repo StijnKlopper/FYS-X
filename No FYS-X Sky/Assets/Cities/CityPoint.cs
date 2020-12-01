@@ -8,13 +8,16 @@ public class CityPoint
 
     public List<Vector3> cityCoordinates; 
 
-    public List<Vector3> invalidCityCoordinates; 
+    public List<Vector3> invalidCityCoordinates;
+
+    public List<GameObject> buildings;
 
     public CityPoint(Vector3 cubePosition)
     {
         this.cubePosition = cubePosition;
         this.cityCoordinates = new List<Vector3>();
         this.invalidCityCoordinates = new List<Vector3>();
+        this.buildings = new List<GameObject>();
     }
 
     public int GetCountAllCityLocations()

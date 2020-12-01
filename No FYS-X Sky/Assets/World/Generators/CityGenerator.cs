@@ -138,15 +138,19 @@ public class CityGenerator : MonoBehaviour, Generator
     public void GenerateCity(Vector3 cityCubeLocation)
     {
         int maxBuildingsPerCity = 4;
-        int cityRaySize = cityPoints[cityCubeLocation].cityCoordinates.Count;
+        int cityRaySizeSeed = cityPoints[cityCubeLocation].cityCoordinates.Count;
 
         // Check if the city is large enough. If it is it will generate a city.
-        if (cityRaySize >= minimumCitySize)
+        if (cityRaySizeSeed >= minimumCitySize)
         {
+            // TODO: reserve spot for (fake) random buildings 
+            float random = Mathf.PerlinNoise(cityCubeLocation.x * cityRaySizeSeed, cityCubeLocation.y * cityRaySizeSeed);  // [0, 1]
+            Debug.Log(random);
 
-             //Place buildings untill no more space in the area
+
+            // Place buildings untill no more space in the area
             int tries = 0;
-            int currentCitySize = cityRaySize;
+            int currentCitySize = cityRaySizeSeed;
             while (currentCitySize >= minimumCitySize && tries <= maxBuildingsPerCity)
             {
                 tries += 1;
@@ -174,10 +178,6 @@ public class CityGenerator : MonoBehaviour, Generator
         // TODO: Probleem is dat we niet huizen kunnen generen "random", ik dacht aan de seed die gebruikt kon worden maar dat kan niet want dan alsnog komt er in elke city dezelfde huizen.
         // Lijkt erop dat die cityCubeLocation.x en cityCubeLocation.z niet iets randoms genereren voor verschillende cities?
         int randomHouseIndex = (int)Math.Round(Mathf.PerlinNoise(cityCubeLocation.x, cityCubeLocation.z) * houses.Count);
-        //Debug.Log(Mathf.PerlinNoise(cityCubeLocation.x, cityCubeLocation.z)); // Tussen 0 en 1
-        //Debug.Log(houses.Count); // 2
-        //Debug.Log(randomHouseIndex); // 1
-        //Debug.Log("---");
         int randomLocationIndex = (int)Math.Round(Mathf.PerlinNoise(cityCubeLocation.x * seed, cityCubeLocation.z * seed) * rayHits.Count);
 
         List<Vector3> rayHitsFakeY = new List<Vector3>();
