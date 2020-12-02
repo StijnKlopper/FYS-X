@@ -8,7 +8,7 @@ public class CaveBuilder : MonoBehaviour
 {
 
     RidgedMultifractal ridgedMultifractal;
-    SafeMesh safemesh;
+    SafeMesh safeMesh;
     float[,] heightmap;
 
     public void Instantiate(float[,] heightmap) {
@@ -20,19 +20,18 @@ public class CaveBuilder : MonoBehaviour
     {
         int height = 30;
 
-        Task task;
         Mesh caveMesh = new Mesh();
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
-        this.StartCoroutineAsync(GenerateCaveMap(caveMesh, offsets, height), out task);
+        this.StartCoroutineAsync(GenerateCaveMap(caveMesh, offsets, height), out Task task);
         yield return StartCoroutine(task.Wait());
 
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         MeshCollider meshCollider = GetComponent<MeshCollider>();
         mesh.Clear();
-        mesh.vertices = safemesh.Vertices;
-        mesh.triangles = safemesh.Triangles;
+        mesh.vertices = safeMesh.Vertices;
+        mesh.triangles = safeMesh.Triangles;
 
-        mesh.uv = GenerateUV.CalculateUVs(safemesh.Vertices, 1);
+        mesh.uv = GenerateUV.CalculateUVs(safeMesh.Vertices, 1);
 
         mesh.Optimize();
         mesh.RecalculateNormals();
@@ -46,13 +45,12 @@ public class CaveBuilder : MonoBehaviour
 
     IEnumerator GenerateCaveMap(Mesh caveMesh, Vector2 offsets, int height)
     {
-        safemesh = this.GenerateCaveMap(offsets, caveMesh, height);
-        yield return safemesh;
+        safeMesh = this.GenerateCaveMap(offsets, caveMesh, height);
+        yield return safeMesh;
     }
 
     public SafeMesh GenerateCaveMap(Vector2 offsets, Mesh caveMesh, int height)
     {
-
         int size = 11;
 
         // Gets added to coordinates, is a decimal to make sure it does not end up at an integer
@@ -75,19 +73,16 @@ public class CaveBuilder : MonoBehaviour
                 // Cave height make height dynamic based on heightmap[x,z]
                 for (int y = 0; y < caveHeight; y++)
                 {
-
                     if (y == 0)
                     {
                         caveMap[x, y, z] = 1;
                     }
-
                     else if (y <= 2)
                     {
                         double tempVal = ridgedMultifractal.GetValue((z + offsets.y + addendum) / scale, (y + addendum) / scale, (x + offsets.x + addendum) / scale);
                         int isCave = tempVal < 0 ? 0 : 1;
                         caveMap[x, y, z] = isCave;
                     }
-
                     else
                     {
                         double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, (y + addendum) / scale, (z + offsets.y + addendum) / scale);

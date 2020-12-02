@@ -6,10 +6,11 @@ public class GenerateUV
 {
     private enum Facing { Up, Forward, Right };
 
-    public static Vector2[] CalculateUVs(Vector3[] v/*vertices*/, float scale)
+    public static Vector2[] CalculateUVs(Vector3[] v, float scale)
     {
         var uvs = new Vector2[v.Length];
 
+        // For every vertice/triangle, create the uv based on the direction and the way it is facing
         for (int i = 0; i < uvs.Length; i += 3)
         {
             int i0 = i;
@@ -64,14 +65,18 @@ public class GenerateUV
         float maxDot = Mathf.NegativeInfinity;
 
         if (!FacesThisWay(v, Vector3.right, Facing.Right, ref maxDot, ref ret))
+        {
             FacesThisWay(v, Vector3.left, Facing.Right, ref maxDot, ref ret);
-
+        }
         if (!FacesThisWay(v, Vector3.forward, Facing.Forward, ref maxDot, ref ret))
+        {
             FacesThisWay(v, Vector3.back, Facing.Forward, ref maxDot, ref ret);
-
+        }
         if (!FacesThisWay(v, Vector3.up, Facing.Up, ref maxDot, ref ret))
+        {
             FacesThisWay(v, Vector3.down, Facing.Up, ref maxDot, ref ret);
-
+        }
+        
         return ret;
     }
 

@@ -17,39 +17,36 @@ public class ObjectPool : MonoBehaviour
 
     private Dictionary<GameObjectType, List<GameObject>> gameObjectDict;
 
-    public int poolAmount;
+    private int poolAmount;
     public GameObject terrainPrefab;
     public GameObject cavePrefab;
     public GameObject oceanPrefab;
 
     public TerrainGenerator terrainGenerator;
 
-    // Start is called before the first frame update
     void Start()
     {
+        poolAmount = Mathf.FloorToInt((WorldBuilder.chunkRenderDistance * 4.4f));
         gameObjectDict = new Dictionary<GameObjectType, List<GameObject>>();
-
 
         for (int i = 0; i < poolAmount; i++ )
         {
-            GameObject cave = (GameObject)Instantiate(cavePrefab);
             GameObject terrain = (GameObject)Instantiate(terrainPrefab);
+            GameObject cave = (GameObject)Instantiate(cavePrefab);
             GameObject ocean = (GameObject)Instantiate(oceanPrefab);
 
             terrain.transform.SetParent(terrainGenerator.transform);
             cave.transform.SetParent(terrainGenerator.transform);
-            ocean.transform.SetParent(terrain.transform);
             cave.transform.rotation = Quaternion.Euler(0, 180, 0);
+            ocean.transform.SetParent(terrain.transform);
 
-            cave.SetActive(false);
             terrain.SetActive(false);
+            cave.SetActive(false);
             ocean.SetActive(false);
-            caveObjectPool.Add(cave);
+
             terrainObjectPool.Add(terrain);
+            caveObjectPool.Add(cave);
             oceanObjectPool.Add(ocean);
-
-            
-
         }
 
         gameObjectDict.Add(GameObjectType.Terrain, terrainObjectPool);
@@ -70,7 +67,6 @@ public class ObjectPool : MonoBehaviour
             }
         }
 
-        Debug.Log("POOL IS EMPTY " + gameObjectType.ToString());
         return null;
     }
 

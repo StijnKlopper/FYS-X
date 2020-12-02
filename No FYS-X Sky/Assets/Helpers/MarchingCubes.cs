@@ -64,17 +64,22 @@ public static class MarchingCubes {
 		int i;
 		int num = 0;
 		float offset = 0f;
-		Vector3[] vector3Array = new Vector3[12];
+		int edges = 12;
+		Vector3[] vector3Array = new Vector3[edges];
+
 		for (i = 0; i < 8; i++) {
 			if (cube[i] <= MarchingCubes.target) {
 				num = num | 1 << (i & 31 & 31);
 			}
 		}
+
 		int num1 = MarchingCubes.cubeEdgeFlags[num];
+
 		if (num1 == 0) {
 			return;
 		}
-		for (i = 0; i < 12; i++) {
+
+		for (i = 0; i < edges; i++) {
 			if ((num1 & 1 << (i & 31)) != 0) {
 				offset = MarchingCubes.GetOffset(cube[MarchingCubes.edgeConnection[i, 0]], cube[MarchingCubes.edgeConnection[i, 1]]);
 				vector3Array[i].x = pos.x + ((float)MarchingCubes.vertexOffset[MarchingCubes.edgeConnection[i, 0], 0] + offset * MarchingCubes.edgeDirection[i, 0]);
@@ -82,7 +87,9 @@ public static class MarchingCubes {
 				vector3Array[i].z = pos.z + ((float)MarchingCubes.vertexOffset[MarchingCubes.edgeConnection[i, 0], 2] + offset * MarchingCubes.edgeDirection[i, 2]);
 			}
 		}
+
 		i = 0;
+
 		while (i < 5) {
 			if (MarchingCubes.triangleConnectionTable[num, 3 * i] >= 0) {
 				int count = vertList.Count;

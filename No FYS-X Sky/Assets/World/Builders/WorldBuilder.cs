@@ -8,9 +8,9 @@ class WorldBuilder
 {
     private TerrainGenerator terrainGenerator;
 
-    private int chunkSize;
+    public static int chunkSize = 10;
 
-    private int chunkRenderDistance;
+    public static int chunkRenderDistance = 100;
 
     private int regionRenderDistance;
 
@@ -18,8 +18,6 @@ class WorldBuilder
 
     public WorldBuilder()
     {
-        this.chunkSize = 10;
-        this.chunkRenderDistance = 100;
         this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
         this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         this.objectPool = GameObject.Find("Level").GetComponent<ObjectPool>();
