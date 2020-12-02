@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class CityPoint
@@ -45,6 +46,39 @@ public class CityPoint
         else
         {
             invalidCityCoordinates.Add(coordinate);
+        }
+        
+    }
+
+    public void CheckCoordinates(List<Vector3> houseCoordinates)
+    {
+        List<Vector3> PointsToRemove = new List<Vector3>();
+        //To-do: Een andere manier vinden dan 3 loops te gebruiken om het uit de list halen misschien?
+        foreach (var pos in houseCoordinates)
+        {
+            foreach (var citypos in cityCoordinates) 
+            {
+                if (citypos.x == pos.x && citypos.z == pos.z)
+                {
+                    //Prevent changing list while trough looping
+                    PointsToRemove.Add(citypos);
+                    continue;
+
+                }
+            }
+          
+        }
+        RemoveCoordinates(PointsToRemove);
+
+    }
+
+
+    private void RemoveCoordinates(List<Vector3> coords)
+    {
+        foreach(var pos in coords)
+        {
+            Debug.Log("Removing");
+            cityCoordinates.Remove(pos);
         }
         
     }
