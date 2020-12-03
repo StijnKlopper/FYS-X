@@ -27,6 +27,7 @@ public class TileBuilder : MonoBehaviour
     GameObject oceanTile;
 
     private Texture2D oceanSplatmap;
+    private Texture2D grassSplatmap;
 
     // Start is called before the first frame update
     void Start()
@@ -48,6 +49,7 @@ public class TileBuilder : MonoBehaviour
 
         Texture2DArray splatmaps = BuildTexture(offsets);
         this.tileRenderer.material.SetTexture("_SplatMaps", splatmaps);
+        this.tileRenderer.materials[1].SetTexture("_GrassSplatMap", grassSplatmap);
 
         UpdateMeshVertices(heightMap, offsets);
         oceanTile = terrainGenerator.GenerateOcean(tileRenderer.gameObject.transform.position);
@@ -66,6 +68,7 @@ public class TileBuilder : MonoBehaviour
         Color[] splatMap3 = new Color[splatmapSize];
 
         Color[] oceanMap = new Color[splatmapSize];
+        Color[] grassMap = new Color[splatmapSize];
 
         for (int y = 0; y < tileHeight; y++)
         {
@@ -82,11 +85,17 @@ public class TileBuilder : MonoBehaviour
 
                 oceanMap[colorIndex] = biome.biomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
 
+                if (biome.biomeType is ForestBiomeType ||
+                    biome.biomeType is PlainsBiomeType ||
+                    biome.biomeType is ShrublandBiomeType)
+                { grassMap[colorIndex] = new Color(1, 0, 0); }
+                else { grassMap[colorIndex] = new Color(0, 1, 0); }
             }
         }
 
         Texture2DArray splatmapsArray = new Texture2DArray(tileWidth, tileHeight, 3, TextureFormat.RGBA32, true);
         oceanSplatmap = new Texture2D(tileHeight, tileWidth);
+        grassSplatmap = new Texture2D(tileHeight, tileWidth);
 
         splatmapsArray.SetPixels(splatMap1, 0);
         splatmapsArray.SetPixels(splatMap2, 1);
@@ -95,6 +104,10 @@ public class TileBuilder : MonoBehaviour
         oceanSplatmap.SetPixels(oceanMap);
         oceanSplatmap.wrapMode = TextureWrapMode.Clamp;
         oceanSplatmap.Apply();
+
+        grassSplatmap.SetPixels(grassMap);
+        grassSplatmap.wrapMode = TextureWrapMode.Clamp;
+        grassSplatmap.Apply();
 
         splatmapsArray.wrapMode = TextureWrapMode.Clamp;
         splatmapsArray.Apply();
