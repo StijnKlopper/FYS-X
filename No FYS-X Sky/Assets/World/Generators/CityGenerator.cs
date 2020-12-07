@@ -1,25 +1,17 @@
 ﻿using Assets.World.Generator;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using TreeEditor;
-using UnityEditor.Profiling;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 
 public class CityGenerator : MonoBehaviour, Generator
 {
     [SerializeField]
-    public float minimumCityDistanceRadius; // Is serialized, Value in Unity Editor(CityPoints) is dominant
-    
-    [SerializeField]
+    public float minimumCityDistanceRadius;
     public int minimumCitySize;
-
-    [SerializeField]
     public int cityRadius;
+    public int seed;
 
     float margin = 0.5f;
-
 
     TerrainGenerator terrainGenerator;
 
@@ -32,17 +24,17 @@ public class CityGenerator : MonoBehaviour, Generator
 
     GameObject parentObj;
 
+
     void Start()
     {
-
         cityPoints = new Dictionary<Vector3, CityPoint>();
 
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         parentObj = GameObject.Find("CityPoints");
 
-        System.Random random = new System.Random(69420);
+        // Pseudo random numbers
+        System.Random random = new System.Random(seed);
         this.randomNumbers = new int[20];
-
         for (int i = 0; i < this.randomNumbers.Length; i++)
         {
             this.randomNumbers[i] = random.Next(10000, 100000);
@@ -153,38 +145,35 @@ public class CityGenerator : MonoBehaviour, Generator
     {
         int cityRaySizeSeed = cityPoints[cityCubeLocation].cityCoordinates.Count;
 
-        //Check if the city is large enough. If it is it will generate a city.
-        //To-do hier is een building gezet dus die mag je niet mere gebruiken
-        //Valid methode nodig
-        //Seed moet ook overheen komen met Worldseed
-        //
+        if (cityRaySizeSeed >= minimumCitySize) {
+            for (int i = 1; i < cityRaySizeSeed - 1; i += 10)
+            {
+                // TODO: reserve spot for (fake) random buildings 
+                // Calculate bounds of the house
+                //Bounds houseB = CalculateBounds(houses[randomHouseIndex]);
+                //Vector3 houseBounds = houseB.size;
+                //Vector3 location = rayHits[randomLocationIndex];
+                GenerateBuilding(cityCubeLocation, i);
 
-        for (int i = 1; i < cityRaySizeSeed -1; i += 5)
-        //if (cityRaySizeSeed >= minimumCitySize)
-        {
-            // TODO: reserve spot for (fake) random buildings 
-            //Debug.Log(randomHouseIndex);
-            // Calculate bounds of the house
-            //Bounds houseB = CalculateBounds(houses[randomHouseIndex]);
-            //Vector3 houseBounds = houseB.size;
-            //Vector3 location = rayHits[randomLocationIndex];
-            GenerateBuilding(cityCubeLocation, i);
-            //// Place buildings untill no more space in the area
-            //int tries = 0;
-            //int currentCitySize = cityRaySizeSeed;
-            //while (currentCitySize >= minimumCitySize && tries <= maxBuildingsPerCity)
-            //{
-            //    tries += 1;
-            //    GenerateBuilding(cityCubeLocation, tries);
-            //    currentCitySize = cityPoints[cityCubeLocation].cityCoordinates.Count;
-            //}
 
+
+                // Place buildings untill no more space in the area
+                //int tries = 0;
+                //int currentCitySize = cityRaySizeSeed;
+                //while (currentCitySize >= minimumCitySize && tries <= maxBuildingsPerCity)
+                //{
+                //    tries += 1;
+                //    GenerateBuilding(cityCubeLocation, tries);
+                //    currentCitySize = cityPoints[cityCubeLocation].cityCoordinates.Count;
+                //}
+
+            }
         }
-        //else
-        //{
-        //    // Delete city because it isn't big enough
-        //    cityPoints.Remove(cityCubeLocation);
-        //}
+        else
+        {
+            // Delete city because it isn't big enough
+            cityPoints.Remove(cityCubeLocation);
+        }
     }
 
     public void GenerateBuilding(Vector3 cityCubeLocation, int localseed)
@@ -199,10 +188,8 @@ public class CityGenerator : MonoBehaviour, Generator
         float sampleX = (cityCubeLocation.x) / minimumCitySize + this.randomNumbers[(localseed % 20)] + localseed;
         float sampleY = (cityCubeLocation.y) / minimumCitySize + this.randomNumbers[(localseed % 20)] + localseed;
         int randomHouseIndex = (int)Math.Round((Mathf.PerlinNoise(sampleX, sampleY) * houses.Count));
-        //int randomLocationIndex = (int)Math.Round(Mathf.PerlinNoise(sampleX, sampleY) * rayHits.Count);  // [0, 1]
-        //int randomHouseIndex = 1;
-
         int randomLocationIndex = localseed - 1;
+
         List<Vector3> rayHitsFakeY = new List<Vector3>();
         foreach (var coord in rayHits)
         {
@@ -213,8 +200,6 @@ public class CityGenerator : MonoBehaviour, Generator
         Bounds houseB = CalculateBounds(houses[randomHouseIndex]);
         Vector3 houseBounds = houseB.size;
         Vector3 location = rayHits[randomLocationIndex];
-     
-
  
         // All coordinates (corners) to check within
         int smallestX = (int)Math.Round(location.x - (houseBounds.x / 2));
@@ -233,11 +218,8 @@ public class CityGenerator : MonoBehaviour, Generator
                 
                 if (rayHitsFakeY.Contains(vectorToCheck)) 
                 {
-                   
-                    //Debug.Log(vectorToCheck);
                     //houseCoords[indexArray] = vectorToCheck;
                     houseCoords.Add(vectorToCheck);
-                    
                     //cityPoints[cityCubeLocation].ReplaceOrAddCityPointCoordinate(true, vectorToCheck);
                 }
                 else
@@ -254,6 +236,7 @@ public class CityGenerator : MonoBehaviour, Generator
         {
             // Houses are placed from the centre of a prefab
             Tile tile = WorldBuilder.GetTile(new Vector3(location.x, 0, location.z));
+
             // Make House only rotate on Y axis.
             Vector3 housePosition = new Vector3(location.x - houseB.center.x, houses[randomHouseIndex].transform.position.y + location.y, location.z - houseB.center.z);
             GameObject house = Instantiate(houses[randomHouseIndex], housePosition, Quaternion.identity, parentObj.transform.GetChild(0).transform) as GameObject;
@@ -265,7 +248,6 @@ public class CityGenerator : MonoBehaviour, Generator
             // Update coordinates
             cityPoints[cityCubeLocation].CheckCoordinates(houseCoords);
             cityPoints[cityCubeLocation].buildings.Add(house);
-
         }
 
     }
@@ -289,7 +271,7 @@ public class CityGenerator : MonoBehaviour, Generator
         }
     }
 
-    private float[,] generateCityNoiseMap(int mapWidth, int mapHeight, Vector2 offsets)
+    private float[,] GenerateCityNoiseMap(int mapWidth, int mapHeight, Vector2 offsets)
     {
         int scale = 20;
         int octaves = 1;
@@ -343,7 +325,7 @@ public class CityGenerator : MonoBehaviour, Generator
     public List<Vector3> DrawCityLocations(int mapWidth, int mapHeight, Vector2 offsets)
     {
         List<Vector3> cubePoints = new List<Vector3>();
-        float[,] noiseMap = generateCityNoiseMap(mapWidth, mapHeight, offsets);
+        float[,] noiseMap = GenerateCityNoiseMap(mapWidth, mapHeight, offsets);
         float pointHeight = 0.00f;
 
         for (int y = 0; y < mapHeight; y++)
@@ -386,14 +368,13 @@ public class CityGenerator : MonoBehaviour, Generator
         return cubePoints;
     }
 
-    // Raycast a sphere and check for nearby gameobjects
     private bool checkNearbyPoints(Vector3 center, float radius)
     {
+        // Raycast a sphere and check for nearby gameobjects
         {
             Collider[] hitColliders = Physics.OverlapSphere(center, radius);
             foreach (var hitCollider in hitColliders)
             {
-                //Debug.Log(hitCollider+"-"+hitCollider.transform.position);
                 // If gameobject is a cube then return true
                 if (hitCollider.gameObject.name == ("Cube"))
                 {
@@ -406,22 +387,20 @@ public class CityGenerator : MonoBehaviour, Generator
 
     private void DebugPoints()
     {
-        
-            foreach (var cityPoint in cityPoints)
+        foreach (var cityPoint in cityPoints)
+        {
+            // Valid city coordinates
+            foreach (var coordinate in cityPoint.Value.cityCoordinates)
             {
-                // Valid city coordinates
-                foreach (var coordinate in cityPoint.Value.cityCoordinates)
-                {
-                    Debug.DrawRay(coordinate, transform.up * 10, Color.green);
-                }
-
-                // Invalid city coordinates
-                foreach (var coordinate in cityPoint.Value.invalidCityCoordinates)
-                {
-                    Debug.DrawRay(coordinate, transform.up * 10, Color.red);
-                }
+                Debug.DrawRay(coordinate, transform.up * 10, Color.green);
             }
-        
+
+            // Invalid city coordinates
+            foreach (var coordinate in cityPoint.Value.invalidCityCoordinates)
+            {
+                Debug.DrawRay(coordinate, transform.up * 10, Color.red);
+            }
+        }
     }
 
 }

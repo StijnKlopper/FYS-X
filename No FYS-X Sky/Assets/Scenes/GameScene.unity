@@ -744,6 +744,7 @@ MonoBehaviour:
   minimumCityDistanceRadius: 300
   minimumCitySize: 20
   cityRadius: 30
+  seed: 69420
   houses:
   - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
   - {fileID: 4875836682623532385, guid: 54f44e8e1a76f5e4f8bba4c338620140, type: 3}
