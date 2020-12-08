@@ -6,7 +6,7 @@ class WorldBuilder
 {
     private TerrainGenerator terrainGenerator;
 
-    private CityGenerator cityGenerator;
+    //private CityGenerator cityGenerator;
 
     private int chunkSize;
 
@@ -14,7 +14,7 @@ class WorldBuilder
 
     private int regionRenderDistance;
 
-    private int cityRenderDistance;
+    //private int cityRenderDistance;
 
     public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
 
@@ -24,8 +24,8 @@ class WorldBuilder
         this.chunkRenderDistance = 100;
         this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
         this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        this.cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
-        this.cityRenderDistance = this.chunkRenderDistance - cityGenerator.cityRadius;
+        //this.cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
+        //this.cityRenderDistance = this.chunkRenderDistance - cityGenerator.cityRadius;
     }
 
     public void LoadRegions(Vector3 position)

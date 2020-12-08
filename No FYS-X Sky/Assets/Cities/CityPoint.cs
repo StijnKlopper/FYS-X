@@ -67,10 +67,9 @@ public class CityPoint
             {
                 if (citypos.x == pos.x && citypos.z == pos.z)
                 {
-                    //Prevent changing list while trough looping
+                    // Prevent changing list while trough looping
                     PointsToRemove.Add(citypos);
                     continue;
-
                 }
             }
           

@@ -146,7 +146,7 @@ public class CityGenerator : MonoBehaviour, Generator
         int cityRaySizeSeed = cityPoints[cityCubeLocation].cityCoordinates.Count;
 
         if (cityRaySizeSeed >= minimumCitySize) {
-            for (int i = 1; i < cityRaySizeSeed - 1; i += 10)
+            for (int i = 1; i < cityRaySizeSeed - 1; i += 50)
             {
                 // TODO: reserve spot for (fake) random buildings 
                 // Calculate bounds of the house
@@ -182,9 +182,8 @@ public class CityGenerator : MonoBehaviour, Generator
             
         if (rayHits == null || rayHits.Count < localseed) return;
 
+        // Set house meta information
         int fakeY = 0;
-        // TODO: Probleem is dat we niet huizen kunnen generen "random", ik dacht aan de seed die gebruikt kon worden maar dat kan niet want dan alsnog komt er in elke city dezelfde huizen.
-        // Lijkt erop dat die cityCubeLocation.x en cityCubeLocation.z niet iets randoms genereren voor verschillende cities?
         float sampleX = (cityCubeLocation.x) / minimumCitySize + this.randomNumbers[(localseed % 20)] + localseed;
         float sampleY = (cityCubeLocation.y) / minimumCitySize + this.randomNumbers[(localseed % 20)] + localseed;
         int randomHouseIndex = (int)Math.Round((Mathf.PerlinNoise(sampleX, sampleY) * houses.Count));
@@ -354,9 +353,21 @@ public class CityGenerator : MonoBehaviour, Generator
                             //point.GetComponent<Renderer>().enabled = true;
                             Physics.SyncTransforms();
 
+                            // Add GameObject to the tile
+                            Tile tile = WorldBuilder.GetTile(new Vector3(cubePoint.x, 0, cubePoint.z));
+                            tile.AddObject(point);
+
                             // Add the cube point to an array
+                            if (cityPoints.ContainsKey(cubePoint))
+                            {
+                                // Remove old one first 
+                                cityPoints.Remove(cubePoint);
+                                cubePoints.Remove(cubePoint);
+                            }
+
                             cityPoints.Add(cubePoint, new CityPoint(cubePoint));
                             cubePoints.Add(cubePoint);
+
 
                             break;
                         }
