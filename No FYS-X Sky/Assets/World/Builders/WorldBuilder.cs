@@ -15,7 +15,7 @@ class WorldBuilder
     private int regionRenderDistance;
 
     //private int cityRenderDistance;
-
+    public static Dictionary<Tile, Vector3> cityDict = new Dictionary<Tile, Vector3>();
     public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
 
     public WorldBuilder()

@@ -1,6 +1,7 @@
 ﻿using Assets.World.Generator;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using UnityEngine;
 
 public class CityGenerator : MonoBehaviour, Generator
@@ -335,7 +336,7 @@ public class CityGenerator : MonoBehaviour, Generator
                 if (currentHeight <= pointHeight)
                 {
                     Vector3 possiblePointPosition = new Vector3(-(x + offsets.x), 0, -(y + offsets.y));
-
+                  
                     if (checkNearbyPoints(possiblePointPosition, this.minimumCityDistanceRadius))
                     {
                         break;
@@ -354,17 +355,15 @@ public class CityGenerator : MonoBehaviour, Generator
                             Physics.SyncTransforms();
 
                             // Add GameObject to the tile
-                            Tile tile = WorldBuilder.GetTile(new Vector3(cubePoint.x, 0, cubePoint.z));
-                            tile.AddObject(point);
+                            //Tile tile = WorldBuilder.GetTile(cubePoint);
+                            //tile.AddObject(point);
 
-                            // Add the cube point to an array
-                            if (cityPoints.ContainsKey(cubePoint))
-                            {
-                                // Remove old one first 
+                            // Add the cube point to an dict
+                            //WorldBuilder.cityDict.Add(tile, cubePoint);
+                            if (cityPoints.ContainsKey(cubePoint)){
                                 cityPoints.Remove(cubePoint);
                                 cubePoints.Remove(cubePoint);
                             }
-
                             cityPoints.Add(cubePoint, new CityPoint(cubePoint));
                             cubePoints.Add(cubePoint);
 
