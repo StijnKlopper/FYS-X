@@ -1,29 +1,30 @@
 ﻿using Microsoft.Win32;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.UI;
 class WorldBuilder
 {
     private TerrainGenerator terrainGenerator;
 
-    private int chunkSize;
+    public static int chunkSize = 10;
 
-    private int chunkRenderDistance;
+    public static int chunkRenderDistance = 100;
 
     private int regionRenderDistance;
 
-    public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
+    private ObjectPool objectPool;
 
     public WorldBuilder()
     {
-        this.chunkSize = 10;
-        this.chunkRenderDistance = 100;
         this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
         this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        this.objectPool = GameObject.Find("Level").GetComponent<ObjectPool>();
     }
+
+    public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
+
 
     public void LoadRegions(Vector3 position)
     {
@@ -43,7 +44,7 @@ class WorldBuilder
         }
     }
 
-    public void UnloadRegions(Vector3 position)
+public void UnloadRegions(Vector3 position)
     {
         (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize, true);
 
@@ -68,11 +69,22 @@ class WorldBuilder
                 if (!tileDict.ContainsKey(newChunkPosition))
                 {
                     Tile tile = new Tile();
-                    GameObject terrain = terrainGenerator.GenerateTile(newChunkPosition);
-                    //Make the tiles a parent of the Level GameObject to have a clean hierarchy.
-                    terrain.transform.SetParent(terrainGenerator.transform);
+                    //GameObject terrain = terrainGenerator.GenerateTile(newChunkPosition);
+                    GameObject terrain = objectPool.GetPooledObject(ObjectPool.GameObjectType.Terrain);
+                    GameObject cave = objectPool.GetPooledObject(ObjectPool.GameObjectType.Cave);
+
+                    Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, 0, newChunkPosition.z + 5);
+                    Vector3 cavePosition = new Vector3(newChunkPosition.x + 5, -30, newChunkPosition.z + 5);
+
+                    terrain.transform.position = terrainPosition;
+                    cave.transform.position = cavePosition;
+
                     tile.AddObject(terrain);
+                    tile.AddObject(cave);
                     tileDict.Add(newChunkPosition, tile);
+                    float[,] heightmap = terrain.GetComponent<TileBuilder>().Instantiate();
+
+                    cave.GetComponent<CaveBuilder>().Instantiate(heightmap);
                 }
             }
         }
@@ -86,7 +98,7 @@ class WorldBuilder
         {
             if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
             {
-                tile.Value.DestroyObjects();
+                tile.Value.DestroyObjects(objectPool);
                 tileDict.Remove(tile.Key);
             }
         }
@@ -112,9 +124,17 @@ class WorldBuilder
         return boundaries;
     }
 
-    private int CalcCoord(float coordinate, int size)
+    public static int CalcCoord(float coordinate, int size)
     {
         // Input: 220, 200. Output: 200, gives corners of current location, rounds to the nearest size number
         return Mathf.FloorToInt(coordinate / size) * size;
+    }
+
+    public static Tile GetTile(Vector3 coordinate)
+    {
+        int x = CalcCoord(coordinate.x, 10);
+        int z = CalcCoord(coordinate.z, 10);
+
+        return tileDict[new Vector3(x, 0, z)];
     }
 }

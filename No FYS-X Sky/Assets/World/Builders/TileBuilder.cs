@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Schema;
-using UnityEditor;
+﻿using CielaSpike;
+using System.Collections;
 using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
@@ -26,38 +24,50 @@ public class TileBuilder : MonoBehaviour
 
     GameObject oceanTile;
 
+    private Texture2DArray splatmapsArray;
+
     private Texture2D oceanSplatmap;
 
+    private bool hasOcean;
+
     // Start is called before the first frame update
-    void Start()
-    {
+
+
+    public float[,] Instantiate() {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        GenerateTile();
+        hasOcean = false;
+        StartCoroutine("GenerateTile");
+        return heightMap;
     }
 
-    private void GenerateTile()
+    private IEnumerator GenerateTile()
     {
         Vector3[] meshVertices = this.meshFilter.mesh.vertices;
         int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
         int tileWidth = tileHeight;
-      
+
         Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
 
         // Instead of generating height map:
         GenerateHeightMap(tileWidth, tileHeight, offsets);
 
-        Texture2DArray splatmaps = BuildTexture(offsets);
-        this.tileRenderer.material.SetTexture("_SplatMaps", splatmaps);
+        this.tileRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
 
         UpdateMeshVertices(heightMap, offsets);
-        oceanTile = terrainGenerator.GenerateOcean(tileRenderer.gameObject.transform.position);
-        oceanTile.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
+
+        GameObject ocean = this.transform.GetChild(0).gameObject;
+        ocean.SetActive(hasOcean);
+        ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
+        ocean.transform.position = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
+        yield return null;
     }
 
-    private Texture2DArray BuildTexture(Vector2 offsets)
+
+    public void GenerateHeightMap(int width, int height, Vector2 offsets)
     {
-        int tileHeight = this.heightMap.GetLength(0);
-        int tileWidth = this.heightMap.GetLength(1);
+
+        int tileHeight = width;
+        int tileWidth = height;
 
         int splatmapSize = tileHeight * tileWidth;
 
@@ -67,43 +77,8 @@ public class TileBuilder : MonoBehaviour
 
         Color[] oceanMap = new Color[splatmapSize];
 
-        for (int y = 0; y < tileHeight; y++)
-        {
-            for (int x = 0; x < tileWidth; x++)
-            {
-                int colorIndex = y * tileWidth + x;
 
-                Vector2 location = new Vector2(x + offsets.x, y + offsets.y);
-                Biome biome = terrainGenerator.GetBiomeByCoordinates(location);
 
-                splatMap1[colorIndex] = biome.biomeType.color;
-                splatMap2[colorIndex] = biome.biomeType.color2;
-                splatMap3[colorIndex] = biome.biomeType.color3;
-
-                oceanMap[colorIndex] = biome.biomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
-
-            }
-        }
-
-        Texture2DArray splatmapsArray = new Texture2DArray(tileWidth, tileHeight, 3, TextureFormat.RGBA32, true);
-        oceanSplatmap = new Texture2D(tileHeight, tileWidth);
-
-        splatmapsArray.SetPixels(splatMap1, 0);
-        splatmapsArray.SetPixels(splatMap2, 1);
-        splatmapsArray.SetPixels(splatMap3, 2);
-
-        oceanSplatmap.SetPixels(oceanMap);
-        oceanSplatmap.wrapMode = TextureWrapMode.Clamp;
-        oceanSplatmap.Apply();
-
-        splatmapsArray.wrapMode = TextureWrapMode.Clamp;
-        splatmapsArray.Apply();
-
-        return splatmapsArray;
-    }
-
-    public void GenerateHeightMap(int width, int height, Vector2 offsets)
-    {
         float[,] heightMap = new float[width, height];
 
         tileTextureData = new float[width * height];
@@ -155,12 +130,28 @@ public class TileBuilder : MonoBehaviour
                     frequency *= lacunarity;
 
                 }
-                
+
+                int colorIndex = y * tileWidth + x;
+
                 // Normalise noise map between minimum and maximum noise heights
                 noiseHeight = (noiseHeight + 1) / (2f * maxPossibleHeight / 1.75f);
 
                 // Change height based on height curve and heightMultiplier
                 Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
+
+                splatMap1[colorIndex] = biome.biomeType.color;
+                splatMap2[colorIndex] = biome.biomeType.color2;
+                splatMap3[colorIndex] = biome.biomeType.color3;
+
+                if (biome.biomeType is OceanBiomeType)
+                {
+                    oceanMap[colorIndex] = new Color(1, 0, 0);
+                    hasOcean = true;
+                }
+
+                else { oceanMap[colorIndex] = new Color(0, 1, 0); }
+
+                oceanMap[colorIndex] = biome.biomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
 
                 tileTextureData[x + y * height] = biome.biomeType.biomeTypeId;
 
@@ -168,7 +159,24 @@ public class TileBuilder : MonoBehaviour
                 heightMap[x, y] = noiseHeight;
             }
         }
-        WorldBuilder.tileDict[new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5))].heightMap = heightMap;
+
+        splatmapsArray = new Texture2DArray(tileWidth, tileHeight, 3, TextureFormat.RGBA32, true);
+        oceanSplatmap = new Texture2D(tileHeight, tileWidth);
+
+        splatmapsArray.SetPixels(splatMap1, 0);
+        splatmapsArray.SetPixels(splatMap2, 1);
+        splatmapsArray.SetPixels(splatMap3, 2);
+
+        oceanSplatmap.SetPixels(oceanMap);
+        oceanSplatmap.wrapMode = TextureWrapMode.Clamp;
+        oceanSplatmap.Apply();
+
+        splatmapsArray.wrapMode = TextureWrapMode.Clamp;
+        splatmapsArray.Apply();
+
+        
+
+        //WorldBuilder.tileDict[new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5))].heightMap = heightMap;
         this.heightMap = heightMap;
     }
 
@@ -185,7 +193,7 @@ public class TileBuilder : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 Vector3 vertex = meshVertices[vertexIndex];
-                
+
                 meshVertices[vertexIndex] = new Vector3(vertex.x, heightMap[x, y], vertex.z);
 
                 vertexIndex++;
