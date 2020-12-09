@@ -50,7 +50,7 @@ public class CityGenerator : MonoBehaviour, Generator
     public void Generate(int mapWidth, int mapHeight, Vector2 offsets)
     {
         // Check from center of tile if there is a city point that needs to be updated
-        CheckForUpdateNearbyCityPoints(new Vector3( -(offsets.x + (mapWidth / 2)), 0, -(offsets.y + (mapHeight / 2))));
+        //CheckForUpdateNearbyCityPoints(new Vector3( -(offsets.x + (mapWidth / 2)), 0, -(offsets.y + (mapHeight / 2))));
 
         // Loop through the cubes and check with rays if possible locations
         List<Vector3> cubePoints = DrawCityLocations(mapWidth, mapHeight, offsets);
@@ -273,10 +273,8 @@ public class CityGenerator : MonoBehaviour, Generator
 
     private float[,] GenerateCityNoiseMap(int mapWidth, int mapHeight, Vector2 offsets)
     {
-        int scale = 20;
+        int scale = 10;
         int octaves = 1;
-        mapWidth *= 5;
-        mapWidth *= 5;
         float maxNoiseHeight = float.MinValue;
         float minNoiseHeight = float.MaxValue;
 
@@ -358,15 +356,16 @@ public class CityGenerator : MonoBehaviour, Generator
                             //Tile tile = WorldBuilder.GetTile(cubePoint);
                             //tile.AddObject(point);
 
-                            // Add the cube point to an dict
-                            //WorldBuilder.cityDict.Add(tile, cubePoint);
                             if (cityPoints.ContainsKey(cubePoint)){
                                 cityPoints.Remove(cubePoint);
                                 cubePoints.Remove(cubePoint);
                             }
+                            // Add the cube point to an dict
+                            Tile tile = WorldBuilder.GetTile(cubePoint);
+                            WorldBuilder.cityDict.Add(tile, cubePoint);
+
                             cityPoints.Add(cubePoint, new CityPoint(cubePoint));
                             cubePoints.Add(cubePoint);
-
 
                             break;
                         }
