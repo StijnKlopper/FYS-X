@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using LibNoise.Generator;
 
 public abstract class RegionType
 {
@@ -29,8 +30,10 @@ public abstract class RegionType
 
         float scale = 0.17777f;
 
+        Perlin perlin = new Perlin();
+
         // [-0.1, 0.1], Distort biome choice a little bit
-        float perlinValue = (Mathf.PerlinNoise(x * scale, z * scale) * 2 - 1) / 10;
+        float perlinValue = (float) perlin.GetValue(x * scale, 0, z * scale) / 10;
 
         // Pick biomes from availableBiomes starting from the middle, equally divided
         for (int i = 1; i <= amountOfBiomes; i++)
