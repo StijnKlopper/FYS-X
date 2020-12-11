@@ -32,11 +32,11 @@ public class Region
 
         // Calculate noise for middle of the region, adding a random number to account for negative numbers, * 2 - 1 to spread output to range [-1,1]
         float xNoise = (float)terrainGenerator.perlin.GetValue((xMiddle + terrainGenerator.randomNumbers[1]) * scale, 0, (zMiddle + terrainGenerator.randomNumbers[1]) * scale);
-        int xJitter = (int)(xNoise * regionSize / 2);
+        int xJitter = (int)(xNoise * regionSize / 4);
         int xFinal = xMiddle + xJitter;
 
         float zNoise = (float)terrainGenerator.perlin.GetValue((xMiddle + terrainGenerator.randomNumbers[1]) * scale, 0, (zMiddle + terrainGenerator.randomNumbers[1]) * scale);
-        int zJitter = (int)(zNoise * regionSize / 2);
+        int zJitter = (int)(zNoise * regionSize / 4);
         int zFinal = zMiddle + zJitter;
 
         // Calculate heat and moisture to determine region type, + 1 / 2 to spread the result between [0,1] instead of [-1,1]
@@ -80,7 +80,6 @@ public class Region
 
     private void GenerateBiomes(int x, int z)
     {
-        
         int biomeSize = regionSize / 10;
         for (int i = x; i < x + regionSize; i += biomeSize)
         {
