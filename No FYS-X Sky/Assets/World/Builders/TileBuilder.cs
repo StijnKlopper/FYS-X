@@ -1,5 +1,6 @@
 ﻿using CielaSpike;
 using System.Collections;
+using LibNoise.Generator;
 using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
@@ -77,20 +78,21 @@ public class TileBuilder : MonoBehaviour
 
         Color[] oceanMap = new Color[splatmapSize];
 
-
-
         float[,] heightMap = new float[width, height];
 
         tileTextureData = new float[width * height];
 
         float maxPossibleHeight = 0f;
+        float frequency = 1f;
         float amplitude = 1f;
         float persistance = 0.5f;
         float lacunarity = 2f;
 
         int octaves = 12;
-        int scale = 50;
-        int heightMultiplier = 10;
+        float scale = 50.777f;
+        int heightMultiplier = 15;
+
+        Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, terrainGenerator.seed, LibNoise.QualityMode.High);
 
         for (int i = 0; i < octaves; i++)
         {
@@ -98,38 +100,14 @@ public class TileBuilder : MonoBehaviour
             amplitude *= 0.5f;
         }
 
-        // Loop through all coordinates on the tile, for every coordinate calculate a height value using octaves
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                amplitude = 1;
-                float frequency = 1;
-                float noiseHeight = 0;
+                double sampleX = (x + offsets.x) / scale;
+                double sampleY = (y + offsets.y) / scale;
 
-                // Needs to ask terraingenerator what the biome is using offsets + x / y
-                //Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(offsets.x + x, offsets.y + y));
-
-                for (int i = 0; i < octaves; i++)
-                {
-                    // Add large number to the sample coordinates to prevent feeding negative numbers into the Perlin Noise function
-                    // Prevents the mandela effect around (0,0)
-                    float sampleX = (x + offsets.x) / scale * frequency + terrainGenerator.randomNumbers[i];
-                    float sampleY = (y + offsets.y) / scale * frequency + terrainGenerator.randomNumbers[i];
-
-                    // Because we * 2 - 1 this value, we stretch out the noise from [0,1] to [-1,1]
-                    float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
-
-                    // Add octave value to the perlin noise once for every octave
-                    noiseHeight += perlinValue * amplitude;
-
-                    // Amplitude decreases every octave
-                    amplitude *= persistance;
-
-                    // Frequency increases every octave
-                    frequency *= lacunarity;
-
-                }
+                float noiseHeight = (float) perlin.GetValue(sampleX, 0, sampleY);
 
                 int colorIndex = y * tileWidth + x;
 
