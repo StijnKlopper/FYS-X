@@ -361,8 +361,7 @@ public class CityGenerator : MonoBehaviour, Generator
                                 cubePoints.Remove(cubePoint);
                             }
                             // Add the cube point to an dict
-                            Tile tile = WorldBuilder.GetTile(cubePoint);
-                            WorldBuilder.cityDict.Add(tile, cubePoint);
+                            //Tile tile = WorldBuilder.GetTile(cubePoint);
 
                             cityPoints.Add(cubePoint, new CityPoint(cubePoint));
                             cubePoints.Add(cubePoint);

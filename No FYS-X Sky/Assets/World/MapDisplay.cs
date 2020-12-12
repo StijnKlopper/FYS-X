@@ -63,7 +63,7 @@ public class MapDisplay : MonoBehaviour
         }
         if(drawMode == DrawMode.NoiseMap) texture.SetPixels(noiseMapC);
         if(drawMode == DrawMode.ColourMap) texture.SetPixels(colourMapC);
-        //Prevents blurryness and makes the colours hold on to points
+        // Prevents blurryness and makes the colours hold on to points
         texture.filterMode = FilterMode.Point;
         texture.wrapMode = TextureWrapMode.Clamp;
         texture.Apply();

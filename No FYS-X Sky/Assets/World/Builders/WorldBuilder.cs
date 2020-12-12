@@ -6,8 +6,6 @@ class WorldBuilder
 {
     private TerrainGenerator terrainGenerator;
 
-    //private CityGenerator cityGenerator;
-
     private int chunkSize;
 
     private int chunkRenderDistance;
@@ -15,7 +13,7 @@ class WorldBuilder
     private int regionRenderDistance;
 
     //private int cityRenderDistance;
-    public static Dictionary<Tile, Vector3> cityDict = new Dictionary<Tile, Vector3>();
+    //public static Dictionary<Tile, Vector3> cityDict = new Dictionary<Tile, Vector3>();
     public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
 
     public WorldBuilder()
@@ -70,17 +68,9 @@ class WorldBuilder
                 Vector3 newChunkPosition = new Vector3(i, 0, j);
                 if (!tileDict.ContainsKey(newChunkPosition))
                 {
-                    //Debug.Log(tile.Key);
-                    //if (cityGenerator.cubes.ContainsKey(tile.Key))
-                    //{
-                    //    UnityEngine.MonoBehaviour.Destroy(cityGenerator.cubes[tile.Key]);
-                    //    cityGenerator.cubes.Remove(tile.Key);
-                    //}
-                    //terrainGenerator.DestroyTile(tile.Value);
-                    //terrainGenerator.tileDict.Remove(tile.Key);
-
                     Tile tile = new Tile();
                     GameObject terrain = terrainGenerator.GenerateTile(newChunkPosition);
+
                     //Make the tiles a parent of the Level GameObject to have a clean hierarchy.
                     terrain.transform.SetParent(terrainGenerator.transform);
                     tile.AddObject(terrain);
@@ -138,18 +128,5 @@ class WorldBuilder
 
         return tileDict[new Vector3(x, 0, z)];
     }
-
-    /*public void UnloadCityPoints(Vector3 position)
-    {
-        (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, cityRenderDistance, chunkSize);
-
-        foreach (KeyValuePair<Vector3, List<Vector3>> points in cityGenerator.cityPoints.ToList())
-        {
-            if (points.Key.x < xMin || points.Key.x > xMax || points.Key.z < zMin || points.Key.z > zMax)
-            {
-                cityGenerator.cityPoints.Remove(points.Key);
-            }
-        }
-    }*/
 
 }
