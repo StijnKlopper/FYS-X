@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using LibNoise.Generator;
 
 public class TerrainGenerator : MonoBehaviour, Generator
 {
@@ -14,8 +15,6 @@ public class TerrainGenerator : MonoBehaviour, Generator
     [SerializeField]
     private GameObject oceanPrefab;
 
-    private int tileOffset = 5;
-
     public int seed;
 
     public TextureData textureData;
@@ -24,14 +23,17 @@ public class TerrainGenerator : MonoBehaviour, Generator
     public int[] randomNumbers;
 
     [System.NonSerialized]
-    public Dictionary<Vector3, Region> regionDict = new Dictionary<Vector3, Region>();
+    public static Dictionary<Vector3, Region> regionDict = new Dictionary<Vector3, Region>();
+
+    public Perlin perlin;
 
     // Start is called before the first frame update
     void Start()
     {
-
         System.Random random = new System.Random(seed);
         this.randomNumbers = new int[20];
+
+        this.perlin = new Perlin();
 
         for (int i = 0; i < this.randomNumbers.Length; i++)
         {
@@ -42,34 +44,21 @@ public class TerrainGenerator : MonoBehaviour, Generator
         textureData.ApplyToMaterial(tilePrefab.GetComponent<Renderer>().sharedMaterial);
     }
 
-    public GameObject GenerateTile(Vector3 position)
-    {
-        Vector3 tilePosition = new Vector3(position.x + tileOffset, this.gameObject.transform.position.y, position.z + tileOffset);
-        GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
-        return tile;
-    }
-
-    public GameObject GenerateOcean(Vector3 position) {
-        Vector3 tilePosition = new Vector3(position.x, this.gameObject.transform.position.y, position.z);
-        GameObject oceanTile = Instantiate(oceanPrefab, tilePosition, Quaternion.identity) as GameObject;
-        return oceanTile;
-    }
-
     public Biome GetBiomeByCoordinates(Vector2 coordinates)
     {
         //Using coordinates, determine region / continent, then determine biome based on the continent and position
         float scale = 0.17777f;
         float x = coordinates.x * scale;
         float z = coordinates.y * scale;
-        x += Mathf.PerlinNoise(x, z) * 2 - 1;
-        z += Mathf.PerlinNoise(x, z) * 2 - 1;
+        x += (float) perlin.GetValue(x, 0, z);
+        z += (float) perlin.GetValue(x, 0, z);
 
         Vector2 newCoordinates = new Vector2(x / scale, z / scale);
         Region region = GetRegionByCoordinates(newCoordinates);
         return region.GetBiomeByCoordinates(newCoordinates);
     }
 
-    public Region GetRegionByCoordinates(Vector2 coordinates)
+    public static Region GetRegionByCoordinates(Vector2 coordinates)
     {
         float distance = 10000f;
         Region nearestRegion = new Region();

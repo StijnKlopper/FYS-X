@@ -90,14 +90,14 @@ public class MapDisplay : MonoBehaviour
         result = result.Remove(result.Length - 1, 1);
         result += ");";
         Debug.Log(result);
-        EditorGUIUtility.systemCopyBuffer = result;
+        //EditorGUIUtility.systemCopyBuffer = result;
     }
 
     public void GetCurve()
     {
-        string animationCurveString = EditorGUIUtility.systemCopyBuffer.Trim();
+        ///string animationCurveString = EditorGUIUtility.systemCopyBuffer.Trim();
 
-        if (animationCurveString.Contains("AnimationCurve"))
+       /* if (animationCurveString.Contains("AnimationCurve"))
         {
             // Strip and make animation curve
             String[] sep = { "AnimationCurve(", ");" };
@@ -118,14 +118,14 @@ public class MapDisplay : MonoBehaviour
                     float.Parse(matches[i + 5].Value)
                     );
 
-                /*
+                *//*
                 Debug.Log(float.Parse(matches[i].Value) + " " +
                     float.Parse(matches[i + 1].Value) + " " +
                     float.Parse(matches[i + 2].Value) + " " +
                     float.Parse(matches[i + 3].Value) + " " +
                     float.Parse(matches[i + 4].Value) + " " +
                     float.Parse(matches[i + 5].Value));
-                */
+                *//*
             }
 
             // Set AnimationCurve
@@ -134,7 +134,7 @@ public class MapDisplay : MonoBehaviour
         else
         {
             Debug.Log("You didn't copy the correct string!");
-        }
+        }*/
 
     }
 

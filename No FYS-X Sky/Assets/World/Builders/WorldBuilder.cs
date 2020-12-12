@@ -4,26 +4,21 @@ using UnityEngine;
 
 class WorldBuilder
 {
-    private TerrainGenerator terrainGenerator;
+    public static int chunkSize = 10;
 
-    private int chunkSize;
-
-    private int chunkRenderDistance;
+    public static int chunkRenderDistance = 100;
 
     private int regionRenderDistance;
 
-    //private int cityRenderDistance;
-    //public static Dictionary<Tile, Vector3> cityDict = new Dictionary<Tile, Vector3>();
     public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
+    private ObjectPool objectPool;
 
     public WorldBuilder()
     {
-        this.chunkSize = 10;
-        this.chunkRenderDistance = 100;
         this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
-        this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         //this.cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
         //this.cityRenderDistance = this.chunkRenderDistance - cityGenerator.cityRadius;
+        this.objectPool = GameObject.Find("Level").GetComponent<ObjectPool>();
     }
 
     public void LoadRegions(Vector3 position)
@@ -36,23 +31,23 @@ class WorldBuilder
             for (int j = zMin; j < zMax; j += Region.regionSize)
             {
                 Vector3 regionPosition = new Vector3(i, 0, j);
-                if (!terrainGenerator.regionDict.ContainsKey(regionPosition))
+                if(!TerrainGenerator.regionDict.ContainsKey(regionPosition))
                 {
-                    terrainGenerator.regionDict.Add(regionPosition, new Region(i, j));
+                    TerrainGenerator.regionDict.Add(regionPosition, new Region(i, j));
                 }
             }
         }
     }
 
-    public void UnloadRegions(Vector3 position)
+public void UnloadRegions(Vector3 position)
     {
         (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize, true);
 
-        foreach (KeyValuePair<Vector3, Region> region in terrainGenerator.regionDict.ToList())
+        foreach (KeyValuePair<Vector3, Region> region in TerrainGenerator.regionDict.ToList())
         {
             if (region.Key.x < xMin || region.Key.x > xMax || region.Key.z < zMin || region.Key.z > zMax)
             {
-                terrainGenerator.regionDict.Remove(region.Key);
+                TerrainGenerator.regionDict.Remove(region.Key);
             }
         }
     }
@@ -69,12 +64,23 @@ class WorldBuilder
                 if (!tileDict.ContainsKey(newChunkPosition))
                 {
                     Tile tile = new Tile();
-                    GameObject terrain = terrainGenerator.GenerateTile(newChunkPosition);
 
-                    //Make the tiles a parent of the Level GameObject to have a clean hierarchy.
-                    terrain.transform.SetParent(terrainGenerator.transform);
+                    //GameObject terrain = terrainGenerator.GenerateTile(newChunkPosition);
+                    GameObject terrain = objectPool.GetPooledObject(ObjectPool.GameObjectType.Terrain);
+                    GameObject cave = objectPool.GetPooledObject(ObjectPool.GameObjectType.Cave);
+
+                    Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, 0, newChunkPosition.z + 5);
+                    Vector3 cavePosition = new Vector3(newChunkPosition.x + 5, -30, newChunkPosition.z + 5);
+
+                    terrain.transform.position = terrainPosition;
+                    cave.transform.position = cavePosition;
+
                     tile.AddObject(terrain);
+                    tile.AddObject(cave);
                     tileDict.Add(newChunkPosition, tile);
+                    float[,] heightmap = terrain.GetComponent<TileBuilder>().Instantiate();
+
+                    cave.GetComponent<CaveBuilder>().Instantiate(heightmap);
                 }
             }
         }
@@ -88,7 +94,7 @@ class WorldBuilder
         {
             if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
             {
-                tile.Value.DestroyObjects();
+                tile.Value.DestroyObjects(objectPool);
                 tileDict.Remove(tile.Key);
             }
         }
@@ -128,5 +134,4 @@ class WorldBuilder
 
         return tileDict[new Vector3(x, 0, z)];
     }
-
 }

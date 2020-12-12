@@ -1,7 +1,4 @@
 ﻿using Assets.World.Generator;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
 using UnityEngine;
 
 public class TownGenerator : MonoBehaviour, Generator

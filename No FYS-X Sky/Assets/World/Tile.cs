@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Tile
@@ -18,11 +17,12 @@ public class Tile
         this.loadedObjects.Add(obj);
     }
 
-    public void DestroyObjects()
+    public void DestroyObjects(ObjectPool objectPool)
     {
+
         foreach (GameObject obj in loadedObjects)
         {
-            UnityEngine.MonoBehaviour.Destroy(obj);
+            objectPool.UnloadPooledObject(obj);
         }
     }
 }
