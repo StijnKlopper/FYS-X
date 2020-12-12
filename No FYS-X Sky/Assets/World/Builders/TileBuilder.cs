@@ -46,7 +46,6 @@ public class TileBuilder : MonoBehaviour
         int tileHeight = WorldBuilder.chunkSize + 1;
         int tileWidth = tileHeight;
         Vector2 offsets = new Vector2(this.gameObject.transform.position.x - 5, this.gameObject.transform.position.z - 5);
-        Debug.Log("GENERATING TILE AT OFFSETS: " + offsets);
 
         // Instead of generating height map:
         GenerateHeightMap(tileWidth, tileHeight, offsets);
@@ -58,8 +57,6 @@ public class TileBuilder : MonoBehaviour
         this.meshCollider.sharedMesh = mesh;
         this.meshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
 
-        //UpdateMeshVertices(heightMap, offsets);
-        Debug.Log("DONE");
         GameObject ocean = this.transform.GetChild(0).gameObject;
         ocean.SetActive(hasOcean);
         ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
@@ -99,8 +96,7 @@ public class TileBuilder : MonoBehaviour
             maxPossibleHeight += amplitude;
             amplitude *= 0.5f;
         }
-        Debug.Log("GENERATING HEIGHTMAP AT: " + (offsets.x) + ", " + (offsets.y));
-        Debug.Log("GENERATING HEIGHTMAP TO: " + (offsets.x + width) + ", " + (offsets.y + height));
+
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -160,7 +156,7 @@ public class TileBuilder : MonoBehaviour
     {
         int width = heightMap.GetLength(0);
         int height = heightMap.GetLength(1);
-        float topLeftX = (width - 1) / -2f;
+        float topLeftX = (width - 1) / 2f;
         float topLeftZ = (height - 1) / 2f;
 
         // Add meshsimplificationincrement
@@ -173,8 +169,9 @@ public class TileBuilder : MonoBehaviour
         {
             for (int x = 0; x < width; x++)
             {
-                meshData.vertices[vertexIndex] = new Vector3(topLeftX + x, heightMap[x, y], topLeftZ - y);
+                meshData.vertices[vertexIndex] = new Vector3(topLeftX - x, heightMap[x, y], topLeftZ - y);
                 meshData.uvs[vertexIndex] = new Vector2(x / (float)width, y / (float)height);
+                //meshData.uvs[vertexIndex] = new Vector2(((width - 1) - x) / (float)width, y / (float)height);
 
                 if (x < width - 1 && y < height - 1)
                 {
@@ -212,9 +209,9 @@ public class MeshData
 
     public void AddTriangle(int a, int b, int c)
     {
-        triangles[triangleIndex] = a;
+        triangles[triangleIndex] = c;
         triangles[triangleIndex + 1] = b;
-        triangles[triangleIndex + 2] = c;
+        triangles[triangleIndex + 2] = a;
         triangleIndex += 3;
     }
 
