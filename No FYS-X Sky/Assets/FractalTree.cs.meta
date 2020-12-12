@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 55408d8a6dcd7d446809b047482ebc93
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - cylinder: {fileID: 4076727355480017967, guid: 8479a5970baba7e4481c617dddf13a97, type: 3}
+  - leafPrefab: {instanceID: 0}
+  - treeMaterial: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

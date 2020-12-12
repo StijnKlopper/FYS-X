@@ -14,6 +14,11 @@ public class TerrainGenerator : MonoBehaviour, Generator
     [SerializeField]
     private GameObject oceanPrefab;
 
+    [SerializeField]
+    private GameObject treePrefab;
+
+    private GameObject temp;
+
     private int tileOffset = 5;
 
     public int seed;
@@ -26,9 +31,12 @@ public class TerrainGenerator : MonoBehaviour, Generator
     [System.NonSerialized]
     public Dictionary<Vector3, Region> regionDict = new Dictionary<Vector3, Region>();
 
+
     // Start is called before the first frame update
     void Start()
     {
+
+        temp = new GameObject();
 
         System.Random random = new System.Random(seed);
         this.randomNumbers = new int[20];
@@ -40,18 +48,22 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
         //set shared texture array for all tiles to use to preserve loading and unloading too many textures
         textureData.ApplyToMaterial(tilePrefab.GetComponent<Renderer>().sharedMaterial);
+        //GameObject tree = Instantiate(treePrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
     }
 
     public GameObject GenerateTile(Vector3 position)
     {
         Vector3 tilePosition = new Vector3(position.x + tileOffset, this.gameObject.transform.position.y, position.z + tileOffset);
         GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
+        
+
         return tile;
     }
 
     public GameObject GenerateOcean(Vector3 position) {
         Vector3 tilePosition = new Vector3(position.x, this.gameObject.transform.position.y, position.z);
         GameObject oceanTile = Instantiate(oceanPrefab, tilePosition, Quaternion.identity) as GameObject;
+        oceanTile.transform.SetParent(temp.transform);
         return oceanTile;
     }
 
