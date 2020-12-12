@@ -36,8 +36,6 @@ public class MapDisplay : MonoBehaviour
 
     public void GenerateMap()
     {
-        TileBuilder tile = new TileBuilder();
-        
         //tile.GenerateHeightMap(mapWidth, mapHeight, noiseScale, octaves, persistance, lacunarity, offsets);
         float[,] noiseMap = GenerateCityNoiseMap(mapWidth,mapHeight,offsets);
 

@@ -16,8 +16,6 @@ class WorldBuilder
     public WorldBuilder()
     {
         this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
-        //this.cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
-        //this.cityRenderDistance = this.chunkRenderDistance - cityGenerator.cityRadius;
         this.objectPool = GameObject.Find("Level").GetComponent<ObjectPool>();
     }
 
@@ -118,7 +116,6 @@ public void UnloadRegions(Vector3 position)
         boundaries.zMax = z + renderDistance;
 
         return boundaries;
-
     }
 
     public static int CalcCoord(float coordinate, int size)
@@ -132,6 +129,16 @@ public void UnloadRegions(Vector3 position)
         int x = CalcCoord(coordinate.x, 10);
         int z = CalcCoord(coordinate.z, 10);
 
-        return tileDict[new Vector3(x, 0, z)];
+        Tile tile = null;
+        try
+        {
+            tile = tileDict[new Vector3(x, 0, z)];
+        }
+        catch
+        {
+            Debug.Log("Get a Tile that doesn't exist");
+        }
+
+        return tile;
     }
 }

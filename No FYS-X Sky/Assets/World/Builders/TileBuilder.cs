@@ -74,7 +74,6 @@ public class TileBuilder : MonoBehaviour
 
     public void GenerateHeightMap(int width, int height, Vector2 offsets)
     {
-
         int tileHeight = width;
         int tileWidth = height;
 
