@@ -51,7 +51,7 @@ public class CaveBuilder : MonoBehaviour
 
     public SafeMesh GenerateCaveMap(Vector2 offsets, Mesh caveMesh, int height)
     {
-        int size = 11;
+        int size = WorldBuilder.chunkSize + 1;
 
         // Gets added to coordinates, is a decimal to make sure it does not end up at an integer
         float addendum = 1000.17777f;

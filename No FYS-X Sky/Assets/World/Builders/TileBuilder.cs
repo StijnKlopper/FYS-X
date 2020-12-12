@@ -6,7 +6,7 @@ using UnityEngine;
 public class TileBuilder : MonoBehaviour
 {
     [SerializeField]
-    private MeshRenderer tileRenderer;
+    private MeshRenderer meshRenderer;
 
     [SerializeField]
     private MeshFilter meshFilter;
@@ -43,19 +43,23 @@ public class TileBuilder : MonoBehaviour
 
     private IEnumerator GenerateTile()
     {
-        Vector3[] meshVertices = this.meshFilter.mesh.vertices;
-        int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
+        int tileHeight = WorldBuilder.chunkSize + 1;
         int tileWidth = tileHeight;
-
-        Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
+        Vector2 offsets = new Vector2(this.gameObject.transform.position.x - 5, this.gameObject.transform.position.z - 5);
+        Debug.Log("GENERATING TILE AT OFFSETS: " + offsets);
 
         // Instead of generating height map:
         GenerateHeightMap(tileWidth, tileHeight, offsets);
 
-        this.tileRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
+        MeshData meshData = GenerateMesh(this.heightMap);
+        Mesh mesh = meshData.CreateMesh();
 
-        UpdateMeshVertices(heightMap, offsets);
+        this.meshFilter.mesh = mesh;
+        this.meshCollider.sharedMesh = mesh;
+        this.meshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
 
+        //UpdateMeshVertices(heightMap, offsets);
+        Debug.Log("DONE");
         GameObject ocean = this.transform.GetChild(0).gameObject;
         ocean.SetActive(hasOcean);
         ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
@@ -66,11 +70,7 @@ public class TileBuilder : MonoBehaviour
 
     public void GenerateHeightMap(int width, int height, Vector2 offsets)
     {
-
-        int tileHeight = width;
-        int tileWidth = height;
-
-        int splatmapSize = tileHeight * tileWidth;
+        int splatmapSize = height * width;
 
         Color[] splatMap1 = new Color[splatmapSize];
         Color[] splatMap2 = new Color[splatmapSize];
@@ -99,17 +99,19 @@ public class TileBuilder : MonoBehaviour
             maxPossibleHeight += amplitude;
             amplitude *= 0.5f;
         }
-
+        Debug.Log("GENERATING HEIGHTMAP AT: " + (offsets.x) + ", " + (offsets.y));
+        Debug.Log("GENERATING HEIGHTMAP TO: " + (offsets.x + width) + ", " + (offsets.y + height));
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
+                
                 double sampleX = (x + offsets.x) / scale;
                 double sampleY = (y + offsets.y) / scale;
 
                 float noiseHeight = (float) perlin.GetValue(sampleX, 0, sampleY);
 
-                int colorIndex = y * tileWidth + x;
+                int colorIndex = y * width + x;
 
                 // Normalise noise map between minimum and maximum noise heights
                 noiseHeight = (noiseHeight + 1) / (2f * maxPossibleHeight / 1.75f);
@@ -137,9 +139,8 @@ public class TileBuilder : MonoBehaviour
                 heightMap[x, y] = noiseHeight;
             }
         }
-
-        splatmapsArray = new Texture2DArray(tileWidth, tileHeight, 3, TextureFormat.RGBA32, true);
-        oceanSplatmap = new Texture2D(tileHeight, tileWidth);
+        splatmapsArray = new Texture2DArray(width, height, 3, TextureFormat.RGBA32, true);
+        oceanSplatmap = new Texture2D(width, width);
 
         splatmapsArray.SetPixels(splatMap1, 0);
         splatmapsArray.SetPixels(splatMap2, 1);
@@ -152,42 +153,79 @@ public class TileBuilder : MonoBehaviour
         splatmapsArray.wrapMode = TextureWrapMode.Clamp;
         splatmapsArray.Apply();
 
-        
-
-        //WorldBuilder.tileDict[new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5))].heightMap = heightMap;
         this.heightMap = heightMap;
     }
 
-    private void UpdateMeshVertices(float[,] heightMap, Vector2 offsets)
+    private MeshData GenerateMesh(float[,] heightMap)
     {
-        int height = heightMap.GetLength(0);
-        int width = heightMap.GetLength(1);
-        Vector3[] meshVertices = this.meshFilter.mesh.vertices;
+        int width = heightMap.GetLength(0);
+        int height = heightMap.GetLength(1);
+        float topLeftX = (width - 1) / -2f;
+        float topLeftZ = (height - 1) / 2f;
 
+        // Add meshsimplificationincrement
+        int verticesPerLine = width;
+
+        MeshData meshData = new MeshData(verticesPerLine, verticesPerLine);
         int vertexIndex = 0;
 
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                Vector3 vertex = meshVertices[vertexIndex];
+                meshData.vertices[vertexIndex] = new Vector3(topLeftX + x, heightMap[x, y], topLeftZ - y);
+                meshData.uvs[vertexIndex] = new Vector2(x / (float)width, y / (float)height);
 
-                meshVertices[vertexIndex] = new Vector3(vertex.x, heightMap[x, y], vertex.z);
+                if (x < width - 1 && y < height - 1)
+                {
+                    meshData.AddTriangle(vertexIndex, vertexIndex + verticesPerLine + 1, vertexIndex + verticesPerLine);
+                    meshData.AddTriangle(vertexIndex + verticesPerLine + 1, vertexIndex, vertexIndex + 1);
+                }
 
                 vertexIndex++;
             }
         }
 
-        this.meshFilter.mesh.vertices = meshVertices;
-        this.meshFilter.mesh.RecalculateBounds();
-        this.meshFilter.mesh.RecalculateNormals();
-
-        this.meshCollider.sharedMesh = this.meshFilter.mesh;
+        return meshData;
     }
 
     void OnDestroy()
     {
         Destroy(oceanTile);
+    }
+
+}
+public class MeshData
+{
+    public Vector3[] vertices;
+    public int[] triangles;
+    public Vector2[] uvs;
+
+    int triangleIndex;
+
+    public MeshData(int meshWidth, int meshHeight)
+    {
+        vertices = new Vector3[meshWidth * meshHeight];
+        uvs = new Vector2[meshWidth * meshHeight];
+        triangles = new int[(meshWidth - 1) * (meshHeight - 1) * 6];
+    }
+
+    public void AddTriangle(int a, int b, int c)
+    {
+        triangles[triangleIndex] = a;
+        triangles[triangleIndex + 1] = b;
+        triangles[triangleIndex + 2] = c;
+        triangleIndex += 3;
+    }
+
+    public Mesh CreateMesh()
+    {
+        Mesh mesh = new Mesh();
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.uv = uvs;
+        mesh.RecalculateNormals();
+        return mesh;
     }
 
 }
