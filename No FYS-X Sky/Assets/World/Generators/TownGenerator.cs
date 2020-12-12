@@ -100,11 +100,13 @@ public class TownGenerator : MonoBehaviour, Generator
                     int randomHouseIndex = (int)Math.Round(Mathf.PerlinNoise(x, y) * houses.Count);
 
                     // Calculate bounds and calculate the houseposition for the center of the house, also get the correct Y value for the building
+                    
                     Bounds houseBounds = CalculateBounds(houses[randomHouseIndex]);
                     Vector3 housePosition = PositionCorrection(new Vector3(position.x - houseBounds.center.x, 0, position.z - houseBounds.center.z));
+                    
                     housePosition = new Vector3(housePosition.x, houses[randomHouseIndex].transform.position.y + housePosition.y, housePosition.z);
 
-                    Tile tile = WorldBuilder.GetTile(housePosition); // TODO: Hier weghalen en in de if weer zetten (zie wat nu is uitgecomment)
+                    Tile tile = WorldBuilder.GetTile(position); // TODO: Hier weghalen en in de if weer zetten (zie wat nu is uitgecomment)
 
                     // Check if valid position
                     if (tile != null && ValidHousePosition(housePosition, houseBounds))

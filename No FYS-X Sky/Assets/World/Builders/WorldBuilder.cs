@@ -125,18 +125,41 @@ public void UnloadRegions(Vector3 position)
     }
 
     public static Tile GetTile(Vector3 coordinate)
-    {
-        int x = CalcCoord(coordinate.x, 10);
-        int z = CalcCoord(coordinate.z, 10);
+    {  
+
+        int x = CalcCoord(coordinate.x-5, 10);
+        int z = CalcCoord(coordinate.z-5, 10);
 
         Tile tile = null;
         try
         {
-            tile = tileDict[new Vector3(x, 0, z)];
+            //if(x > 0)
+            //{
+            //    x -= 10;
+            //}
+            //if(z < 0)
+            //{
+            //    z -= 10;
+            //}
+            //if(x > 0)
+            //{
+            //    x = x + 10;
+            //}
+            //if( z < 0)
+            //{
+            //    z = z + 10;
+            //}
+            if(x < 0 && z > 0) {
+                tile = tileDict[new Vector3(x, 0, z)];
+            }
+           
+            
         }
         catch
         {
-            Debug.Log("Get a Tile that doesn't exist");
+
+
+            Debug.Log(coordinate + " Get a Tile that doesn't exist" + (x-10) +  " - " + (z-10));
         }
 
         return tile;
