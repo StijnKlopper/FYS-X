@@ -22,7 +22,6 @@ public class TownGenerator : MonoBehaviour, Generator
 
     public int[] randomNumbers;
 
-
     void Start()
     {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
@@ -45,7 +44,7 @@ public class TownGenerator : MonoBehaviour, Generator
         this.mapHeight = mapHeight;
         this.offsets = offsets;
 
-        makeHouseLocations();
+        generateHouses();
     }
 
     bool ValidHousePosition(Vector3 position, Bounds bounds)
@@ -75,15 +74,14 @@ public class TownGenerator : MonoBehaviour, Generator
         Ray ray = new Ray(rayStartPosition, -transform.up);
         if (Physics.Raycast(ray, out RaycastHit hitInfo))
         {
-            // Small extra correction
-            Vector3 correctionPosition = new Vector3(hitInfo.point.x, hitInfo.point.y - 0.2f, hitInfo.point.z);
-            return correctionPosition;
+            // Return with small extra correction
+            return new Vector3(hitInfo.point.x, hitInfo.point.y - 0.2f, hitInfo.point.z);
         }
 
         return Vector3.zero;
     }
 
-    private void makeHouseLocations()
+    private void generateHouses()
     {
         int checkForEveryCoordinates = 4; 
         float[,] noiseMap = GenerateCityNoiseMap(this.mapWidth, this.mapHeight, this.offsets);
@@ -106,7 +104,7 @@ public class TownGenerator : MonoBehaviour, Generator
                     Vector3 housePosition = PositionCorrection(new Vector3(position.x - houseBounds.center.x, 0, position.z - houseBounds.center.z));
                     housePosition = new Vector3(housePosition.x, houses[randomHouseIndex].transform.position.y + housePosition.y, housePosition.z);
 
-                    Tile tile = WorldBuilder.GetTile(position); // TODO: Hier weghalen en in de if weer zetten (zie wat nu is uitgecomment)
+                    Tile tile = WorldBuilder.GetTile(housePosition); // TODO: Hier weghalen en in de if weer zetten (zie wat nu is uitgecomment)
 
                     // Check if valid position
                     if (tile != null && ValidHousePosition(housePosition, houseBounds))

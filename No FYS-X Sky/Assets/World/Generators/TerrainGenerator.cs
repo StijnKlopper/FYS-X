@@ -20,7 +20,7 @@ public class TerrainGenerator : MonoBehaviour, Generator
     public TextureData textureData;
 
     [System.NonSerialized]
-    public int[] randomNumbers; // TODO: Nodig nog??
+    public int[] randomNumbers;
 
     [System.NonSerialized]
     public static Dictionary<Vector3, Region> regionDict = new Dictionary<Vector3, Region>();

@@ -866,7 +866,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1564121594}
-  - {fileID: 1027472117}
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -915,6 +914,7 @@ MonoBehaviour:
   houses:
   - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
   - {fileID: 4875836682623532385, guid: 54f44e8e1a76f5e4f8bba4c338620140, type: 3}
+  randomNumbers: 
 --- !u!1 &906747359
 GameObject:
   m_ObjectHideFlags: 0
@@ -960,36 +960,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f9bbdef35dffc74492b3ab294016de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1027472116
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1027472117}
-  m_Layer: 0
-  m_Name: CubePoints
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1027472117
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1027472116}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 827795474}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1029945969
 GameObject:
   m_ObjectHideFlags: 0
