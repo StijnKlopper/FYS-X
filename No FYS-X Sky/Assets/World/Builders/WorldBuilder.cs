@@ -6,8 +6,6 @@ using UnityEngine;
 using UnityEngine.UI;
 class WorldBuilder
 {
-    private TerrainGenerator terrainGenerator;
-
     public static int chunkSize = 10;
 
     public static int chunkRenderDistance = 100;
@@ -19,7 +17,6 @@ class WorldBuilder
     public WorldBuilder()
     {
         this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
-        this.terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         this.objectPool = GameObject.Find("Level").GetComponent<ObjectPool>();
     }
 
@@ -36,9 +33,9 @@ class WorldBuilder
             for (int j = zMin; j < zMax; j += Region.regionSize)
             {
                 Vector3 regionPosition = new Vector3(i, 0, j);
-                if(!terrainGenerator.regionDict.ContainsKey(regionPosition))
+                if(!TerrainGenerator.regionDict.ContainsKey(regionPosition))
                 {
-                    terrainGenerator.regionDict.Add(regionPosition, new Region(i, j));
+                    TerrainGenerator.regionDict.Add(regionPosition, new Region(i, j));
                 }
             }
         }
@@ -48,11 +45,11 @@ public void UnloadRegions(Vector3 position)
     {
         (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize, true);
 
-        foreach (KeyValuePair<Vector3, Region> region in terrainGenerator.regionDict.ToList())
+        foreach (KeyValuePair<Vector3, Region> region in TerrainGenerator.regionDict.ToList())
         {
             if (region.Key.x < xMin || region.Key.x > xMax || region.Key.z < zMin || region.Key.z > zMax)
             {
-                terrainGenerator.regionDict.Remove(region.Key);
+                TerrainGenerator.regionDict.Remove(region.Key);
             }
         }
     }

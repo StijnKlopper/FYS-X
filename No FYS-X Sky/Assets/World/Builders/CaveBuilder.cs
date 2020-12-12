@@ -68,7 +68,8 @@ public class CaveBuilder : MonoBehaviour
         {
             for (int z = 0; z < size; z++)
             {
-                int coordinateHeight = Mathf.FloorToInt(heightmap[x, z]);
+                // -5 to make the amount of rocks sticking out of the terrain lower
+                int coordinateHeight = Mathf.FloorToInt(heightmap[x, z]) - 5;
                 int caveHeight = coordinateHeight + height;
                 // Cave height make height dynamic based on heightmap[x,z]
                 for (int y = 0; y < caveHeight; y++)

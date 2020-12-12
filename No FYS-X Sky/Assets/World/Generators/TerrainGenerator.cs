@@ -23,7 +23,7 @@ public class TerrainGenerator : MonoBehaviour, Generator
     public int[] randomNumbers;
 
     [System.NonSerialized]
-    public Dictionary<Vector3, Region> regionDict = new Dictionary<Vector3, Region>();
+    public static Dictionary<Vector3, Region> regionDict = new Dictionary<Vector3, Region>();
 
     public Perlin perlin;
 
@@ -58,7 +58,7 @@ public class TerrainGenerator : MonoBehaviour, Generator
         return region.GetBiomeByCoordinates(newCoordinates);
     }
 
-    public Region GetRegionByCoordinates(Vector2 coordinates)
+    public static Region GetRegionByCoordinates(Vector2 coordinates)
     {
         float distance = 10000f;
         Region nearestRegion = new Region();

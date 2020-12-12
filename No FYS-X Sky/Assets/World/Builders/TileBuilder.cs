@@ -47,7 +47,7 @@ public class TileBuilder : MonoBehaviour
         int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
         int tileWidth = tileHeight;
 
-        Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
+        Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
 
         // Instead of generating height map:
         GenerateHeightMap(tileWidth, tileHeight, offsets);
