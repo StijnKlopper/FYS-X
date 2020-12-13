@@ -845,7 +845,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 827795474}
-  - component: {fileID: 827795475}
   - component: {fileID: 827795476}
   m_Layer: 0
   m_Name: CityPoints
@@ -869,33 +868,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &827795475
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 827795473}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e6a3dd7ffa46c54daed857f141ebdfa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minimumCityDistanceRadius: 300
-  minimumCitySize: 20
-  cityRadius: 30
-  seed: 69420
-  houses:
-  - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
-  - {fileID: 4875836682623532385, guid: 54f44e8e1a76f5e4f8bba4c338620140, type: 3}
-  - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
-  - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
-  - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
-  - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
-  - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
-  - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
-  - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
-  - {fileID: 177254, guid: e086196633391794b92cb8199f8053ac, type: 3}
 --- !u!114 &827795476
 MonoBehaviour:
   m_ObjectHideFlags: 0

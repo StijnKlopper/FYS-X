@@ -20,9 +20,10 @@ public class GameController : MonoBehaviour
 
         worldBuilder.UnloadTiles(position);
         worldBuilder.UnloadRegions(position);
-
+        worldBuilder.UnloadHouses();
         worldBuilder.LoadRegions(position);
         worldBuilder.LoadTiles(position);
+
     }
 
 }

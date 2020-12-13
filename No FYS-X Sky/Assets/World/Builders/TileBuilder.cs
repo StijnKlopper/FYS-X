@@ -20,7 +20,7 @@ public class TileBuilder : MonoBehaviour
 
     TerrainGenerator terrainGenerator;
 
-    TownGenerator townGenerator;
+    CityGenerator cityGenerator;
 
     float[] tileTextureData;
 
@@ -35,7 +35,7 @@ public class TileBuilder : MonoBehaviour
     // Start is called before the first frame update
     public float[,] Instantiate() {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        townGenerator = GameObject.Find("CityPoints").GetComponent<TownGenerator>();
+        cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
 
         hasOcean = false;
         StartCoroutine("GenerateTile");
@@ -49,6 +49,9 @@ public class TileBuilder : MonoBehaviour
         int tileWidth = tileHeight;
 
         Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
+        
+        // Offsets which are used by CityGenerator
+        Vector2 cityOffsets = new Vector2(this.gameObject.transform.position.x - 5, this.gameObject.transform.position.z - 5);
 
         // Instead of generating height map:
         GenerateHeightMap(tileWidth, tileHeight, offsets);
@@ -63,8 +66,7 @@ public class TileBuilder : MonoBehaviour
         ocean.transform.position = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
 
         // Spawning city points
-        //cityGenerator.Generate(tileWidth, tileHeight, offsets);
-        townGenerator.Generate(tileWidth, tileHeight, offsets);
+        cityGenerator.Generate(tileWidth, tileHeight, cityOffsets);
 
         yield return null;
     }

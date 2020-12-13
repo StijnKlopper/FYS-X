@@ -1,14 +1,14 @@
 ﻿using Assets.World.Generator;
-using UnityEngine;
 using LibNoise.Generator;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class TownGenerator : MonoBehaviour, Generator
+public class CityGenerator : MonoBehaviour, Generator
 {
-    public int mapWidth;
-    public int mapHeight;
-    public Vector2 offsets;
+    private int mapWidth;
+    private int mapHeight;
+    private Vector2 offsets;
 
     int seed;
 
@@ -20,7 +20,7 @@ public class TownGenerator : MonoBehaviour, Generator
     [System.NonSerialized]
     GameObject parentObject;
 
-    public int[] randomNumbers;
+    private int[] randomNumbers;
 
     void Start()
     {
@@ -44,9 +44,10 @@ public class TownGenerator : MonoBehaviour, Generator
         this.mapHeight = mapHeight;
         this.offsets = offsets;
 
-        generateHouses();
+        GenerateHouses();
     }
 
+    // Validate house position to prevent overlapping
     bool ValidHousePosition(Vector3 position, Bounds bounds)
     {
         float buildingMargin = 1.5f;
@@ -85,11 +86,12 @@ public class TownGenerator : MonoBehaviour, Generator
         return Vector3.zero;
     }
 
-    private void generateHouses()
+    // Generate houses based on noise height value
+    private void GenerateHouses()
     {
-        int checkForEveryCoordinates = 4; 
+        int checkForEveryCoordinates = 50;
         float[,] noiseMap = GenerateCityNoiseMap(this.mapWidth, this.mapHeight, this.offsets);
-        float minNoiseHeight = 0.03f;
+        float minNoiseHeight = 0.01f;
 
         for (int y = 0; y < mapHeight; y += checkForEveryCoordinates)
         {
@@ -100,13 +102,12 @@ public class TownGenerator : MonoBehaviour, Generator
                 // If the current location is within the noisemap position
                 if (noiseMap[x, y] <= minNoiseHeight)
                 {
-                    // Get random building index from thhe list of buildings
-                    int randomHouseIndex = (int)Math.Round(Mathf.PerlinNoise(x, y) * houses.Count);
+                    // Get random building index from thhe list of buildings 
+                    int randomHouseIndex = (int)Math.Round((terrainGenerator.perlin.GetValue(x, 0, y) + 1  / 2) * houses.Count);
 
                     // Calculate bounds and calculate the houseposition for the center of the house, also get the correct Y value for the building
                     Bounds houseBounds = CalculateBounds(houses[randomHouseIndex]);
                     Vector3 housePosition = PositionCorrection(new Vector3(position.x - houseBounds.center.x, 0, position.z - houseBounds.center.z));
-                    
                     housePosition = new Vector3(housePosition.x, houses[randomHouseIndex].transform.position.y + housePosition.y, housePosition.z);
 
                     // Get tile and check if it exists before making a house
@@ -125,19 +126,13 @@ public class TownGenerator : MonoBehaviour, Generator
 
                         // Add house to tile 
                         tile.AddObject(house);
-
-                        /*
-                        Vector3 positionTemp = new Vector3(x + this.offsets.x, 20, y + this.offsets.y);
-                        GameObject point = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        point.transform.position = positionTemp;
-                        Physics.SyncTransforms();
-                        */
                     }
                 }
             }
         }
     }
 
+    // Calculate bounds of buildings
     public Bounds CalculateBounds(GameObject go)
     {
         Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
@@ -157,6 +152,7 @@ public class TownGenerator : MonoBehaviour, Generator
         }
     }
 
+    // Generate NoiseMap for the City(Buildings)
     private float[,] GenerateCityNoiseMap(int mapWidth, int mapHeight, Vector2 offsets)
     {
         float[,] noiseMap = new float[mapWidth, mapHeight];
