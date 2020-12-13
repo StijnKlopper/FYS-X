@@ -20,8 +20,6 @@ public class TileBuilder : MonoBehaviour
 
     TerrainGenerator terrainGenerator;
 
-    CityGenerator cityGenerator;
-
     TownGenerator townGenerator;
 
     float[] tileTextureData;
@@ -37,7 +35,6 @@ public class TileBuilder : MonoBehaviour
     // Start is called before the first frame update
     public float[,] Instantiate() {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
         townGenerator = GameObject.Find("CityPoints").GetComponent<TownGenerator>();
 
         hasOcean = false;

@@ -74,8 +74,11 @@ public class TownGenerator : MonoBehaviour, Generator
         Ray ray = new Ray(rayStartPosition, -transform.up);
         if (Physics.Raycast(ray, out RaycastHit hitInfo))
         {
-            // Return with small extra correction
-            return new Vector3(hitInfo.point.x, hitInfo.point.y - 0.2f, hitInfo.point.z);
+            if (hitInfo.point.y > -1)
+            {
+                // Return with small extra correction
+                return new Vector3(hitInfo.point.x, hitInfo.point.y - 0.2f, hitInfo.point.z);
+            }
         }
 
         return Vector3.zero;
@@ -85,9 +88,9 @@ public class TownGenerator : MonoBehaviour, Generator
     {
         int checkForEveryCoordinates = 4; 
         float[,] noiseMap = GenerateCityNoiseMap(this.mapWidth, this.mapHeight, this.offsets);
-        float minNoiseHeight = 0.05f;
+        float minNoiseHeight = 0.03f;
 
-        for (int y = 0; y < mapHeight; y+=checkForEveryCoordinates)
+        for (int y = 0; y < mapHeight; y += checkForEveryCoordinates)
         {
             for (int x = 0; x < mapWidth; x += checkForEveryCoordinates)
             {
@@ -100,13 +103,13 @@ public class TownGenerator : MonoBehaviour, Generator
                     int randomHouseIndex = (int)Math.Round(Mathf.PerlinNoise(x, y) * houses.Count);
 
                     // Calculate bounds and calculate the houseposition for the center of the house, also get the correct Y value for the building
-                    
                     Bounds houseBounds = CalculateBounds(houses[randomHouseIndex]);
                     Vector3 housePosition = PositionCorrection(new Vector3(position.x - houseBounds.center.x, 0, position.z - houseBounds.center.z));
                     
                     housePosition = new Vector3(housePosition.x, houses[randomHouseIndex].transform.position.y + housePosition.y, housePosition.z);
 
-                    Tile tile = WorldBuilder.GetTile(position); // TODO: Hier weghalen en in de if weer zetten (zie wat nu is uitgecomment)
+                    // Get tile and check if it exists before making a house
+                    Tile tile = WorldBuilder.GetTile(position);
 
                     // Check if valid position
                     if (tile != null && ValidHousePosition(housePosition, houseBounds))
@@ -119,8 +122,7 @@ public class TownGenerator : MonoBehaviour, Generator
                         Vector3 lookAtPostition = new Vector3(xRandomIndex, house.transform.position.y, zRandomIndex);
                         house.transform.LookAt(lookAtPostition);
 
-                        // Add house to tile
-                        //Tile tile = WorldBuilder.GetTile(position); // TODO: Deze terughalen
+                        // Add house to tile 
                         tile.AddObject(house);
 
                         /*
