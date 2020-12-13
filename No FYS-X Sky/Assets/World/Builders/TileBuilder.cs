@@ -57,14 +57,15 @@ public class TileBuilder : MonoBehaviour
 
         UpdateMeshVertices(heightMap, offsets);
 
-        // Spawning city points
-        //cityGenerator.Generate(tileWidth, tileHeight, offsets);
-        townGenerator.Generate(tileWidth, tileHeight, offsets);
-
         GameObject ocean = this.transform.GetChild(0).gameObject;
         ocean.SetActive(hasOcean);
         ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
         ocean.transform.position = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
+
+        // Spawning city points
+        //cityGenerator.Generate(tileWidth, tileHeight, offsets);
+        townGenerator.Generate(tileWidth, tileHeight, offsets);
+
         yield return null;
     }
 

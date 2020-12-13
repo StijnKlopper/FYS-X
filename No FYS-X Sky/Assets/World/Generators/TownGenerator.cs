@@ -49,9 +49,10 @@ public class TownGenerator : MonoBehaviour, Generator
 
     bool ValidHousePosition(Vector3 position, Bounds bounds)
     {
+        float buildingMargin = 1.5f;
         float radius;
-        if (bounds.size.x > bounds.size.z) radius = bounds.size.x;
-        else radius = bounds.size.z;
+        if (bounds.size.x > bounds.size.z) radius = bounds.size.x + buildingMargin;
+        else radius = bounds.size.z + buildingMargin;
         radius += 1;
 
         Collider[] hitColliders = Physics.OverlapSphere(position, radius);

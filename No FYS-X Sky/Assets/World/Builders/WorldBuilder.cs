@@ -126,9 +126,8 @@ public void UnloadRegions(Vector3 position)
 
     public static Tile GetTile(Vector3 coordinate)
     {  
-        // TODO: Fix get Tile bug
-        int x = CalcCoord(coordinate.x, 10);
-        int z = CalcCoord(coordinate.z, 10);
+        int x = CalcCoord(coordinate.x - 10, 10);
+        int z = CalcCoord(coordinate.z - 10, 10);
 
         Tile tile = null;
         try
