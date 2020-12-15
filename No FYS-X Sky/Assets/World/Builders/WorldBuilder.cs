@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 class WorldBuilder
 {
-    public static int chunkSize = 10;
+    public static int chunkSize = 25;
 
     public static int chunkRenderDistance = 100;
 

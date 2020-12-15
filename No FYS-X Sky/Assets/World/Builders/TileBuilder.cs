@@ -59,6 +59,8 @@ public class TileBuilder : MonoBehaviour
 
         GameObject ocean = this.transform.GetChild(0).gameObject;
         ocean.SetActive(hasOcean);
+        MeshFilter oceanMeshFilter = ocean.GetComponent<MeshFilter>();
+        oceanMeshFilter.mesh = GenerateOceanMesh().CreateMesh();
         ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
         ocean.transform.position = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
         yield return null;
@@ -171,7 +173,39 @@ public class TileBuilder : MonoBehaviour
             {
                 meshData.vertices[vertexIndex] = new Vector3(topLeftX - x, heightMap[x, y], topLeftZ - y);
                 meshData.uvs[vertexIndex] = new Vector2(x / (float)width, y / (float)height);
-                //meshData.uvs[vertexIndex] = new Vector2(((width - 1) - x) / (float)width, y / (float)height);
+
+                if (x < width - 1 && y < height - 1)
+                {
+                    meshData.AddTriangle(vertexIndex, vertexIndex + verticesPerLine + 1, vertexIndex + verticesPerLine);
+                    meshData.AddTriangle(vertexIndex + verticesPerLine + 1, vertexIndex, vertexIndex + 1);
+                }
+
+                vertexIndex++;
+            }
+        }
+
+        return meshData;
+    }
+
+    private MeshData GenerateOceanMesh()
+    {
+        int width = WorldBuilder.chunkSize + 1;
+        int height = width;
+        float topLeftX = (width - 1) / 2f;
+        float topLeftZ = (height - 1) / 2f;
+
+        // Add meshsimplificationincrement
+        int verticesPerLine = width;
+
+        MeshData meshData = new MeshData(verticesPerLine, verticesPerLine);
+        int vertexIndex = 0;
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                meshData.vertices[vertexIndex] = new Vector3(topLeftX - x, 0, topLeftZ - y);
+                meshData.uvs[vertexIndex] = new Vector2(x / (float)width, y / (float)height);
 
                 if (x < width - 1 && y < height - 1)
                 {
