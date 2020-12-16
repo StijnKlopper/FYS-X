@@ -10,7 +10,6 @@ public class CityPoint
     public List<Vector3> invalidCityCoordinates;
 
     public List<GameObject> buildings;
-
     public CityPoint(Vector3 cubePosition)
     {
         this.cubePosition = cubePosition;
@@ -54,28 +53,24 @@ public class CityPoint
         {
             ReplaceOrAddCityPointCoordinate(validCoord, coordinate);
         }
-
     }
 
     public void CheckCoordinates(List<Vector3> houseCoordinates)
     {
         List<Vector3> PointsToRemove = new List<Vector3>();
-        //To-do: Een andere manier vinden dan 3 loops te gebruiken om het uit de list halen misschien?
         foreach (Vector3 pos in houseCoordinates)
         {
             foreach (Vector3 citypos in cityCoordinates) 
             {
                 if (citypos.x == pos.x && citypos.z == pos.z)
                 {
-                    // Prevent changing list while trough looping
+                    // Prevent changing list while looping trough
                     PointsToRemove.Add(citypos);
                     continue;
                 }
-            }
-          
+            }         
         }
         RemoveCoordinates(PointsToRemove);
-
     }
 
     private void RemoveCoordinates(List<Vector3> coords)
@@ -83,8 +78,7 @@ public class CityPoint
         foreach(Vector3 pos in coords)
         {
             cityCoordinates.Remove(pos);
-        }
-        
+        }      
     }
 
 }

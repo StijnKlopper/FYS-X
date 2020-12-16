@@ -20,22 +20,12 @@ public class CityGenerator : MonoBehaviour, Generator
     [System.NonSerialized]
     GameObject parentObject;
 
-    private int[] randomNumbers;
-
     void Start()
     {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         seed = terrainGenerator.seed;
 
         parentObject = GameObject.Find("CityPoints");
-
-        // Pseudo random numbers
-        System.Random random = new System.Random(seed);
-        this.randomNumbers = new int[50];
-        for (int i = 0; i < this.randomNumbers.Length; i++)
-        {
-            this.randomNumbers[i] = random.Next(-10000, 10000);
-        }
     }
 
     public void Generate(int mapWidth, int mapHeight, Vector2 offsets)
@@ -51,10 +41,9 @@ public class CityGenerator : MonoBehaviour, Generator
     bool ValidHousePosition(Vector3 position, Bounds bounds)
     {
         float buildingMargin = 1.5f;
-        float radius;
-        if (bounds.size.x > bounds.size.z) radius = bounds.size.x + buildingMargin;
-        else radius = bounds.size.z + buildingMargin;
-        radius += 1;
+        float radius = 1;
+        if (bounds.size.x > bounds.size.z) radius += bounds.size.x + buildingMargin;
+        else radius += bounds.size.z + buildingMargin;
 
         Collider[] hitColliders = Physics.OverlapSphere(position, radius);
         foreach (var hitCollider in hitColliders)
@@ -65,7 +54,6 @@ public class CityGenerator : MonoBehaviour, Generator
                 return false;
             }
         }
-
         return true;
     }
 
@@ -91,7 +79,7 @@ public class CityGenerator : MonoBehaviour, Generator
     {
         int checkForEveryCoordinates = 50;
         float[,] noiseMap = GenerateCityNoiseMap(this.mapWidth, this.mapHeight, this.offsets);
-        float minNoiseHeight = 0.01f;
+        float minNoiseHeight = 0.05f;
 
         for (int y = 0; y < mapHeight; y += checkForEveryCoordinates)
         {
@@ -103,8 +91,7 @@ public class CityGenerator : MonoBehaviour, Generator
                 if (noiseMap[x, y] <= minNoiseHeight)
                 {
                     // Get random building index from thhe list of buildings 
-                    int randomHouseIndex = (int)Math.Round((terrainGenerator.perlin.GetValue(x, 0, y) + 1  / 2) * houses.Count);
-
+                    int randomHouseIndex = (int)Math.Round(((terrainGenerator.perlin.GetValue(position.x + terrainGenerator.randomNumbers[y] / 500.6667f, 0, position.y + terrainGenerator.randomNumbers[y] / 500.6667f) + 1) / 2f) * houses.Count);
                     // Calculate bounds and calculate the houseposition for the center of the house, also get the correct Y value for the building
                     Bounds houseBounds = CalculateBounds(houses[randomHouseIndex]);
                     Vector3 housePosition = PositionCorrection(new Vector3(position.x - houseBounds.center.x, 0, position.z - houseBounds.center.z));
@@ -119,13 +106,14 @@ public class CityGenerator : MonoBehaviour, Generator
                         GameObject house = Instantiate(houses[randomHouseIndex], housePosition, Quaternion.identity, parentObject.transform.GetChild(0).transform) as GameObject;
 
                         // Turn house with consistent random numbers
-                        int xRandomIndex = this.randomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.x) % this.randomNumbers.Length];
-                        int zRandomIndex = this.randomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.y) % (this.randomNumbers.Length - 1)];
-                        Vector3 lookAtPostition = new Vector3(xRandomIndex, house.transform.position.y, zRandomIndex);
-                        house.transform.LookAt(lookAtPostition);
+                        int xRandomIndex = terrainGenerator.randomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.x) % terrainGenerator.randomNumbers.Length];
+                        int zRandomIndex = terrainGenerator.randomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.y) % (terrainGenerator.randomNumbers.Length - 1)];
+                        Vector3 lookAtPosition = new Vector3(xRandomIndex, house.transform.position.y, zRandomIndex);
+                        house.transform.LookAt(lookAtPosition);
 
                         // Add house to tile 
                         tile.AddObject(house);
+                      
                     }
                 }
             }
@@ -156,23 +144,14 @@ public class CityGenerator : MonoBehaviour, Generator
     private float[,] GenerateCityNoiseMap(int mapWidth, int mapHeight, Vector2 offsets)
     {
         float[,] noiseMap = new float[mapWidth, mapHeight];
-
-        float maxPossibleHeight = 0f;
         float frequency = 1f;
-        float amplitude = 1f;
-        float persistance = 0.5f;
+        float persistance = 1f;
         float lacunarity = 2f;
 
-        int octaves = 12;
-        float scale = 50.777f;
+        int octaves = 1;
+        float scale = 100.777f;
 
         Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, seed, LibNoise.QualityMode.High);
-
-        for (int i = 0; i < octaves; i++)
-        {
-            maxPossibleHeight += amplitude;
-            amplitude *= 0.5f;
-        }
 
         for (int y = 0; y < mapHeight; y++)
         {
@@ -181,10 +160,7 @@ public class CityGenerator : MonoBehaviour, Generator
                 double sampleX = (x + offsets.x) / scale;
                 double sampleY = (y + offsets.y) / scale;
 
-                float noiseHeight = (float)perlin.GetValue(sampleX, 0, sampleY);
-
-                // Normalise noise map between minimum and maximum noise heights
-                noiseHeight = (noiseHeight + 1) / (2f * maxPossibleHeight / 1.75f);
+                float noiseHeight = (float)(perlin.GetValue(sampleY, 0, sampleX) + 1) / 2;
 
                 // Change height based on height curve and heightMultiplier
                 Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
