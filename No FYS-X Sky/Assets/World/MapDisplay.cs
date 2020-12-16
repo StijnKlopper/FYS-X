@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 public class MapDisplay : MonoBehaviour
 {
-    public enum DrawMode {NoiseMap, ColourMap, Mesh}
+    public enum DrawMode {NoiseMap, ColourMap, Mesh, CityMap}
     public DrawMode drawMode;
     public int mapWidth;
     public int mapHeight;
@@ -36,9 +36,8 @@ public class MapDisplay : MonoBehaviour
 
     public void GenerateMap()
     {
-        TileBuilder tile = new TileBuilder();
-        //tile.GenerateNoiseMap(mapWidth, mapHeight, noiseScale, octaves, persistance, lacunarity, offsets);
-        float[,] noiseMap = tile.heightMap;
+        //tile.GenerateHeightMap(mapWidth, mapHeight, noiseScale, octaves, persistance, lacunarity, offsets);
+        float[,] noiseMap = GenerateCityNoiseMap(mapWidth,mapHeight,offsets);
 
         Texture2D texture = new Texture2D(mapWidth, mapHeight);
 
@@ -62,7 +61,7 @@ public class MapDisplay : MonoBehaviour
         }
         if(drawMode == DrawMode.NoiseMap) texture.SetPixels(noiseMapC);
         if(drawMode == DrawMode.ColourMap) texture.SetPixels(colourMapC);
-        //Prevents blurryness and makes the colours hold on to points
+        // Prevents blurryness and makes the colours hold on to points
         texture.filterMode = FilterMode.Point;
         texture.wrapMode = TextureWrapMode.Clamp;
         texture.Apply();
@@ -135,6 +134,55 @@ public class MapDisplay : MonoBehaviour
             Debug.Log("You didn't copy the correct string!");
         }*/
 
+    }
+
+    private float[,] GenerateCityNoiseMap(int mapWidth, int mapHeight, Vector2 offsets)
+    {
+        float scale = noiseScale;
+        mapWidth *= 5;
+        mapWidth *= 5;
+        float maxNoiseHeight = float.MinValue;
+        float minNoiseHeight = float.MaxValue;
+
+        float[,] noiseMap = new float[mapWidth, mapHeight];
+        for (int y = 0; y < mapHeight; y++)
+        {
+            for (int x = 0; x < mapWidth; x++)
+            {
+
+                float amplitude = 1;
+                float noiseHeight = 0;
+
+                for (int i = 0; i < octaves; i++)
+                {
+                    float sampleX = (x + offsets.x) / scale;
+                    float sampleY = (y + offsets.y) / scale;
+
+                    float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
+                    noiseHeight += perlinValue * amplitude;
+                }
+
+                if (noiseHeight > maxNoiseHeight)
+                {
+                    maxNoiseHeight = noiseHeight;
+                }
+                else if (noiseHeight < minNoiseHeight)
+                {
+                    minNoiseHeight = noiseHeight;
+                }
+                noiseMap[x, y] = noiseHeight;
+            }
+        }
+
+        for (int y = 0; y < mapHeight; y++)
+        {
+            for (int x = 0; x < mapWidth; x++)
+            {
+                noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]);
+            }
+        }
+
+        return noiseMap;
     }
 
     private void OnValidate()

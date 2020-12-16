@@ -1,5 +1,4 @@
-﻿using CielaSpike;
-using System.Collections;
+﻿using System.Collections;
 using LibNoise.Generator;
 using UnityEngine;
 
@@ -21,6 +20,8 @@ public class TileBuilder : MonoBehaviour
 
     TerrainGenerator terrainGenerator;
 
+    CityGenerator cityGenerator;
+
     float[] tileTextureData;
 
     GameObject oceanTile;
@@ -32,10 +33,10 @@ public class TileBuilder : MonoBehaviour
     private bool hasOcean;
 
     // Start is called before the first frame update
-
-
     public float[,] Instantiate() {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
+
         hasOcean = false;
         StartCoroutine("GenerateTile");
         return heightMap;
@@ -48,6 +49,9 @@ public class TileBuilder : MonoBehaviour
         int tileWidth = tileHeight;
 
         Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
+        
+        // Offsets which are used by CityGenerator
+        Vector2 cityOffsets = new Vector2(this.gameObject.transform.position.x - 5, this.gameObject.transform.position.z - 5);
 
         // Instead of generating height map:
         GenerateHeightMap(tileWidth, tileHeight, offsets);
@@ -60,13 +64,16 @@ public class TileBuilder : MonoBehaviour
         ocean.SetActive(hasOcean);
         ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
         ocean.transform.position = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
+
+        // Spawning city points
+        cityGenerator.Generate(tileWidth, tileHeight, cityOffsets);
+
         yield return null;
     }
 
 
     public void GenerateHeightMap(int width, int height, Vector2 offsets)
     {
-
         int tileHeight = width;
         int tileWidth = height;
 
@@ -151,8 +158,6 @@ public class TileBuilder : MonoBehaviour
 
         splatmapsArray.wrapMode = TextureWrapMode.Clamp;
         splatmapsArray.Apply();
-
-        
 
         //WorldBuilder.tileDict[new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5))].heightMap = heightMap;
         this.heightMap = heightMap;
