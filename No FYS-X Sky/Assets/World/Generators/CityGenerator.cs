@@ -1,5 +1,4 @@
-﻿using Assets.World.Generator;
-using LibNoise.Generator;
+﻿using LibNoise.Generator;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,16 +21,23 @@ public class CityGenerator : MonoBehaviour, Generator
 
     void Start()
     {
+        this.mapWidth = WorldBuilder.chunkSize + 1;
+        this.mapHeight = WorldBuilder.chunkSize + 1;
+
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         seed = terrainGenerator.seed;
 
         parentObject = GameObject.Find("CityPoints");
     }
 
-    public void Generate(int mapWidth, int mapHeight, Vector2 offsets)
+    public void Generate()
     {
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
+        // Should not be used, only for debugging/satisfying the Generator interface
+        Generate(new Vector2(0, 0));
+    }
+
+    public void Generate(Vector2 offsets)
+    {
         this.offsets = offsets;
 
         GenerateHouses();

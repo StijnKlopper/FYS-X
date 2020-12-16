@@ -1,8 +1,4 @@
-﻿using Assets.World.Generator;
-using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using LibNoise.Generator;
 
@@ -82,5 +78,10 @@ public class TerrainGenerator : MonoBehaviour, Generator
     public void DestroyTile(GameObject obj)
     {
         Destroy(obj);
+    }
+
+    public void Generate()
+    {
+        throw new System.NotImplementedException();
     }
 }

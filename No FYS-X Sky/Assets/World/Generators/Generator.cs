@@ -1,10 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-
-namespace Assets.World.Generator
+﻿
+public interface Generator
 {
-    public interface Generator
-    {
-        
-    }
+    void Generate();
 }

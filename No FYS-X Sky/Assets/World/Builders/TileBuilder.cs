@@ -66,7 +66,7 @@ public class TileBuilder : MonoBehaviour
         ocean.transform.position = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
 
         // Spawning city points
-        cityGenerator.Generate(tileWidth, tileHeight, cityOffsets);
+        cityGenerator.Generate(cityOffsets);
 
         yield return null;
     }

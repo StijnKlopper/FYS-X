@@ -1,5 +1,4 @@
-﻿using Assets.World.Generator;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,5 +14,9 @@ public class DungeonGenerator : MonoBehaviour, Generator
     void Update()
     {
         
+    }
+    public void Generate()
+    {
+        throw new System.NotImplementedException();
     }
 }
