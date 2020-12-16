@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 class WorldBuilder
 {
-    public static int chunkSize = 25;
+    public static int chunkSize = 20;
 
     public static int chunkRenderDistance = 100;
 
@@ -21,7 +21,6 @@ class WorldBuilder
     }
 
     public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
-
 
     public void LoadRegions(Vector3 position)
     {
@@ -71,7 +70,7 @@ public void UnloadRegions(Vector3 position)
                     GameObject cave = objectPool.GetPooledObject(ObjectPool.GameObjectType.Cave);
 
                     Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, 0, newChunkPosition.z + 5);
-                    Vector3 cavePosition = new Vector3(newChunkPosition.x + 5, -30, newChunkPosition.z + 5);
+                    Vector3 cavePosition = new Vector3(newChunkPosition.x, -30, newChunkPosition.z);
 
                     terrain.transform.position = terrainPosition;
                     cave.transform.position = cavePosition;

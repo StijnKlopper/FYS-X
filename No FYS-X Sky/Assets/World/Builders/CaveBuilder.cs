@@ -21,7 +21,7 @@ public class CaveBuilder : MonoBehaviour
         int height = 30;
 
         Mesh caveMesh = new Mesh();
-        Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
+        Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
         this.StartCoroutineAsync(GenerateCaveMap(caveMesh, offsets, height), out Task task);
         yield return StartCoroutine(task.Wait());
 

@@ -43,14 +43,18 @@ public class TileBuilder : MonoBehaviour
 
     private IEnumerator GenerateTile()
     {
-        int tileHeight = WorldBuilder.chunkSize + 1;
-        int tileWidth = tileHeight;
         Vector2 offsets = new Vector2(this.gameObject.transform.position.x - 5, this.gameObject.transform.position.z - 5);
+        Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
+        float xzDistance = Vector2.Distance(offsets, new Vector2(playerPos.x, playerPos.z));
+        Debug.Log(xzDistance);
 
         // Instead of generating height map:
-        GenerateHeightMap(tileWidth, tileHeight, offsets);
+        GenerateHeightMap(offsets);
 
-        MeshData meshData = GenerateMesh(this.heightMap);
+        // Calculate levelOfDetail with offsets and player position
+
+        int levelOfDetail = 1;
+        MeshData meshData = GenerateMesh(levelOfDetail, this.heightMap);
         Mesh mesh = meshData.CreateMesh();
 
         this.meshFilter.mesh = mesh;
@@ -59,17 +63,25 @@ public class TileBuilder : MonoBehaviour
 
         GameObject ocean = this.transform.GetChild(0).gameObject;
         ocean.SetActive(hasOcean);
+
+        Mesh oceanMesh = GenerateMesh(levelOfDetail, null, true).CreateMesh();
+        
         MeshFilter oceanMeshFilter = ocean.GetComponent<MeshFilter>();
-        oceanMeshFilter.mesh = GenerateOceanMesh().CreateMesh();
+        oceanMeshFilter.mesh = oceanMesh;
+
+        MeshCollider oceanMeshCollider = ocean.GetComponent<MeshCollider>();
+        oceanMeshCollider.sharedMesh = oceanMesh;
+
         ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
         ocean.transform.position = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
         yield return null;
     }
 
 
-    public void GenerateHeightMap(int width, int height, Vector2 offsets)
+    public void GenerateHeightMap(Vector2 offsets)
     {
-        int splatmapSize = height * width;
+        int tileSize = WorldBuilder.chunkSize + 1;
+        int splatmapSize = tileSize * tileSize;
 
         Color[] splatMap1 = new Color[splatmapSize];
         Color[] splatMap2 = new Color[splatmapSize];
@@ -77,9 +89,9 @@ public class TileBuilder : MonoBehaviour
 
         Color[] oceanMap = new Color[splatmapSize];
 
-        float[,] heightMap = new float[width, height];
+        float[,] heightMap = new float[tileSize, tileSize];
 
-        tileTextureData = new float[width * height];
+        tileTextureData = new float[tileSize * tileSize];
 
         float maxPossibleHeight = 0f;
         float frequency = 1f;
@@ -99,9 +111,9 @@ public class TileBuilder : MonoBehaviour
             amplitude *= 0.5f;
         }
 
-        for (int y = 0; y < height; y++)
+        for (int y = 0; y < tileSize; y++)
         {
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < tileSize; x++)
             {
                 
                 double sampleX = (x + offsets.x) / scale;
@@ -109,7 +121,7 @@ public class TileBuilder : MonoBehaviour
 
                 float noiseHeight = (float) perlin.GetValue(sampleX, 0, sampleY);
 
-                int colorIndex = y * width + x;
+                int colorIndex = y * tileSize + x;
 
                 // Normalise noise map between minimum and maximum noise heights
                 noiseHeight = (noiseHeight + 1) / (2f * maxPossibleHeight / 1.75f);
@@ -131,14 +143,14 @@ public class TileBuilder : MonoBehaviour
 
                 oceanMap[colorIndex] = biome.biomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
 
-                tileTextureData[x + y * height] = biome.biomeType.biomeTypeId;
+                tileTextureData[x + y * tileSize] = biome.biomeType.biomeTypeId;
 
                 noiseHeight = biome.biomeType.heightCurve.Evaluate(noiseHeight) * heightMultiplier;
                 heightMap[x, y] = noiseHeight;
             }
         }
-        splatmapsArray = new Texture2DArray(width, height, 3, TextureFormat.RGBA32, true);
-        oceanSplatmap = new Texture2D(width, width);
+        splatmapsArray = new Texture2DArray(tileSize, tileSize, 3, TextureFormat.RGBA32, true);
+        oceanSplatmap = new Texture2D(tileSize, tileSize);
 
         splatmapsArray.SetPixels(splatMap1, 0);
         splatmapsArray.SetPixels(splatMap2, 1);
@@ -154,27 +166,28 @@ public class TileBuilder : MonoBehaviour
         this.heightMap = heightMap;
     }
 
-    private MeshData GenerateMesh(float[,] heightMap)
+    private MeshData GenerateMesh(int levelOfDetail, float[,] heightMap = null, bool isOcean = false)
     {
-        int width = heightMap.GetLength(0);
-        int height = heightMap.GetLength(1);
-        float topLeftX = (width - 1) / 2f;
-        float topLeftZ = (height - 1) / 2f;
+        int size = WorldBuilder.chunkSize + 1;
+        float topLeft = (size - 1) / 2f;
 
-        // Add meshsimplificationincrement
-        int verticesPerLine = width;
+        // Must be divisible by WorldBuilder.chunkSize
+        int meshSimplificationIncrement = 1;
+        int verticesPerLine = (size - 1) / meshSimplificationIncrement + 1;
 
         MeshData meshData = new MeshData(verticesPerLine, verticesPerLine);
         int vertexIndex = 0;
 
-        for (int y = 0; y < height; y++)
+        for (int y = 0; y < size; y += meshSimplificationIncrement)
         {
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < size; x += meshSimplificationIncrement)
             {
-                meshData.vertices[vertexIndex] = new Vector3(topLeftX - x, heightMap[x, y], topLeftZ - y);
-                meshData.uvs[vertexIndex] = new Vector2(x / (float)width, y / (float)height);
+                float heightValue = isOcean ? 0f : heightMap[x, y];
 
-                if (x < width - 1 && y < height - 1)
+                meshData.vertices[vertexIndex] = new Vector3(topLeft - x, heightValue, topLeft - y);
+                meshData.uvs[vertexIndex] = new Vector2(x / (float)size, y / (float)size);
+
+                if (x < size - 1 && y < size - 1)
                 {
                     meshData.AddTriangle(vertexIndex, vertexIndex + verticesPerLine + 1, vertexIndex + verticesPerLine);
                     meshData.AddTriangle(vertexIndex + verticesPerLine + 1, vertexIndex, vertexIndex + 1);
@@ -186,45 +199,6 @@ public class TileBuilder : MonoBehaviour
 
         return meshData;
     }
-
-    private MeshData GenerateOceanMesh()
-    {
-        int width = WorldBuilder.chunkSize + 1;
-        int height = width;
-        float topLeftX = (width - 1) / 2f;
-        float topLeftZ = (height - 1) / 2f;
-
-        // Add meshsimplificationincrement
-        int verticesPerLine = width;
-
-        MeshData meshData = new MeshData(verticesPerLine, verticesPerLine);
-        int vertexIndex = 0;
-
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                meshData.vertices[vertexIndex] = new Vector3(topLeftX - x, 0, topLeftZ - y);
-                meshData.uvs[vertexIndex] = new Vector2(x / (float)width, y / (float)height);
-
-                if (x < width - 1 && y < height - 1)
-                {
-                    meshData.AddTriangle(vertexIndex, vertexIndex + verticesPerLine + 1, vertexIndex + verticesPerLine);
-                    meshData.AddTriangle(vertexIndex + verticesPerLine + 1, vertexIndex, vertexIndex + 1);
-                }
-
-                vertexIndex++;
-            }
-        }
-
-        return meshData;
-    }
-
-    void OnDestroy()
-    {
-        Destroy(oceanTile);
-    }
-
 }
 public class MeshData
 {

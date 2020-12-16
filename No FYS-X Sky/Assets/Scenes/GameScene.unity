@@ -508,6 +508,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player-chan
       objectReference: {fileID: 0}
+    - target: {fileID: 100326, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 400326, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1000,7 +1004,6 @@ MonoBehaviour:
   caveObjectPool: []
   terrainObjectPool: []
   oceanObjectPool: []
-  poolAmount: 440
   terrainPrefab: {fileID: 5520266623367027301, guid: 0c31a200cbf2256439ca13b894b6f98b, type: 3}
   cavePrefab: {fileID: 5849594575968623539, guid: 414f10da3431ef44f88a77f5c556f3b2, type: 3}
   oceanPrefab: {fileID: 8703873624021677109, guid: b4c854845c276c3409741edef1149a9d, type: 3}
