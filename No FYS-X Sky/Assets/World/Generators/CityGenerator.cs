@@ -77,21 +77,24 @@ public class CityGenerator : MonoBehaviour, Generator
     // Generate houses based on noise height value
     private void GenerateHouses()
     {
+        int aboveGroundPlaceholderY = 10;
         int checkForEveryCoordinates = 50;
-        float[,] noiseMap = GenerateCityNoiseMap(this.mapWidth, this.mapHeight, this.offsets);
         float minNoiseHeight = 0.05f;
+        float scale = 500.6667f;
+        float[,] noiseMap = GenerateCityNoiseMap(this.mapWidth, this.mapHeight, this.offsets);
 
         for (int y = 0; y < mapHeight; y += checkForEveryCoordinates)
         {
             for (int x = 0; x < mapWidth; x += checkForEveryCoordinates)
             {
-                Vector3 position = new Vector3(x + this.offsets.x, 10, y + this.offsets.y);
+                Vector3 position = new Vector3(x + this.offsets.x, aboveGroundPlaceholderY, y + this.offsets.y);
 
                 // If the current location is within the noisemap position
                 if (noiseMap[x, y] <= minNoiseHeight)
                 {
                     // Get random building index from thhe list of buildings 
-                    int randomHouseIndex = (int)Math.Round(((terrainGenerator.perlin.GetValue(position.x + terrainGenerator.randomNumbers[y] / 500.6667f, 0, position.y + terrainGenerator.randomNumbers[y] / 500.6667f) + 1) / 2f) * houses.Count);
+                    int randomHouseIndex = (int)Math.Round(((terrainGenerator.perlin.GetValue(position.x + terrainGenerator.randomNumbers[y] / scale, 0, position.y + terrainGenerator.randomNumbers[y] / scale) + 1) / 2f) * houses.Count);
+                    
                     // Calculate bounds and calculate the houseposition for the center of the house, also get the correct Y value for the building
                     Bounds houseBounds = CalculateBounds(houses[randomHouseIndex]);
                     Vector3 housePosition = PositionCorrection(new Vector3(position.x - houseBounds.center.x, 0, position.z - houseBounds.center.z));
@@ -113,7 +116,6 @@ public class CityGenerator : MonoBehaviour, Generator
 
                         // Add house to tile 
                         tile.AddObject(house);
-                      
                     }
                 }
             }
@@ -174,7 +176,6 @@ public class CityGenerator : MonoBehaviour, Generator
                 {
                     noiseMap[x, y] = noiseHeight;
                 }
-
             }
         }
 
