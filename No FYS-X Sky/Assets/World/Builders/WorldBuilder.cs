@@ -6,7 +6,10 @@ using UnityEngine;
 using UnityEngine.UI;
 class WorldBuilder
 {
-    public static int chunkSize = 20;
+    public static int chunkSize = 10;
+
+    // Must be factors of chunkSize and 4 long
+    public static int[] levelsOfDetail = new int[] {1, 2, 5, 10};
 
     public static int chunkRenderDistance = 100;
 
@@ -62,6 +65,15 @@ public void UnloadRegions(Vector3 position)
             for (int j = zMin; j < zMax; j += chunkSize)
             {
                 Vector3 newChunkPosition = new Vector3(i, 0, j);
+                Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
+
+                float xzDistance = Vector3.Distance(newChunkPosition, playerPos);
+                int levelOfDetail = CalculateLevelOfDetail(xzDistance);
+                if (tileDict.ContainsKey(newChunkPosition) && tileDict[newChunkPosition].levelOfDetail != levelOfDetail)
+                {
+                    tileDict[newChunkPosition].DestroyObjects(objectPool);
+                    tileDict.Remove(newChunkPosition);
+                }
                 if (!tileDict.ContainsKey(newChunkPosition))
                 {
                     Tile tile = new Tile();
@@ -74,6 +86,8 @@ public void UnloadRegions(Vector3 position)
 
                     terrain.transform.position = terrainPosition;
                     cave.transform.position = cavePosition;
+
+                    tile.levelOfDetail = levelOfDetail;
 
                     tile.AddObject(terrain);
                     tile.AddObject(cave);
@@ -132,5 +146,18 @@ public void UnloadRegions(Vector3 position)
         int z = CalcCoord(coordinate.z, 10);
 
         return tileDict[new Vector3(x, 0, z)];
+    }
+
+    private int CalculateLevelOfDetail(float distance)
+    {
+
+        int levels = levelsOfDetail.Length;
+        // Diagonally
+        int maxDistance = Mathf.CeilToInt(chunkRenderDistance * 1.5f);
+        if (distance > maxDistance) return levelsOfDetail[levels - 1];
+
+        float stepSize = (float)maxDistance / levels;
+
+        return levelsOfDetail[Mathf.CeilToInt(distance / stepSize) - 1];
     }
 }

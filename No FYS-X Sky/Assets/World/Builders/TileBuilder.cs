@@ -44,16 +44,11 @@ public class TileBuilder : MonoBehaviour
     private IEnumerator GenerateTile()
     {
         Vector2 offsets = new Vector2(this.gameObject.transform.position.x - 5, this.gameObject.transform.position.z - 5);
-        Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
-        float xzDistance = Vector2.Distance(offsets, new Vector2(playerPos.x, playerPos.z));
-        Debug.Log(xzDistance);
 
         // Instead of generating height map:
         GenerateHeightMap(offsets);
 
-        // Calculate levelOfDetail with offsets and player position
-
-        int levelOfDetail = 1;
+        int levelOfDetail = WorldBuilder.GetTile(new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z)).levelOfDetail;
         MeshData meshData = GenerateMesh(levelOfDetail, this.heightMap);
         Mesh mesh = meshData.CreateMesh();
 
@@ -172,7 +167,7 @@ public class TileBuilder : MonoBehaviour
         float topLeft = (size - 1) / 2f;
 
         // Must be divisible by WorldBuilder.chunkSize
-        int meshSimplificationIncrement = 1;
+        int meshSimplificationIncrement = levelOfDetail;
         int verticesPerLine = (size - 1) / meshSimplificationIncrement + 1;
 
         MeshData meshData = new MeshData(verticesPerLine, verticesPerLine);
