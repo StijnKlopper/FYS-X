@@ -14,6 +14,18 @@ class WorldBuilder
 
     private ObjectPool objectPool;
 
+    public struct MapData
+    {
+        public float[,] heightMap;
+        public Color[,] colorMap;
+
+        public MapData(float[,] heightMap, Color[,] colorMap)
+        {
+            this.heightMap = heightMap;
+            this.colorMap = colorMap;
+        }
+    }
+
     public WorldBuilder()
     {
         this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
@@ -77,7 +89,7 @@ public void UnloadRegions(Vector3 position)
                     cave.transform.position = cavePosition;
 
                     tile.AddObject(terrain);
-                    tile.AddObject(cave);
+                     tile.AddObject(cave);
                     tileDict.Add(newChunkPosition, tile);
                     float[,] heightmap = terrain.GetComponent<TileBuilder>().Instantiate();
 
@@ -86,6 +98,8 @@ public void UnloadRegions(Vector3 position)
             }
         }
     }
+
+
 
     public void UnloadTiles(Vector3 position)
     {
