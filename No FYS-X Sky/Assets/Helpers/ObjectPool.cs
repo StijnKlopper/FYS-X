@@ -27,8 +27,7 @@ public class ObjectPool : MonoBehaviour
     {
         // Total rendered area divided by chunk size area + 10%
         poolAmount = (((WorldBuilder.chunkRenderDistance * WorldBuilder.chunkRenderDistance) / (WorldBuilder.chunkSize * WorldBuilder.chunkSize))) * 4;
-        poolAmount = poolAmount + Mathf.CeilToInt(10f * poolAmount);
-        Debug.Log(poolAmount);
+        poolAmount = poolAmount + Mathf.CeilToInt(0.1f * poolAmount);
         gameObjectDict = new Dictionary<GameObjectType, List<GameObject>>();
 
         for (int i = 0; i < poolAmount; i++ )

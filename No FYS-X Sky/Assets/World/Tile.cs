@@ -26,4 +26,10 @@ public class Tile
             objectPool.UnloadPooledObject(obj);
         }
     }
+
+    public void RegenerateMesh()
+    {
+        TileBuilder tileBuilder = this.loadedObjects[0].GetComponent<TileBuilder>();
+        tileBuilder.SetMesh(tileBuilder.GenerateMesh(levelOfDetail, heightMap).CreateMesh());
+    }
 }

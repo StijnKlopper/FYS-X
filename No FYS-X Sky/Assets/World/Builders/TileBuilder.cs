@@ -59,9 +59,8 @@ public class TileBuilder : MonoBehaviour
         int levelOfDetail = WorldBuilder.GetTile(new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z)).levelOfDetail;
         MeshData meshData = GenerateMesh(levelOfDetail, this.heightMap);
         Mesh mesh = meshData.CreateMesh();
+        SetMesh(mesh);
 
-        this.meshFilter.mesh = mesh;
-        this.meshCollider.sharedMesh = mesh;
         this.meshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
 
         GameObject ocean = this.transform.GetChild(0).gameObject;
@@ -83,7 +82,6 @@ public class TileBuilder : MonoBehaviour
 
         yield return null;
     }
-
 
     public void GenerateHeightMap(Vector2 offsets)
     {
@@ -173,7 +171,7 @@ public class TileBuilder : MonoBehaviour
         this.heightMap = heightMap;
     }
 
-    private MeshData GenerateMesh(int levelOfDetail, float[,] heightMap = null, bool isOcean = false)
+    public MeshData GenerateMesh(int levelOfDetail, float[,] heightMap = null, bool isOcean = false)
     {
         int size = WorldBuilder.chunkSize + 1;
         float topLeft = (size - 1) / 2f;
@@ -206,38 +204,10 @@ public class TileBuilder : MonoBehaviour
 
         return meshData;
     }
-}
-public class MeshData
-{
-    public Vector3[] vertices;
-    public int[] triangles;
-    public Vector2[] uvs;
 
-    int triangleIndex;
-
-    public MeshData(int meshWidth, int meshHeight)
+    public void SetMesh(Mesh mesh)
     {
-        vertices = new Vector3[meshWidth * meshHeight];
-        uvs = new Vector2[meshWidth * meshHeight];
-        triangles = new int[(meshWidth - 1) * (meshHeight - 1) * 6];
+        this.meshFilter.mesh = mesh;
+        this.meshCollider.sharedMesh = mesh;
     }
-
-    public void AddTriangle(int a, int b, int c)
-    {
-        triangles[triangleIndex] = c;
-        triangles[triangleIndex + 1] = b;
-        triangles[triangleIndex + 2] = a;
-        triangleIndex += 3;
-    }
-
-    public Mesh CreateMesh()
-    {
-        Mesh mesh = new Mesh();
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
-        mesh.uv = uvs;
-        mesh.RecalculateNormals();
-        return mesh;
-    }
-
 }
