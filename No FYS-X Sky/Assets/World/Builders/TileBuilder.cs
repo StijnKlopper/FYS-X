@@ -57,10 +57,10 @@ public class TileBuilder : MonoBehaviour
         GenerateHeightMap(offsets);
 
         int levelOfDetail = WorldBuilder.GetTile(new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z)).levelOfDetail;
+
         MeshData meshData = GenerateMesh(levelOfDetail, this.heightMap);
         Mesh mesh = meshData.CreateMesh();
         SetMesh(mesh);
-
         this.meshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
 
         GameObject ocean = this.transform.GetChild(0).gameObject;

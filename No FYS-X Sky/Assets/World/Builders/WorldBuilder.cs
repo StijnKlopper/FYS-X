@@ -74,13 +74,14 @@ public void UnloadRegions(Vector3 position)
                 {
                     if (tileDict[newChunkPosition].levelOfDetail != levelOfDetail)
                     {
+                        // Regenerate the terrain mesh if the level of detail is different
                         Tile tile = tileDict[newChunkPosition];
                         tile.levelOfDetail = levelOfDetail;
                         tile.RegenerateMesh();
                     }
-
                 } else
                 {
+                    // Generate new tile
                     Tile tile = new Tile();
 
                     GameObject terrain = objectPool.GetPooledObject(ObjectPool.GameObjectType.Terrain);
@@ -113,7 +114,6 @@ public void UnloadRegions(Vector3 position)
         {
             if (!houses.gameObject.activeSelf)
             {
-
                 GameObject.Destroy(houses.gameObject);
             }
         }
@@ -160,16 +160,16 @@ public void UnloadRegions(Vector3 position)
 
     // Get tile from tile dict based on worldcoordinates
     public static Tile GetTile(Vector3 coordinate)
-    {  
-        int x = CalcCoord(coordinate.x, 10);
-        int z = CalcCoord(coordinate.z, 10);    
+    {
+        int x = CalcCoord(coordinate.x, chunkSize);
+        int z = CalcCoord(coordinate.z, chunkSize);  
 
         return tileDict[new Vector3(x, 0, z)];
     }
 
     private int CalculateLevelOfDetail(float distance)
     {
-
+        // Calculate the level of detail by taking the distance from the player to the chunk and dividing it over the different LOD levels
         int levels = levelsOfDetail.Length;
         // Diagonally
         int maxDistance = Mathf.CeilToInt(chunkRenderDistance * 1.5f);
