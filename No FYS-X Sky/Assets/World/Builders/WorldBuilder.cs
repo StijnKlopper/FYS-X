@@ -65,9 +65,10 @@ public void UnloadRegions(Vector3 position)
             for (int j = zMin; j < zMax; j += chunkSize)
             {
                 Vector3 newChunkPosition = new Vector3(i, 0, j);
-                Vector3 playerPos = GameObject.FindGameObjectWithTag("Player").transform.position;
+                Vector3 playerPosV3 = GameObject.FindGameObjectWithTag("Player").transform.position;
+                Vector2 playerPosV2 = new Vector2(playerPosV3.x, playerPosV3.z);
 
-                float xzDistance = Vector3.Distance(newChunkPosition, playerPos);
+                float xzDistance = Vector2.Distance(new Vector2(i, j), playerPosV2);
                 int levelOfDetail = CalculateLevelOfDetail(xzDistance);
                 if (tileDict.ContainsKey(newChunkPosition) && tileDict[newChunkPosition].levelOfDetail != levelOfDetail)
                 {
