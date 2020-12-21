@@ -1,9 +1,7 @@
-﻿using Microsoft.Win32;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
+
 class WorldBuilder
 {
     public static int chunkSize = 10;
@@ -15,15 +13,16 @@ class WorldBuilder
 
     private int regionRenderDistance;
 
-    private ObjectPool objectPool;
+    public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
 
+    private ObjectPool objectPool;
+    private GameObject cityPoints;
     public WorldBuilder()
     {
         this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
         this.objectPool = GameObject.Find("Level").GetComponent<ObjectPool>();
+        this.cityPoints = GameObject.Find("CityPoints/Buildings");
     }
-
-    public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
 
     public void LoadRegions(Vector3 position)
     {
@@ -69,7 +68,8 @@ public void UnloadRegions(Vector3 position)
                 Vector2 playerPosV2 = new Vector2(playerPosV3.x, playerPosV3.z);
 
                 float xzDistance = Vector2.Distance(new Vector2(i, j), playerPosV2);
-                int levelOfDetail = CalculateLevelOfDetail(xzDistance);
+                //int levelOfDetail = CalculateLevelOfDetail(xzDistance);
+                int levelOfDetail = 1;
                 if (tileDict.ContainsKey(newChunkPosition) && tileDict[newChunkPosition].levelOfDetail != levelOfDetail)
                 {
                     tileDict[newChunkPosition].DestroyObjects(objectPool);
@@ -78,6 +78,7 @@ public void UnloadRegions(Vector3 position)
                 if (!tileDict.ContainsKey(newChunkPosition))
                 {
                     Tile tile = new Tile();
+
                     //GameObject terrain = terrainGenerator.GenerateTile(newChunkPosition);
                     GameObject terrain = objectPool.GetPooledObject(ObjectPool.GameObjectType.Terrain);
                     GameObject cave = objectPool.GetPooledObject(ObjectPool.GameObjectType.Cave);
@@ -101,6 +102,18 @@ public void UnloadRegions(Vector3 position)
         }
     }
 
+    // Destroy Houses if they are inactive
+    public void UnloadHouses()
+    {
+        foreach (Transform houses in cityPoints.GetComponentInChildren<Transform>())
+        {
+            if (!houses.gameObject.activeSelf)
+            {
+
+                GameObject.Destroy(houses.gameObject);
+            }
+        }
+    }
     public void UnloadTiles(Vector3 position)
     {
         (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
@@ -122,7 +135,7 @@ public void UnloadRegions(Vector3 position)
         int x = CalcCoord(position.x, size);
         int z = CalcCoord(position.z, size);
 
-        if(region)
+        if (region)
         {
             renderDistance += size;
         }
@@ -141,10 +154,11 @@ public void UnloadRegions(Vector3 position)
         return Mathf.FloorToInt(coordinate / size) * size;
     }
 
+    // Get tile from tile dict based on worldcoordinates
     public static Tile GetTile(Vector3 coordinate)
-    {
+    {  
         int x = CalcCoord(coordinate.x, 10);
-        int z = CalcCoord(coordinate.z, 10);
+        int z = CalcCoord(coordinate.z, 10);    
 
         return tileDict[new Vector3(x, 0, z)];
     }

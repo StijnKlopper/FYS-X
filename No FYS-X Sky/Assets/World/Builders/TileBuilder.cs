@@ -1,5 +1,4 @@
-﻿using CielaSpike;
-using System.Collections;
+﻿using System.Collections;
 using LibNoise.Generator;
 using UnityEngine;
 
@@ -21,6 +20,8 @@ public class TileBuilder : MonoBehaviour
 
     TerrainGenerator terrainGenerator;
 
+    CityGenerator cityGenerator;
+
     float[] tileTextureData;
 
     GameObject oceanTile;
@@ -32,10 +33,10 @@ public class TileBuilder : MonoBehaviour
     private bool hasOcean;
 
     // Start is called before the first frame update
-
-
     public float[,] Instantiate() {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
+
         hasOcean = false;
         StartCoroutine("GenerateTile");
         return heightMap;
@@ -43,7 +44,14 @@ public class TileBuilder : MonoBehaviour
 
     private IEnumerator GenerateTile()
     {
-        Vector2 offsets = new Vector2(this.gameObject.transform.position.x - 5, this.gameObject.transform.position.z - 5);
+        Vector3[] meshVertices = this.meshFilter.mesh.vertices;
+        int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
+        int tileWidth = tileHeight;
+
+        Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
+        
+        // Offsets which are used by CityGenerator
+        Vector2 cityOffsets = new Vector2(this.gameObject.transform.position.x - 5, this.gameObject.transform.position.z - 5);
 
         // Instead of generating height map:
         GenerateHeightMap(offsets);
@@ -69,6 +77,10 @@ public class TileBuilder : MonoBehaviour
 
         ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
         ocean.transform.position = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
+
+        // Spawning city points
+        cityGenerator.Generate(tileWidth, tileHeight, cityOffsets);
+
         yield return null;
     }
 
