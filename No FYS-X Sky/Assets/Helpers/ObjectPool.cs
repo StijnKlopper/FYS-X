@@ -67,7 +67,7 @@ public class ObjectPool : MonoBehaviour
                 return objectList[i];
             }
         }
-        Debug.Log("Pool empty");
+
         return null;
     }
 
