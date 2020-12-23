@@ -48,7 +48,7 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
         //set shared texture array for all tiles to use to preserve loading and unloading too many textures
         textureData.ApplyToMaterial(tilePrefab.GetComponent<Renderer>().sharedMaterial);
-        //GameObject tree = Instantiate(treePrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+        GameObject tree = Instantiate(treePrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
     }
 
     public GameObject GenerateTile(Vector3 position)

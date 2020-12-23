@@ -42,10 +42,12 @@ public class FractalTree : MonoBehaviour {
 
     public void generate(Vector3 newPosition) {
         this.newPosition = newPosition;
-        StartCoroutine("GenerateTree", newPosition);
+        GenerateTree(newPosition);
+
+
     }
 
-    public IEnumerator GenerateTree(Vector3 startPosition)
+    public void GenerateTree(Vector3 startPosition)
     {
 
         rules.Clear();
@@ -53,7 +55,7 @@ public class FractalTree : MonoBehaviour {
         branches.Clear();
 
         //F[-F]F[+F][F]
-        rules.Add('F', "F[%F]F");
+        rules.Add('F', "F[-F][F]");
 
         // Apply rules for i interations
         output = input;
@@ -66,7 +68,6 @@ public class FractalTree : MonoBehaviour {
         CreateCylinders(startPosition, this.gameObject);
         //combineMeshes(wood, treeMaterial);
         //combineMeshes(leaves, leafMaterial);
-        yield return null;
     }
 
     public void combineMeshes(GameObject gameObject, Material material)
@@ -86,7 +87,6 @@ public class FractalTree : MonoBehaviour {
             meshFilters[i].gameObject.SetActive(false);
 
         }
-
 
         gameObject.GetComponent<MeshRenderer>().material = material;
         gameObject.transform.GetComponent<MeshFilter>().mesh = new Mesh();
@@ -136,7 +136,6 @@ public class FractalTree : MonoBehaviour {
         {
             switch (c)
             {
-                case 'B':
                 case 'F': // Draw line of length lastBranchLength, in direction of lastAngle
                     points.Add(lastPoint);
 
@@ -153,9 +152,6 @@ public class FractalTree : MonoBehaviour {
                     points.Add(newPoint);
                     lastPoint = newPoint;
                     break;
-
-
-
                 case '+': // Rotate +30
                     lastPoint.Angle.x += 60.0f + Random.Range(0, 40);
                     break;
@@ -167,12 +163,6 @@ public class FractalTree : MonoBehaviour {
                     break;
                 case ']': // Load Saved State
                     lastPoint = returnValues.Pop();
-                    break;
-                case '*': // Rotate -30
-                    lastPoint.Angle.z += -60.0f + Random.Range(0, 40);
-                    break;
-                case '%': // Rotate -30
-                    lastPoint.Angle.z += -60.0f + Random.Range(0, 40);
                     break;
             }
         }
@@ -204,12 +194,11 @@ public class FractalTree : MonoBehaviour {
                 CreateLeaf(points[i], points[i + 1]);
             }
 
-
             else
             {
                 if (oldBranchSize == prevTrunkSize)
                 {
-                    oldBranchSize = trunkSize / 4;
+                    oldBranchSize = trunkSize / 2;
                 }
 
                 branchSize = oldBranchSize - 0.01f;
@@ -233,7 +222,7 @@ public class FractalTree : MonoBehaviour {
     {
         GameObject newCylinder = (GameObject)Instantiate(woodPrefab, startPosition, Quaternion.identity);
         newCylinder.name = "point 1 " + point1.Point + "point 2" + point2.Point;
-        newCylinder.GetComponent<Cone>().Generate(oldSize, newSize, false);
+        newCylinder.GetComponent<Cone>().Generate(oldSize, newSize, lastTrunk);
         newCylinder.SetActive(true);
 
         float length = Vector3.Distance(point2.Point, point1.Point);
@@ -244,6 +233,7 @@ public class FractalTree : MonoBehaviour {
         newCylinder.transform.localScale = scale;
         newCylinder.transform.position = newCylinder.transform.position + point1.Point;
         point2.Angle.x = point2.Angle.x + 270;
+        point2.Angle.z = 0;
         newCylinder.transform.Rotate(point2.Angle);
         newCylinder.transform.parent = wood.transform;
 

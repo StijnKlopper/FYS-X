@@ -212,26 +212,26 @@ public class Cone : MonoBehaviour
 			mesh.triangles = tris;
 		}
 
-		//GetComponentInParent<MeshFilter>().mesh = mesh;
+        GetComponentInParent<MeshFilter>().mesh = mesh;
 
 
-		GameObject newCone = new GameObject("BROo");
-		newCone.AddComponent<MeshFilter>();
-		newCone.AddComponent<MeshRenderer>();
-		newCone.AddComponent<MeshCollider>();
-		newCone.GetComponent<MeshFilter>().mesh = mesh;
-		newCone.transform.parent = this.transform.parent;
+/*        GameObject newCone = new GameObject("Cone");
+        newCone.AddComponent<MeshFilter>();
+        newCone.AddComponent<MeshRenderer>();
+        newCone.AddComponent<MeshCollider>();
+        newCone.GetComponent<MeshFilter>().mesh = mesh;
+        newCone.transform.parent = this.transform.parent;
 
 
-		/*//newCone.AddComponent<MeshRenderer>();
+        newCone.AddComponent<MeshRenderer>();
 
         if (addCollider)
         {
             MeshCollider mc = newCone.AddComponent<MeshCollider>();
             mc.sharedMesh = mf.sharedMesh;
-        }
+        }*/
 
-        //Selection.activeObject = newCone;*/
-	}
+        //Selection.activeObject = newCone;
+    }
 
 }
