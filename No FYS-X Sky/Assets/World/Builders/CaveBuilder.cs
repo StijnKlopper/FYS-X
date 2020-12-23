@@ -3,35 +3,72 @@ using UnityEngine;
 using LibNoise.Generator;
 
 using CielaSpike;
+using System;
+using System.Threading;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 public class CaveBuilder : MonoBehaviour
 {
 
     RidgedMultifractal ridgedMultifractal;
     SafeMesh safeMesh;
-    float[,] heightmap;
 
-    public void Instantiate(float[,] heightmap) {
-        this.heightmap = heightmap;
-        StartCoroutine(UpdateCaveMesh());
-    }
+    ConcurrentQueue<CaveThreadInfo<SafeMesh>> caveDataThreadInfoQueue = new ConcurrentQueue<CaveThreadInfo<SafeMesh>>();
 
-    public IEnumerator UpdateCaveMesh()
+
+
+/*    public void UpdateCaveMesh()
     {
         int height = 30;
+        RequestCaveData(OnCaveDataReceived);
+    }*/
 
-        Mesh caveMesh = new Mesh();
-        Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
-        this.StartCoroutineAsync(GenerateCaveMap(caveMesh, offsets, height), out Task task);
-        yield return StartCoroutine(task.Wait());
+    public void RequestCaveData(Action<SafeMesh> callback)
+    {
 
+        Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
+        ThreadStart threadStart = delegate
+        {
+            CaveDataThread(callback, offsets);
+        };
+/*        Thread thread = new Thread(threadStart);
+        thread.IsBackground = true;
+        thread.Priority = System.Threading.ThreadPriority.Lowest;
+        thread.Start();*/
+        new Thread(threadStart).Start();
+    }
+
+    void CaveDataThread(Action<SafeMesh> callback, Vector2 offsets)
+    {
+        SafeMesh safeMesh = GenerateCaveMap(offsets, 30);
+
+        caveDataThreadInfoQueue.Enqueue(new CaveThreadInfo<SafeMesh>(callback, safeMesh));
+        
+    }
+
+    struct CaveThreadInfo<T>
+    {
+        public readonly Action<T> callback;
+        public readonly T parameter;
+
+        public CaveThreadInfo(Action<T> callback, T parameter)
+        {
+            this.callback = callback;
+            this.parameter = parameter;
+        }
+
+    }
+
+    public void OnCaveDataReceived(SafeMesh safeMesh)
+    {
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         MeshCollider meshCollider = GetComponent<MeshCollider>();
         mesh.Clear();
         mesh.vertices = safeMesh.Vertices;
         mesh.triangles = safeMesh.Triangles;
 
-        mesh.uv = GenerateUV.CalculateUVs(safeMesh.Vertices, 1);
+        //mesh.uv = GenerateUV.CalculateUVs(safeMesh.Vertices, 1);
 
         mesh.Optimize();
         mesh.RecalculateNormals();
@@ -40,19 +77,12 @@ public class CaveBuilder : MonoBehaviour
         meshCollider.sharedMesh = null;
         meshCollider.sharedMesh = mesh;
 
-        yield return null;
+
     }
 
-    IEnumerator GenerateCaveMap(Mesh caveMesh, Vector2 offsets, int height)
-    {
-        safeMesh = this.GenerateCaveMap(offsets, caveMesh, height);
-        yield return safeMesh;
-    }
-
-    public SafeMesh GenerateCaveMap(Vector2 offsets, Mesh caveMesh, int height)
+    public SafeMesh GenerateCaveMap(Vector2 offsets, int height)
     {
         int size = 11;
-
         // Gets added to coordinates, is a decimal to make sure it does not end up at an integer
         float addendum = 1000.17777f;
 
@@ -69,7 +99,7 @@ public class CaveBuilder : MonoBehaviour
             for (int z = 0; z < size; z++)
             {
                 // -5 to make the amount of rocks sticking out of the terrain lower
-                int coordinateHeight = Mathf.FloorToInt(heightmap[x, z]) - 5;
+                int coordinateHeight = 0;
                 int caveHeight = coordinateHeight + height;
                 // Cave height make height dynamic based on heightmap[x,z]
                 for (int y = 0; y < caveHeight; y++)
@@ -94,7 +124,54 @@ public class CaveBuilder : MonoBehaviour
             }
         }
 
-        SafeMesh safeMesh = MarchingCubes.BuildMesh(caveMap);
+        MarchingCubes marchingCubes = new MarchingCubes();
+
+        SafeMesh safeMesh = marchingCubes.BuildMesh(caveMap);
         return safeMesh;
+    }
+
+
+
+    public long FindPrimeNumber(int n)
+    {
+        int count = 0;
+        long a = 2;
+        while (count < n)
+        {
+            long b = 2;
+            int prime = 1;// to check if found a prime
+            while (b * b <= a)
+            {
+                if (a % b == 0)
+                {
+                    prime = 0;
+                    break;
+                }
+                b++;
+            }
+            if (prime > 0)
+            {
+                count++;
+            }
+            a++;
+        }
+        return (--a);
+    }
+
+
+    void Update()
+    {
+        if (caveDataThreadInfoQueue.Count > 0)
+        {
+            for (int i = 0; i < caveDataThreadInfoQueue.Count; i++)
+            {
+                CaveThreadInfo<SafeMesh> result;
+
+                if (caveDataThreadInfoQueue.TryDequeue(out result)) 
+                {
+                    result.callback(result.parameter);
+                }
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-class WorldBuilder
+class WorldBuilder 
 {
     public static int chunkSize = 10;
 
@@ -34,7 +34,6 @@ class WorldBuilder
 
     public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
 
-
     public void LoadRegions(Vector3 position)
     {
         (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize, true);
@@ -53,7 +52,7 @@ class WorldBuilder
         }
     }
 
-public void UnloadRegions(Vector3 position)
+    public void UnloadRegions(Vector3 position)
     {
         (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize, true);
 
@@ -79,25 +78,32 @@ public void UnloadRegions(Vector3 position)
                 {
                     Tile tile = new Tile();
                     //GameObject terrain = terrainGenerator.GenerateTile(newChunkPosition);
-                    GameObject terrain = objectPool.GetPooledObject(ObjectPool.GameObjectType.Terrain);
+                    //GameObject terrain = objectPool.GetPooledObject(ObjectPool.GameObjectType.Terrain);
                     GameObject cave = objectPool.GetPooledObject(ObjectPool.GameObjectType.Cave);
 
-                    Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, 0, newChunkPosition.z + 5);
+                    //Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, 0, newChunkPosition.z + 5);
                     Vector3 cavePosition = new Vector3(newChunkPosition.x + 5, -30, newChunkPosition.z + 5);
 
-                    terrain.transform.position = terrainPosition;
+                    //terrain.transform.position = terrainPosition;
                     cave.transform.position = cavePosition;
 
-                    tile.AddObject(terrain);
-                     tile.AddObject(cave);
+                    //tile.AddObject(terrain);
+                    tile.AddObject(cave);
                     tileDict.Add(newChunkPosition, tile);
-                    float[,] heightmap = terrain.GetComponent<TileBuilder>().Instantiate();
+                    //terrain.GetComponent<TileBuilder>().GenerateTile();
 
-                    cave.GetComponent<CaveBuilder>().Instantiate(heightmap);
+                    //float[,] heightmap =
+                    //cave.GetComponent<CaveBuilder>().UpdateCaveMesh();
+
+                    cave.GetComponent<CaveBuilder>().RequestCaveData(cave.GetComponent<CaveBuilder>().OnCaveDataReceived);
+
+                    //RequestCaveData(OnCaveDataReceived);
                 }
             }
         }
     }
+
+
 
 
 

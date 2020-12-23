@@ -31,6 +31,9 @@ public class ObjectPool : MonoBehaviour
 
         for (int i = 0; i < poolAmount; i++ )
         {
+            
+
+
             GameObject terrain = (GameObject)Instantiate(terrainPrefab);
             GameObject cave = (GameObject)Instantiate(cavePrefab);
             GameObject ocean = (GameObject)Instantiate(oceanPrefab);

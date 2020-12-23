@@ -38,12 +38,12 @@ public class TileBuilder : MonoBehaviour
 
     Queue<MapThreadInfo<MapData>> mapDataThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
 
-    public float[,] Instantiate() {
+/*    public float[,] Instantiate() {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         hasOcean = false;
         GenerateTile();
         return heightMap;
-    }
+    }*/
 
     public void RequestMapData(Action<MapData> callback)
     {
@@ -70,6 +70,7 @@ public class TileBuilder : MonoBehaviour
 
     void MapDataThread(Action<MapData> callback, Vector2 offsets)
     {
+
         MapData mapData = GenerateHeightMap(11, 11, offsets);
         lock (mapDataThreadInfoQueue)
         {
@@ -95,8 +96,10 @@ public class TileBuilder : MonoBehaviour
         }
     }
 
-    private void GenerateTile()
+    public void GenerateTile()
     {
+        terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        hasOcean = false;
         Vector3[] meshVertices = this.meshFilter.mesh.vertices;
         int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
         int tileWidth = tileHeight;
@@ -107,11 +110,9 @@ public class TileBuilder : MonoBehaviour
         RequestMapData(OnMapDataReceived);
     }
 
-    void OnMapDataReceived(MapData mapData)
+    public void OnMapDataReceived(MapData mapData)
     {
         Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
-        Debug.Log("Received");
-
         splatmapsArray = new Texture2DArray(11, 11, 3, TextureFormat.RGBA32, true);
         oceanSplatmap = new Texture2D(11, 11);
 
