@@ -105,7 +105,6 @@ public class TileBuilder : MonoBehaviour
         int tileWidth = tileHeight;
 
         //RequestMapData
-        Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
 
         RequestMapData(OnMapDataReceived);
     }
@@ -145,7 +144,6 @@ public class TileBuilder : MonoBehaviour
 
         int splatmapSize = tileHeight * tileWidth;
 
-        
         Color[] splatMap1 = new Color[splatmapSize];
         Color[] splatMap2 = new Color[splatmapSize];
         Color[] splatMap3 = new Color[splatmapSize];
@@ -205,9 +203,9 @@ public class TileBuilder : MonoBehaviour
 
                 oceanMap[colorIndex] = biome.biomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
 
-                AnimationCurve heightCurve = new AnimationCurve(biome.biomeType.heightCurve.keys);
+                //AnimationCurve heightCurve = new AnimationCurve(biome.biomeType.heightCurve.keys);
 
-                noiseHeight = heightCurve.Evaluate(noiseHeight) * heightMultiplier;
+                noiseHeight = biome.biomeType.heightCurve.Evaluate(noiseHeight) * heightMultiplier;
 
 
 

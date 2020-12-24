@@ -18,6 +18,12 @@ public class MarchingCubes {
 
 	private  int[,] triangleConnectionTable;
 
+
+	private int i;
+	private int num = 0;
+	private float offset = 0f;
+	private int edges = 12;
+
 	public MarchingCubes() {
 		this.target = 0.5f;
 		this.windingOrder = new int[] { 0, 1, 2 };
@@ -31,7 +37,7 @@ public class MarchingCubes {
 	public SafeMesh BuildMesh(float[, ,] voxels) {
 
 		MarchingCubes marchingCubes = new MarchingCubes();
-
+		Vector3[] vector3Array = new Vector3[12];
 		List<Vector3> vector3s = new List<Vector3>();
 		List<int> nums = new List<int>();
 		float[] singleArray = new float[8];
@@ -39,7 +45,7 @@ public class MarchingCubes {
 			for (int j = 0; j < voxels.GetLength(1) - 1; j++) {
 				for (int k = 0; k < voxels.GetLength(2) - 1; k++) {
 					marchingCubes.FillCube(i, j, k, voxels, singleArray, marchingCubes);
-					marchingCubes.MarchCube(new Vector3((float)i, (float)j, (float)k), singleArray, vector3s, nums, marchingCubes);
+					marchingCubes.MarchCube(new Vector3((float)i, (float)j, (float)k), singleArray, vector3s, nums, marchingCubes, vector3Array);
 				}
 			}
 		}
@@ -61,12 +67,10 @@ public class MarchingCubes {
 		return (single != 0f ? (marchingCubes.target - v1) / single : 0.5f);
 	}
 
-	private void MarchCube(Vector3 pos, float[] cube, List<Vector3> vertList, List<int> indexList, MarchingCubes marchingCubes) {
-		int i;
-		int num = 0;
-		float offset = 0f;
-		int edges = 12;
-		Vector3[] vector3Array = new Vector3[edges];
+	private void MarchCube(Vector3 pos, float[] cube, List<Vector3> vertList, List<int> indexList, MarchingCubes marchingCubes, Vector3[] vector3Array) {
+
+		num = 0;
+		offset = 0f;
 
         for (i = 0; i < 8; i++)
         {
@@ -83,7 +87,7 @@ public class MarchingCubes {
             return;
         }
 
-        for (i = 0; i < edges; i++)
+        /*for (i = 0; i < edges; i++)
         {
             if ((num1 & 1 << (i & 31)) != 0)
             {
@@ -96,18 +100,22 @@ public class MarchingCubes {
 
         i = 0;
 
-		while (i < 5) {
-			if (marchingCubes.triangleConnectionTable[num, 3 * i] >= 0) {
-				int count = vertList.Count;
-				for (int j = 0; j < 3; j++) {
-					int num2 = marchingCubes.triangleConnectionTable[num, 3 * i + j];
-					indexList.Add(count + marchingCubes.windingOrder[j]);
-					vertList.Add(vector3Array[num2]);
-				}
-				i++;
-			} else {
-				break;
-			}
-		}
-	}
-}
+        while (i < 5)
+        {
+            if (marchingCubes.triangleConnectionTable[num, 3 * i] >= 0)
+            {
+                int count = vertList.Count;
+                for (int j = 0; j < 3; j++)
+                {
+                    int num2 = marchingCubes.triangleConnectionTable[num, 3 * i + j];
+                    indexList.Add(count + marchingCubes.windingOrder[j]);
+                    vertList.Add(vector3Array[num2]);
+                }
+                i++;
+            }
+            else
+            {
+                break;
+            }*/
+        }
+    }

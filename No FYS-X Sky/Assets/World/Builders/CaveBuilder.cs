@@ -28,15 +28,20 @@ public class CaveBuilder : MonoBehaviour
     {
 
         Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
+
+       
         ThreadStart threadStart = delegate
         {
             CaveDataThread(callback, offsets);
         };
-/*        Thread thread = new Thread(threadStart);
+        Thread thread = new Thread(threadStart);
         thread.IsBackground = true;
         thread.Priority = System.Threading.ThreadPriority.Lowest;
-        thread.Start();*/
-        new Thread(threadStart).Start();
+
+
+
+        thread.Start();
+        //new Thread(threadStart).Start();
     }
 
     void CaveDataThread(Action<SafeMesh> callback, Vector2 offsets)
@@ -167,7 +172,7 @@ public class CaveBuilder : MonoBehaviour
             {
                 CaveThreadInfo<SafeMesh> result;
 
-                if (caveDataThreadInfoQueue.TryDequeue(out result)) 
+                if (caveDataThreadInfoQueue.TryDequeue(out result))
                 {
                     result.callback(result.parameter);
                 }

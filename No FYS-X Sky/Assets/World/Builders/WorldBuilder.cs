@@ -77,20 +77,21 @@ class WorldBuilder
                 if (!tileDict.ContainsKey(newChunkPosition))
                 {
                     Tile tile = new Tile();
-                    //GameObject terrain = terrainGenerator.GenerateTile(newChunkPosition);
-                    //GameObject terrain = objectPool.GetPooledObject(ObjectPool.GameObjectType.Terrain);
+                    GameObject terrain = objectPool.GetPooledObject(ObjectPool.GameObjectType.Terrain);
                     GameObject cave = objectPool.GetPooledObject(ObjectPool.GameObjectType.Cave);
 
-                    //Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, 0, newChunkPosition.z + 5);
+                    Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, 0, newChunkPosition.z + 5);
                     Vector3 cavePosition = new Vector3(newChunkPosition.x + 5, -30, newChunkPosition.z + 5);
 
-                    //terrain.transform.position = terrainPosition;
+                    terrain.transform.position = terrainPosition;
                     cave.transform.position = cavePosition;
 
-                    //tile.AddObject(terrain);
+                    tile.AddObject(terrain);
                     tile.AddObject(cave);
                     tileDict.Add(newChunkPosition, tile);
-                    //terrain.GetComponent<TileBuilder>().GenerateTile();
+                    terrain.GetComponent<TileBuilder>().GenerateTile();
+
+
 
                     //float[,] heightmap =
                     //cave.GetComponent<CaveBuilder>().UpdateCaveMesh();

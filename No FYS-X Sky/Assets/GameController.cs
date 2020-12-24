@@ -16,10 +16,12 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
+        Application.backgroundLoadingPriority = ThreadPriority.BelowNormal;
+        //GarbageCollector.GCMode = GarbageCollector.Mode.Disabled;
         QualitySettings.vSyncCount = 0;
         //Application.targetFrameRate = targetFrameRate;
         worldBuilder = new WorldBuilder();
-
+        
     }
 
     // Update is called once per frame
