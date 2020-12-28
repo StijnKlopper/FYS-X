@@ -6,9 +6,9 @@ public class DefaultBiomeType : BiomeType
 {
     public DefaultBiomeType()
     { 
-        this.biomeTypeId = 10;
-        this.color = new Color(0, 0, 0, 0);
-        this.color2 = new Color(0, 0, 0, 0);
-        this.color3 = new Color(0, 0, 0, 1);
+        this.BiomeTypeId = 10;
+        this.Color = new Color(0, 0, 0, 0);
+        this.Color2 = new Color(0, 0, 0, 0);
+        this.Color3 = new Color(0, 0, 0, 1);
     }
 }

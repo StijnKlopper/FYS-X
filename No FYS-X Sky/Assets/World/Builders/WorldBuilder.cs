@@ -4,64 +4,65 @@ using UnityEngine;
 
 class WorldBuilder
 {
-    public static int chunkSize = 10;
+    public const int CHUNK_SIZE = 10;
 
-    // Must be factors of chunkSize and 4 long
+    public const int CHUNK_RENDER_DISTANCE = 100;
+
+    // Must be factors of CHUNK_SIZE and 4 long
     public static int[] levelsOfDetail = new int[] {1, 2, 5, 10};
-
-    public static int chunkRenderDistance = 100;
 
     private int regionRenderDistance;
 
-    public static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
+    private static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
 
     private ObjectPool objectPool;
     private GameObject cityPoints;
+
     public WorldBuilder()
     {
-        this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
+        this.regionRenderDistance = Mathf.CeilToInt(CHUNK_RENDER_DISTANCE / Region.REGION_SIZE) * Region.REGION_SIZE + Region.REGION_SIZE;
         this.objectPool = GameObject.Find("Level").GetComponent<ObjectPool>();
         this.cityPoints = GameObject.Find("CityPoints/Buildings");
     }
 
     public void LoadRegions(Vector3 position)
     {
-        (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize, true);
+        (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.REGION_SIZE, true);
 
         // Loop through current region and the surrounding regions
-        for (int i = xMin; i < xMax; i += Region.regionSize)
+        for (int i = xMin; i < xMax; i += Region.REGION_SIZE)
         {
-            for (int j = zMin; j < zMax; j += Region.regionSize)
+            for (int j = zMin; j < zMax; j += Region.REGION_SIZE)
             {
                 Vector3 regionPosition = new Vector3(i, 0, j);
-                if(!TerrainGenerator.regionDict.ContainsKey(regionPosition))
+                if(!TerrainGenerator.RegionDict.ContainsKey(regionPosition))
                 {
-                    TerrainGenerator.regionDict.Add(regionPosition, new Region(i, j));
+                    TerrainGenerator.RegionDict.Add(regionPosition, new Region(i, j));
                 }
             }
         }
     }
 
-public void UnloadRegions(Vector3 position)
+    public void UnloadRegions(Vector3 position)
     {
-        (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.regionSize, true);
+        (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, regionRenderDistance, Region.REGION_SIZE, true);
 
-        foreach (KeyValuePair<Vector3, Region> region in TerrainGenerator.regionDict.ToList())
+        foreach (KeyValuePair<Vector3, Region> region in TerrainGenerator.RegionDict.ToList())
         {
             if (region.Key.x < xMin || region.Key.x > xMax || region.Key.z < zMin || region.Key.z > zMax)
             {
-                TerrainGenerator.regionDict.Remove(region.Key);
+                TerrainGenerator.RegionDict.Remove(region.Key);
             }
         }
     }
 
     public void LoadTiles(Vector3 position)
     {
-        (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
+        (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, CHUNK_RENDER_DISTANCE, CHUNK_SIZE);
 
-        for (int i = xMin; i < xMax; i += chunkSize)
+        for (int i = xMin; i < xMax; i += CHUNK_SIZE)
         {
-            for (int j = zMin; j < zMax; j += chunkSize)
+            for (int j = zMin; j < zMax; j += CHUNK_SIZE)
             {
                 Vector3 newChunkPosition = new Vector3(i, 0, j);
                 Vector3 playerPosV3 = GameObject.FindGameObjectWithTag("Player").transform.position;
@@ -72,11 +73,11 @@ public void UnloadRegions(Vector3 position)
 
                 if (tileDict.ContainsKey(newChunkPosition))
                 {
-                    if (tileDict[newChunkPosition].levelOfDetail != levelOfDetail)
+                    if (tileDict[newChunkPosition].LevelOfDetail != levelOfDetail)
                     {
                         // Regenerate the terrain mesh if the level of detail is different
                         Tile tile = tileDict[newChunkPosition];
-                        tile.levelOfDetail = levelOfDetail;
+                        tile.LevelOfDetail = levelOfDetail;
                         tile.RegenerateMesh();
                     }
                 } else
@@ -96,12 +97,12 @@ public void UnloadRegions(Vector3 position)
                     tile.AddObject(terrain);
                     tile.AddObject(cave);
 
-                    tile.levelOfDetail = levelOfDetail;
+                    tile.LevelOfDetail = levelOfDetail;
 
                     tileDict.Add(newChunkPosition, tile);
-                    float[,] heightmap = terrain.GetComponent<TileBuilder>().Instantiate();
-                    tile.heightMap = heightmap;
-                    cave.GetComponent<CaveBuilder>().Instantiate(heightmap);
+                    float[,] heightMap = terrain.GetComponent<TileBuilder>().Instantiate();
+                    tile.HeightMap = heightMap;
+                    cave.GetComponent<CaveBuilder>().Instantiate(heightMap);
                 }
             }
         }
@@ -120,7 +121,7 @@ public void UnloadRegions(Vector3 position)
     }
     public void UnloadTiles(Vector3 position)
     {
-        (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, chunkRenderDistance, chunkSize);
+        (int xMin, int xMax, int zMin, int zMax) = CalcBoundaries(position, CHUNK_RENDER_DISTANCE, CHUNK_SIZE);
 
         foreach (KeyValuePair<Vector3, Tile> tile in tileDict.ToList())
         {
@@ -152,7 +153,7 @@ public void UnloadRegions(Vector3 position)
         return boundaries;
     }
 
-    public static int CalcCoord(float coordinate, int size)
+    private static int CalcCoord(float coordinate, int size)
     {
         // Input: 220, 200. Output: 200, gives corners of current location, rounds to the nearest size number
         return Mathf.FloorToInt(coordinate / size) * size;
@@ -161,8 +162,8 @@ public void UnloadRegions(Vector3 position)
     // Get tile from tile dict based on worldcoordinates
     public static Tile GetTile(Vector3 coordinate)
     {
-        int x = CalcCoord(coordinate.x, chunkSize);
-        int z = CalcCoord(coordinate.z, chunkSize);  
+        int x = CalcCoord(coordinate.x, CHUNK_SIZE);
+        int z = CalcCoord(coordinate.z, CHUNK_SIZE);  
 
         return tileDict[new Vector3(x, 0, z)];
     }
@@ -172,7 +173,7 @@ public void UnloadRegions(Vector3 position)
         // Calculate the level of detail by taking the distance from the player to the chunk and dividing it over the different LOD levels
         int levels = levelsOfDetail.Length;
         // Diagonally
-        int maxDistance = Mathf.CeilToInt(chunkRenderDistance * 1.5f);
+        int maxDistance = Mathf.CeilToInt(CHUNK_RENDER_DISTANCE * 1.5f);
         if (distance > maxDistance) return levelsOfDetail[levels - 1];
 
         float stepSize = (float)maxDistance / levels;

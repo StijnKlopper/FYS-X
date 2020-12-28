@@ -7,16 +7,16 @@ using CielaSpike;
 public class CaveBuilder : MonoBehaviour
 {
 
-    RidgedMultifractal ridgedMultifractal;
-    SafeMesh safeMesh;
-    float[,] heightmap;
+    private RidgedMultifractal ridgedMultifractal;
+    private SafeMesh safeMesh;
+    private float[,] heightMap;
 
-    public void Instantiate(float[,] heightmap) {
-        this.heightmap = heightmap;
+    public void Instantiate(float[,] heightMap) {
+        this.heightMap = heightMap;
         StartCoroutine(UpdateCaveMesh());
     }
 
-    public IEnumerator UpdateCaveMesh()
+    private IEnumerator UpdateCaveMesh()
     {
         int height = 30;
 
@@ -43,15 +43,15 @@ public class CaveBuilder : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator GenerateCaveMap(Mesh caveMesh, Vector2 offsets, int height)
+    private IEnumerator GenerateCaveMap(Mesh caveMesh, Vector2 offsets, int height)
     {
         safeMesh = this.GenerateCaveMap(offsets, caveMesh, height);
         yield return safeMesh;
     }
 
-    public SafeMesh GenerateCaveMap(Vector2 offsets, Mesh caveMesh, int height)
+    private SafeMesh GenerateCaveMap(Vector2 offsets, Mesh caveMesh, int height)
     {
-        int size = WorldBuilder.chunkSize + 1;
+        int size = WorldBuilder.CHUNK_SIZE + 1;
 
         // Gets added to coordinates, is a decimal to make sure it does not end up at an integer
         float addendum = 1000.17777f;
@@ -69,7 +69,7 @@ public class CaveBuilder : MonoBehaviour
             for (int z = 0; z < size; z++)
             {
                 // -5 to make the amount of rocks sticking out of the terrain lower
-                int coordinateHeight = Mathf.FloorToInt(heightmap[x, z]) - 5;
+                int coordinateHeight = Mathf.FloorToInt(heightMap[x, z]) - 5;
                 int caveHeight = coordinateHeight + height;
                 // Cave height make height dynamic based on heightmap[x,z]
                 for (int y = 0; y < caveHeight; y++)

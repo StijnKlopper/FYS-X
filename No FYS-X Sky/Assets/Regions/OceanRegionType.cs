@@ -8,7 +8,7 @@ public class OceanRegionType : RegionType
 
     public OceanRegionType()
     {
-        this.availableBiomes = new List<BiomeType>();
-        this.availableBiomes.Add(new OceanBiomeType());
+        this.AvailableBiomes = new List<BiomeType>();
+        this.AvailableBiomes.Add(new OceanBiomeType());
     }
 }

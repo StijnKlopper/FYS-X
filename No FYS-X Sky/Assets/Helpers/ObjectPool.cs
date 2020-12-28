@@ -3,9 +3,6 @@ using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
-    public List<GameObject> caveObjectPool;
-    public List<GameObject> terrainObjectPool;
-    public List<GameObject> oceanObjectPool;
 
     public enum GameObjectType
     {
@@ -15,44 +12,49 @@ public class ObjectPool : MonoBehaviour
     }
 
     private Dictionary<GameObjectType, List<GameObject>> gameObjectDict;
-
+    
     private int poolAmount;
-    public GameObject terrainPrefab;
-    public GameObject cavePrefab;
-    public GameObject oceanPrefab;
 
-    public TerrainGenerator terrainGenerator;
+    public List<GameObject> CaveObjectPool;
+    public List<GameObject> TerrainObjectPool;
+    public List<GameObject> OceanObjectPool;
+
+    public GameObject TerrainPrefab;
+    public GameObject CavePrefab;
+    public GameObject OceanPrefab;
+
+    public TerrainGenerator TerrainGenerator;
 
     void Start()
     {
         // Total rendered area divided by chunk size area + 10%
-        poolAmount = (((WorldBuilder.chunkRenderDistance * WorldBuilder.chunkRenderDistance) / (WorldBuilder.chunkSize * WorldBuilder.chunkSize))) * 4;
+        poolAmount = (((WorldBuilder.CHUNK_RENDER_DISTANCE * WorldBuilder.CHUNK_RENDER_DISTANCE) / (WorldBuilder.CHUNK_SIZE * WorldBuilder.CHUNK_SIZE))) * 4;
         poolAmount = poolAmount + Mathf.CeilToInt(0.1f * poolAmount);
         gameObjectDict = new Dictionary<GameObjectType, List<GameObject>>();
 
         for (int i = 0; i < poolAmount; i++ )
         {
-            GameObject terrain = (GameObject)Instantiate(terrainPrefab);
-            GameObject cave = (GameObject)Instantiate(cavePrefab);
-            GameObject ocean = (GameObject)Instantiate(oceanPrefab);
+            GameObject terrain = (GameObject)Instantiate(TerrainPrefab);
+            GameObject cave = (GameObject)Instantiate(CavePrefab);
+            GameObject ocean = (GameObject)Instantiate(OceanPrefab);
 
-            terrain.transform.SetParent(terrainGenerator.transform);
+            terrain.transform.SetParent(TerrainGenerator.transform);
             terrain.transform.rotation = Quaternion.Euler(0, 180, 0);
-            cave.transform.SetParent(terrainGenerator.transform);
+            cave.transform.SetParent(TerrainGenerator.transform);
             ocean.transform.SetParent(terrain.transform);
 
             terrain.SetActive(false);
             cave.SetActive(false);
             ocean.SetActive(false);
 
-            terrainObjectPool.Add(terrain);
-            caveObjectPool.Add(cave);
-            oceanObjectPool.Add(ocean);
+            TerrainObjectPool.Add(terrain);
+            CaveObjectPool.Add(cave);
+            OceanObjectPool.Add(ocean);
         }
 
-        gameObjectDict.Add(GameObjectType.Terrain, terrainObjectPool);
-        gameObjectDict.Add(GameObjectType.Cave, caveObjectPool);
-        gameObjectDict.Add(GameObjectType.Ocean, oceanObjectPool);
+        gameObjectDict.Add(GameObjectType.Terrain, TerrainObjectPool);
+        gameObjectDict.Add(GameObjectType.Cave, CaveObjectPool);
+        gameObjectDict.Add(GameObjectType.Ocean, OceanObjectPool);
     }
 
     public GameObject GetPooledObject(GameObjectType gameObjectType)

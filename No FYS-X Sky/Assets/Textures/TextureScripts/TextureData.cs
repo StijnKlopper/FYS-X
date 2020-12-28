@@ -5,8 +5,8 @@ using UnityEngine;
 public class TextureData : UpdatableData
 {
 
-    const int textureSize = 512;
-    const TextureFormat textureFormat = TextureFormat.RGB565;
+    const int TEXTURE_SIZE = 512;
+    const TextureFormat TEXTURE_FORMAT = TextureFormat.RGB565;
 
     public Layer[] layers;
 
@@ -26,7 +26,7 @@ public class TextureData : UpdatableData
 
     // Generate texture array data type from array of 2D textures
     Texture2DArray GenerateTextureArray(Texture2D[] textures) {
-        Texture2DArray textureArray = new Texture2DArray(textureSize, textureSize, textures.Length, textureFormat, true);
+        Texture2DArray textureArray = new Texture2DArray(TEXTURE_SIZE, TEXTURE_SIZE, textures.Length, TEXTURE_FORMAT, true);
         for (int i = 0; i < textures.Length; i++) {
             textureArray.SetPixels(textures[i].GetPixels(), i);
         }

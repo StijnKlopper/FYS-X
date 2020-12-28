@@ -10,14 +10,14 @@ using UnityEngine.UI;
 
 public class LoadingScreen : MonoBehaviour
 {
-    Image loadingImage;
+    private Image loadingImage;
 
-    TextMeshProUGUI loadingIndicator;
+    private TextMeshProUGUI loadingIndicator;
 
-    float nextActionTime = 0.0f;
-    float period = 1.0f;
+    private float nextActionTime = 0.0f;
+    private float period = 1.0f;
 
-    int loadingDots = 3;
+    private int loadingDots = 3;
 
     void Start()
     {

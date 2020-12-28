@@ -8,9 +8,9 @@ public class ColdDryRegionType : RegionType
 
     public ColdDryRegionType()
     {
-        this.availableBiomes = new List<BiomeType>();
-        this.availableBiomes.Add(new MountainBiomeType());
-        this.availableBiomes.Add(new SnowBiomeType());
-        this.availableBiomes.Add(new TundraBiomeType());
+        this.AvailableBiomes = new List<BiomeType>();
+        this.AvailableBiomes.Add(new MountainBiomeType());
+        this.AvailableBiomes.Add(new SnowBiomeType());
+        this.AvailableBiomes.Add(new TundraBiomeType());
     }
 }

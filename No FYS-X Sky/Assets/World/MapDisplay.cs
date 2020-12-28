@@ -71,7 +71,7 @@ public class MapDisplay : MonoBehaviour
 
     public void CopyCurve()
     {
-        string result = "this.heightCurve = new AnimationCurve(";
+        string result = "this.HeightCurve = new AnimationCurve(";
         string split = "f, ";
 
         foreach (Keyframe keyframe in heightCurve.keys)
@@ -127,7 +127,7 @@ public class MapDisplay : MonoBehaviour
             }
 
             // Set AnimationCurve
-            this.heightCurve = new AnimationCurve(keys);
+            this.HeightCurve = new AnimationCurve(keys);
         }
         else
         {

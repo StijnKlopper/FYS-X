@@ -8,9 +8,9 @@ public class HotDryRegionType : RegionType
 
     public HotDryRegionType()
     {
-        this.availableBiomes = new List<BiomeType>();
-        this.availableBiomes.Add(new MountainBiomeType());
-        this.availableBiomes.Add(new DesertBiomeType());
-        this.availableBiomes.Add(new ShrublandBiomeType());
+        this.AvailableBiomes = new List<BiomeType>();
+        this.AvailableBiomes.Add(new MountainBiomeType());
+        this.AvailableBiomes.Add(new DesertBiomeType());
+        this.AvailableBiomes.Add(new ShrublandBiomeType());
     }
 }
