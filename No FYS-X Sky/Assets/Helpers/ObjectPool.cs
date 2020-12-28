@@ -25,7 +25,9 @@ public class ObjectPool : MonoBehaviour
 
     void Start()
     {
-        poolAmount = Mathf.FloorToInt((WorldBuilder.chunkRenderDistance * 4.4f));
+        // Total rendered area divided by chunk size area + 10%
+        poolAmount = (((WorldBuilder.chunkRenderDistance * WorldBuilder.chunkRenderDistance) / (WorldBuilder.chunkSize * WorldBuilder.chunkSize))) * 4;
+        poolAmount = poolAmount + Mathf.CeilToInt(0.1f * poolAmount);
         gameObjectDict = new Dictionary<GameObjectType, List<GameObject>>();
 
         for (int i = 0; i < poolAmount; i++ )
@@ -35,9 +37,8 @@ public class ObjectPool : MonoBehaviour
             GameObject ocean = (GameObject)Instantiate(oceanPrefab);
 
             terrain.transform.SetParent(terrainGenerator.transform);
-            terrain.transform.rotation = Quaternion.Euler(0, -180, 0);
+            terrain.transform.rotation = Quaternion.Euler(0, 180, 0);
             cave.transform.SetParent(terrainGenerator.transform);
-            cave.transform.rotation = Quaternion.Euler(0, -180, 0);
             ocean.transform.SetParent(terrain.transform);
 
             terrain.SetActive(false);
