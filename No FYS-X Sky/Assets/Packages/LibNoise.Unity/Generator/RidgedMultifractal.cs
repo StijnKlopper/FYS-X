@@ -169,8 +169,8 @@ namespace LibNoise.Generator
         /// <returns>The resulting output value.</returns>
         public override double GetValue(double x, double y, double z)
         {
-            var value   = 0.0;
-            var weight  = 1.0;
+            var value = 0.0;
+            var weight = 1.0;
 
             x *= _frequency;
             y *= _frequency;
@@ -180,14 +180,14 @@ namespace LibNoise.Generator
                 var nx = Utils.MakeInt32Range(x);
                 var ny = Utils.MakeInt32Range(y);
                 var nz = Utils.MakeInt32Range(z);
-                long seed   = (_seed + i) & 0x7fffffff;
-                var signal  = Utils.GradientCoherentNoise3D(nx, ny, nz, seed, _quality);
+                long seed = (_seed + i) & 0x7fffffff;
+                var signal = Utils.GradientCoherentNoise3D(nx, ny, nz, seed, _quality);
                 signal = Math.Abs(signal);
                 signal = _offset - signal;
                 signal *= signal;
                 signal *= weight;
                 weight = signal * _gain;
-                weight = Mathf.Clamp01((float) weight);
+                weight = Mathf.Clamp01((float)weight);
                 value += (signal * _weights[i]);
                 x *= _lacunarity;
                 y *= _lacunarity;

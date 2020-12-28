@@ -1,10 +1,7 @@
 ﻿using Assets.World.Generator;
-using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using UnityEngine;
 using LibNoise.Generator;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour, Generator
 {
@@ -51,8 +48,8 @@ public class TerrainGenerator : MonoBehaviour, Generator
         float scale = 0.17777f;
         float x = coordinates.x * scale;
         float z = coordinates.y * scale;
-        x += (float) Perlin.GetValue(x, 0, z);
-        z += (float) Perlin.GetValue(x, 0, z);
+        x += (float)Perlin.GetValue(x, 0, z);
+        z += (float)Perlin.GetValue(x, 0, z);
 
         Vector2 newCoordinates = new Vector2(x / scale, z / scale);
         Region region = GetRegionByCoordinates(newCoordinates);

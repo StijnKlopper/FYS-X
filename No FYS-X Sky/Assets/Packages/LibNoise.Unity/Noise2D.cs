@@ -37,7 +37,7 @@ namespace LibNoise
         private int _ucBorder = 1; // Border size of extra noise for uncropped data.
 
         private readonly float[,] _ucData;
-            // Uncropped data. This has a border of extra noise data used for calculating normal map edges.
+        // Uncropped data. This has a border of extra noise data used for calculating normal map edges.
 
         private float _borderValue = float.NaN;
         private ModuleBase _generator;
@@ -301,8 +301,8 @@ namespace LibNoise
             }
             var xe = right - left;
             var ze = bottom - top;
-            var xd = xe / ((double) _width - _ucBorder);
-            var zd = ze / ((double) _height - _ucBorder);
+            var xd = xe / ((double)_width - _ucBorder);
+            var zd = ze / ((double)_height - _ucBorder);
             var xc = left;
             for (var x = 0; x < _ucWidth; x++)
             {
@@ -312,7 +312,7 @@ namespace LibNoise
                     float fv;
                     if (isSeamless)
                     {
-                        fv = (float) GeneratePlanar(xc, zc);
+                        fv = (float)GeneratePlanar(xc, zc);
                     }
                     else
                     {
@@ -324,7 +324,7 @@ namespace LibNoise
                         var zb = 1.0 - ((zc - top) / ze);
                         var z0 = Utils.InterpolateLinear(swv, sev, xb);
                         var z1 = Utils.InterpolateLinear(nwv, nev, xb);
-                        fv = (float) Utils.InterpolateLinear(z0, z1, zb);
+                        fv = (float)Utils.InterpolateLinear(z0, z1, zb);
                     }
                     _ucData[x, y] = fv;
                     if (x >= _ucBorder && y >= _ucBorder && x < _width + _ucBorder &&
@@ -371,20 +371,20 @@ namespace LibNoise
             }
             var ae = angleMax - angleMin;
             var he = heightMax - heightMin;
-            var xd = ae / ((double) _width - _ucBorder);
-            var yd = he / ((double) _height - _ucBorder);
+            var xd = ae / ((double)_width - _ucBorder);
+            var yd = he / ((double)_height - _ucBorder);
             var ca = angleMin;
             for (var x = 0; x < _ucWidth; x++)
             {
                 var ch = heightMin;
                 for (var y = 0; y < _ucHeight; y++)
                 {
-                    _ucData[x, y] = (float) GenerateCylindrical(ca, ch);
+                    _ucData[x, y] = (float)GenerateCylindrical(ca, ch);
                     if (x >= _ucBorder && y >= _ucBorder && x < _width + _ucBorder &&
                         y < _height + _ucBorder)
                     {
-                        _data[x - _ucBorder, y - _ucBorder] = (float) GenerateCylindrical(ca, ch);
-                            // Cropped data
+                        _data[x - _ucBorder, y - _ucBorder] = (float)GenerateCylindrical(ca, ch);
+                        // Cropped data
                     }
                     ch += yd;
                 }
@@ -424,20 +424,20 @@ namespace LibNoise
             }
             var loe = east - west;
             var lae = north - south;
-            var xd = loe / ((double) _width - _ucBorder);
-            var yd = lae / ((double) _height - _ucBorder);
+            var xd = loe / ((double)_width - _ucBorder);
+            var yd = lae / ((double)_height - _ucBorder);
             var clo = west;
             for (var x = 0; x < _ucWidth; x++)
             {
                 var cla = south;
                 for (var y = 0; y < _ucHeight; y++)
                 {
-                    _ucData[x, y] = (float) GenerateSpherical(cla, clo);
+                    _ucData[x, y] = (float)GenerateSpherical(cla, clo);
                     if (x >= _ucBorder && y >= _ucBorder && x < _width + _ucBorder &&
                         y < _height + _ucBorder)
                     {
-                        _data[x - _ucBorder, y - _ucBorder] = (float) GenerateSpherical(cla, clo);
-                            // Cropped data
+                        _data[x - _ucBorder, y - _ucBorder] = (float)GenerateSpherical(cla, clo);
+                        // Cropped data
                     }
                     cla += yd;
                 }
@@ -536,7 +536,7 @@ namespace LibNoise
 #if !XBOX360 && !ZUNE
         [NonSerialized]
 #endif
-            private bool _disposed;
+        private bool _disposed;
 
         /// <summary>
         /// Gets a value whether the object is disposed.

@@ -125,8 +125,8 @@ namespace LibNoise.Generator
         /// <returns>The resulting output value.</returns>
         public override double GetValue(double x, double y, double z)
         {
-            var value       = 0.0;
-            var amplitude   = 1.0;
+            var value = 0.0;
+            var amplitude = 1.0;
 
             x *= _frequency;
             y *= _frequency;

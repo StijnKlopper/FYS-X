@@ -107,8 +107,8 @@ public class Region
         float z = position.y;
 
         // Transitions between biomes
-        x += (float) terrainGenerator.Perlin.GetValue(x / SCALE, 0, z / SCALE);
-        z += (float) terrainGenerator.Perlin.GetValue(x / SCALE, 0, z / SCALE);
+        x += (float)terrainGenerator.Perlin.GetValue(x / SCALE, 0, z / SCALE);
+        z += (float)terrainGenerator.Perlin.GetValue(x / SCALE, 0, z / SCALE);
 
         position = new Vector2(x, z);
 

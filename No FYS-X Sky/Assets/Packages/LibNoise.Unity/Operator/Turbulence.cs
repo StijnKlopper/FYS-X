@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using LibNoise.Generator;
+﻿using LibNoise.Generator;
+using System.Diagnostics;
 
 namespace LibNoise.Operator
 {

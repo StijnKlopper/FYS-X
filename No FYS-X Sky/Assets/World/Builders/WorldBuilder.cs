@@ -9,7 +9,7 @@ class WorldBuilder
     public const int CHUNK_RENDER_DISTANCE = 100;
 
     // Must be factors of CHUNK_SIZE and 4 long
-    public static int[] levelsOfDetail = new int[] {1, 2, 5, 10};
+    public static int[] levelsOfDetail = new int[] { 1, 2, 5, 10 };
 
     private int regionRenderDistance;
 
@@ -35,7 +35,7 @@ class WorldBuilder
             for (int j = zMin; j < zMax; j += Region.REGION_SIZE)
             {
                 Vector3 regionPosition = new Vector3(i, 0, j);
-                if(!TerrainGenerator.RegionDict.ContainsKey(regionPosition))
+                if (!TerrainGenerator.RegionDict.ContainsKey(regionPosition))
                 {
                     TerrainGenerator.RegionDict.Add(regionPosition, new Region(i, j));
                 }
@@ -80,7 +80,8 @@ class WorldBuilder
                         tile.LevelOfDetail = levelOfDetail;
                         tile.RegenerateMesh();
                     }
-                } else
+                }
+                else
                 {
                     // Generate new tile
                     Tile tile = new Tile();
@@ -163,7 +164,7 @@ class WorldBuilder
     public static Tile GetTile(Vector3 coordinate)
     {
         int x = CalcCoord(coordinate.x, CHUNK_SIZE);
-        int z = CalcCoord(coordinate.z, CHUNK_SIZE);  
+        int z = CalcCoord(coordinate.z, CHUNK_SIZE);
 
         return tileDict[new Vector3(x, 0, z)];
     }

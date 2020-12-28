@@ -93,7 +93,7 @@ namespace LibNoise.Operator
             {
                 _data.Add(input);
             }
-            _data.Sort(delegate(double lhs, double rhs) { return lhs.CompareTo(rhs); });
+            _data.Sort(delegate (double lhs, double rhs) { return lhs.CompareTo(rhs); });
         }
 
         /// <summary>

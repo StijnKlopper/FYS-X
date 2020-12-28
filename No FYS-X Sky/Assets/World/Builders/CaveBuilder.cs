@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using CielaSpike;
 using LibNoise.Generator;
-
-using CielaSpike;
+using System.Collections;
+using UnityEngine;
 
 public class CaveBuilder : MonoBehaviour
 {
@@ -11,7 +10,8 @@ public class CaveBuilder : MonoBehaviour
     private SafeMesh safeMesh;
     private float[,] heightMap;
 
-    public void Instantiate(float[,] heightMap) {
+    public void Instantiate(float[,] heightMap)
+    {
         this.heightMap = heightMap;
         StartCoroutine(UpdateCaveMesh());
     }
@@ -62,7 +62,7 @@ public class CaveBuilder : MonoBehaviour
         ridgedMultifractal = new RidgedMultifractal();
         ridgedMultifractal.OctaveCount = 3;
 
-        float[, ,] caveMap = new float[size, height * 2, size];
+        float[,,] caveMap = new float[size, height * 2, size];
 
         for (int x = 0; x < size; x++)
         {

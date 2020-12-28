@@ -12,7 +12,7 @@ public class ObjectPool : MonoBehaviour
     }
 
     private Dictionary<GameObjectType, List<GameObject>> gameObjectDict;
-    
+
     private int poolAmount;
 
     public List<GameObject> CaveObjectPool;
@@ -32,7 +32,7 @@ public class ObjectPool : MonoBehaviour
         poolAmount = poolAmount + Mathf.CeilToInt(0.1f * poolAmount);
         gameObjectDict = new Dictionary<GameObjectType, List<GameObject>>();
 
-        for (int i = 0; i < poolAmount; i++ )
+        for (int i = 0; i < poolAmount; i++)
         {
             GameObject terrain = (GameObject)Instantiate(TerrainPrefab);
             GameObject cave = (GameObject)Instantiate(CavePrefab);
@@ -73,7 +73,8 @@ public class ObjectPool : MonoBehaviour
         return null;
     }
 
-    public void UnloadPooledObject(GameObject gameObject) {
+    public void UnloadPooledObject(GameObject gameObject)
+    {
         gameObject.SetActive(false);
     }
 }

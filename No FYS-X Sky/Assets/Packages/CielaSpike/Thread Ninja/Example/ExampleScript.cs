@@ -1,10 +1,11 @@
-﻿using System;
-using UnityEngine;
+﻿using CielaSpike;
+using System;
 using System.Collections;
-using CielaSpike;
 using System.Threading;
+using UnityEngine;
 
-public class ExampleScript : MonoBehaviour {
+public class ExampleScript : MonoBehaviour
+{
 
     void Start()
     {

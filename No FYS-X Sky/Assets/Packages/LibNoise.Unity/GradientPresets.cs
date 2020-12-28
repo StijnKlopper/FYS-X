@@ -50,7 +50,7 @@ namespace LibNoise
             };
 
             // RGBA gradient alpha keys
-            var rgbaAlphaKeys = new List<GradientAlphaKey> {new GradientAlphaKey(0, 2 / 3f), new GradientAlphaKey(1, 1)};
+            var rgbaAlphaKeys = new List<GradientAlphaKey> { new GradientAlphaKey(0, 2 / 3f), new GradientAlphaKey(1, 1) };
 
             // Terrain gradient color keys
             var terrainColorKeys = new List<GradientColorKey>
@@ -66,7 +66,7 @@ namespace LibNoise
             };
 
             // Generic gradient alpha keys
-            var alphaKeys = new List<GradientAlphaKey> {new GradientAlphaKey(1, 0), new GradientAlphaKey(1, 1)};
+            var alphaKeys = new List<GradientAlphaKey> { new GradientAlphaKey(1, 0), new GradientAlphaKey(1, 1) };
 
             _empty = new Gradient();
 

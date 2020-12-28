@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using LibNoise.Generator;
+﻿using LibNoise.Generator;
+using System.Collections;
 using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
@@ -22,7 +22,7 @@ public class TileBuilder : MonoBehaviour
 
     private CityGenerator cityGenerator;
 
-    
+
     private float[] tileTextureData;
 
     private Texture2DArray splatmapsArray;
@@ -31,7 +31,8 @@ public class TileBuilder : MonoBehaviour
 
     private bool hasOcean;
 
-    public float[,] Instantiate() {
+    public float[,] Instantiate()
+    {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
 
@@ -47,7 +48,7 @@ public class TileBuilder : MonoBehaviour
         int tileWidth = tileHeight;
 
         Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
-        
+
         // Offsets which are used by CityGenerator
         Vector2 cityOffsets = new Vector2(this.gameObject.transform.position.x - 5, this.gameObject.transform.position.z - 5);
 
@@ -65,7 +66,7 @@ public class TileBuilder : MonoBehaviour
         ocean.SetActive(hasOcean);
 
         Mesh oceanMesh = GenerateMesh(levelOfDetail, null, true).CreateMesh();
-        
+
         MeshFilter oceanMeshFilter = ocean.GetComponent<MeshFilter>();
         oceanMeshFilter.mesh = oceanMesh;
 
@@ -118,11 +119,11 @@ public class TileBuilder : MonoBehaviour
         {
             for (int x = 0; x < tileSize; x++)
             {
-                
+
                 double sampleX = (x + offsets.x) / scale;
                 double sampleY = (y + offsets.y) / scale;
 
-                float noiseHeight = (float) perlin.GetValue(sampleX, 0, sampleY);
+                float noiseHeight = (float)perlin.GetValue(sampleX, 0, sampleY);
 
                 int colorIndex = y * tileSize + x;
 

@@ -89,7 +89,7 @@ public class CityGenerator : MonoBehaviour, Generator
                 {
                     // Get random building index from thhe list of buildings 
                     int randomHouseIndex = (int)Math.Round(((terrainGenerator.Perlin.GetValue(position.x + terrainGenerator.RandomNumbers[y] / scale, 0, position.y + terrainGenerator.RandomNumbers[y] / scale) + 1) / 2f) * houses.Count);
-                    
+
                     // Calculate bounds and calculate the houseposition for the center of the house, also get the correct Y value for the building
                     Bounds houseBounds = CalculateBounds(houses[randomHouseIndex]);
                     Vector3 housePosition = PositionCorrection(new Vector3(position.x - houseBounds.center.x, 0, position.z - houseBounds.center.z));

@@ -73,7 +73,7 @@ namespace LibNoise.Operator
                 _data.Add(kvp);
             }
             _data.Sort(
-                delegate(KeyValuePair<double, double> lhs, KeyValuePair<double, double> rhs)
+                delegate (KeyValuePair<double, double> lhs, KeyValuePair<double, double> rhs)
                 {
                     return lhs.Key.CompareTo(rhs.Key);
                 });

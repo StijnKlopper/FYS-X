@@ -16,7 +16,7 @@ namespace LibNoise.Operator
         public ScaleBias()
             : base(1)
         {
-			Scale = 1;
+            Scale = 1;
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace LibNoise.Operator
             : base(1)
         {
             Modules[0] = input;
-			Scale = 1;
+            Scale = 1;
         }
 
         /// <summary>

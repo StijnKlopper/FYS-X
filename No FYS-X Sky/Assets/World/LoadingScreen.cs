@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -31,7 +27,7 @@ public class LoadingScreen : MonoBehaviour
     void Update()
     {
         // The changing amount of dots is not visible because the game loads too fast
-        if (loadingImage.enabled && Time.time > nextActionTime )
+        if (loadingImage.enabled && Time.time > nextActionTime)
         {
             nextActionTime += period;
 
@@ -64,7 +60,7 @@ public class LoadingScreen : MonoBehaviour
         System.Random random = new System.Random();
 
         Sprite[] backgrounds = Resources.LoadAll<Sprite>("Images/LoadingScreens");
-    
+
         sprite = backgrounds[random.Next(0, backgrounds.Length)];
         return sprite;
     }

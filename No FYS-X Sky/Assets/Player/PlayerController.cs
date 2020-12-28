@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(PlayerMotor))]
 public class PlayerController : MonoBehaviour
@@ -47,7 +45,7 @@ public class PlayerController : MonoBehaviour
 
         //Apply rotation
 
-        motor.Rotate(_rotation); 
+        motor.Rotate(_rotation);
 
 
         //Calculate Camera rotation as a 3D vector (turning around)
