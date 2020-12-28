@@ -18,7 +18,6 @@ class WorldBuilder
         this.regionRenderDistance = Mathf.CeilToInt(chunkRenderDistance / Region.regionSize) * Region.regionSize + Region.regionSize;
         this.objectPool = GameObject.Find("Level").GetComponent<ObjectPool>();
         this.cityPoints = GameObject.Find("CityPoints/Buildings");
-        
     }
 
     public void LoadRegions(Vector3 position)
