@@ -76,8 +76,8 @@ public void UnloadRegions(Vector3 position)
                     {
                         // Regenerate the terrain mesh if the level of detail is different
                         Tile tile = tileDict[newChunkPosition];
-                        tile.levelOfDetail = levelOfDetail;
-                        tile.RegenerateMesh();
+                        //tile.levelOfDetail = levelOfDetail;
+                        //tile.RegenerateMesh();
                     }
                 } else
                 {
@@ -87,7 +87,7 @@ public void UnloadRegions(Vector3 position)
                     GameObject terrain = objectPool.GetPooledObject(ObjectPool.GameObjectType.Terrain);
                     GameObject cave = objectPool.GetPooledObject(ObjectPool.GameObjectType.Cave);
 
-                    Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, 0, newChunkPosition.z + 5);
+                    Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, -30, newChunkPosition.z + 5);
                     Vector3 cavePosition = new Vector3(newChunkPosition.x, -30, newChunkPosition.z);
 
                     terrain.transform.position = terrainPosition;
@@ -99,6 +99,7 @@ public void UnloadRegions(Vector3 position)
                     tile.levelOfDetail = levelOfDetail;
 
                     tileDict.Add(newChunkPosition, tile);
+                    // Instead of this, generate cave and then generate terrain atop it
                     float[,] heightmap = terrain.GetComponent<TileBuilder>().Instantiate();
                     tile.heightMap = heightmap;
                     cave.GetComponent<CaveBuilder>().Instantiate(heightmap);

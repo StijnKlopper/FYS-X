@@ -37,7 +37,9 @@ public class ObjectPool : MonoBehaviour
             GameObject ocean = (GameObject)Instantiate(oceanPrefab);
 
             terrain.transform.SetParent(terrainGenerator.transform);
-            terrain.transform.rotation = Quaternion.Euler(0, 180, 0);
+            terrain.transform.position = new Vector3(terrain.transform.position.x, terrain.transform.position.y - 30, terrain.transform.position.z);
+            // Not needed with marching cubes terrain
+            //terrain.transform.rotation = Quaternion.Euler(0, 180, 0);
             cave.transform.SetParent(terrainGenerator.transform);
             ocean.transform.SetParent(terrain.transform);
 

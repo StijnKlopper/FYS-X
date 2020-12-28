@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using LibNoise.Generator;
 using UnityEngine;
 
@@ -15,6 +16,8 @@ public class TileBuilder : MonoBehaviour
 
     [System.NonSerialized]
     public float[,] heightMap;
+
+    private float[,,] heightMap3D;
 
     public AnimationCurve heightCurve;
 
@@ -58,9 +61,23 @@ public class TileBuilder : MonoBehaviour
 
         int levelOfDetail = WorldBuilder.GetTile(new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z)).levelOfDetail;
 
-        MeshData meshData = GenerateMesh(levelOfDetail, this.heightMap);
-        Mesh mesh = meshData.CreateMesh();
-        SetMesh(mesh);
+        //MeshData meshData = GenerateMesh(levelOfDetail, this.heightMap);
+        //Mesh mesh = meshData.CreateMesh();
+        //SetMesh(mesh);
+
+        SafeMesh safeMesh = MarchingCubes.BuildMesh(heightMap3D);
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+        MeshCollider meshCollider = GetComponent<MeshCollider>();
+        mesh.Clear();
+        mesh.vertices = safeMesh.Vertices;
+        mesh.triangles = safeMesh.Triangles;
+        mesh.uv = GenerateUV.CalculateUVs(safeMesh.Vertices, 1);
+        mesh.Optimize();
+        mesh.RecalculateNormals();
+        meshCollider.sharedMesh = null;
+        meshCollider.sharedMesh = mesh;
+
+
         this.meshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
 
         GameObject ocean = this.transform.GetChild(0).gameObject;
@@ -95,7 +112,7 @@ public class TileBuilder : MonoBehaviour
         Color[] oceanMap = new Color[splatmapSize];
 
         float[,] heightMap = new float[tileSize, tileSize];
-
+        this.heightMap3D = new float[tileSize, 60, tileSize];
         tileTextureData = new float[tileSize * tileSize];
 
         float maxPossibleHeight = 0f;
@@ -152,6 +169,13 @@ public class TileBuilder : MonoBehaviour
 
                 noiseHeight = biome.biomeType.heightCurve.Evaluate(noiseHeight) * heightMultiplier;
                 heightMap[x, y] = noiseHeight;
+
+                for (int i = 0; i < 60; i++)
+                {
+                    heightMap3D[x, i, y] = 0f;
+                }
+                heightMap3D[x, Mathf.FloorToInt(noiseHeight) + 30, y] = 1f;
+
             }
         }
         splatmapsArray = new Texture2DArray(tileSize, tileSize, 3, TextureFormat.RGBA32, true);
