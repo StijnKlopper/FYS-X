@@ -21,7 +21,7 @@ public class CaveBuilder : MonoBehaviour
         int height = 30;
 
         Mesh caveMesh = new Mesh();
-        Vector2 offsets = new Vector2(-this.gameObject.transform.position.x, -this.gameObject.transform.position.z);
+        Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
         this.StartCoroutineAsync(GenerateCaveMap(caveMesh, offsets, height), out Task task);
         yield return StartCoroutine(task.Wait());
 
@@ -51,7 +51,7 @@ public class CaveBuilder : MonoBehaviour
 
     public SafeMesh GenerateCaveMap(Vector2 offsets, Mesh caveMesh, int height)
     {
-        int size = 11;
+        int size = WorldBuilder.chunkSize + 1;
 
         // Gets added to coordinates, is a decimal to make sure it does not end up at an integer
         float addendum = 1000.17777f;
