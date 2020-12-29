@@ -36,14 +36,17 @@ public class BuildingGenerator : MonoBehaviour, Generator
         East,
         South,
         West,
-        Up
+        Up,
+        Down
     }
 
     enum GridTypes
     {
         Empty,
         Wall,
+        WallFloor,
         Door,
+        DoorFloor,
         Floor,
         Roof
     }
@@ -73,7 +76,7 @@ public class BuildingGenerator : MonoBehaviour, Generator
 
     private GridTypes[,,] GenerateGrid()
     {
-        int temp = 69420;
+        int temp = 1231;
         int floors = GetRandomNumberTo(maxFloors, temp);
         floors = floors > 0 ? floors : 1;
         int depth = GetRandomNumberTo(maxDepth, temp + 1);
@@ -85,39 +88,91 @@ public class BuildingGenerator : MonoBehaviour, Generator
         // Initialize grid y/floors, x/depth, z/depth
         GridTypes[,,] grid = new GridTypes[floors, depth, depth];
 
-        // TODO: Make random grid
-        /*for (int y = 0; y < floors; y++)
+        // Make a grid without corners and with floors only
+        for (int y = 0; y < floors; y++)
         {
             for (int x = 0; x < depth; x++)
             {
                 for (int z = 0; z < depth; z++)
                 {
-                    grid[y, x, z] = GridTypes.Floor;
+                    if ((z == 0 && x == 0) || (z == depth - 1 && x == 0) || (z == 0 && x == depth - 1) || (z == depth - 1 && x == depth - 1))
+                    {
+                        // Make all the corners empty
+                        grid[y, x, z] = GridTypes.Empty;
+                        continue;
+                    }
+                    else
+                    {
+                        grid[y, x, z] = GridTypes.Floor;
+                        /* Only place floors next to other floors or above a floor
+                        Dictionary<Rotation, GridTypes> nearbyGridTypes = GetGridTypeAllDirections(grid, new Vector3Int(x, y, z));
+                        bool shouldPlace = Convert.ToBoolean(this.randomNumbers[(y * x * z + 1) % this.randomNumbers.Length] % 2);
+
+                        if (shouldPlace && (y == 0 || nearbyGridTypes.ContainsValue(GridTypes.Floor)))
+                        {
+                            grid[y, x, z] = GridTypes.Floor;
+                        }
+                        else
+                        {
+                            grid[y, x, z] = GridTypes.Empty;
+                        }*/
+
+                    }
                 }
             }
-        }*/
+        }
 
-        grid = new GridTypes[,,]
+        // Remove blocks of the building 
+        for (int y = 0; y < floors; y++)
+        {
+            for (int x = 0; x < depth; x++)
+            {
+                for (int z = 0; z < depth; z++)
+                {
+                    // TODO: Remove blocks of the building
+                }
+            }
+        }
+
+        // TODO: Add walls, doors etc
+
+        /*grid = new GridTypes[,,]
         {
             {
-                { GridTypes.Empty, GridTypes.Wall, GridTypes.Door, GridTypes.Wall,  GridTypes.Empty},
-                { GridTypes.Wall, GridTypes.Floor, GridTypes.Floor, GridTypes.Floor, GridTypes.Wall},
+                { GridTypes.Empty, GridTypes.Wall, GridTypes.Empty, GridTypes.Wall,  GridTypes.Empty},
+                { GridTypes.Wall, GridTypes.Floor, GridTypes.Wall, GridTypes.Floor, GridTypes.Wall},
                 { GridTypes.Wall, GridTypes.Floor, GridTypes.Floor, GridTypes.Floor, GridTypes.Wall},
                 { GridTypes.Empty, GridTypes.Wall, GridTypes.Wall, GridTypes.Door,  GridTypes.Empty},
             }, // Floor 0
             {
-                { GridTypes.Empty, GridTypes.Wall, GridTypes.Wall, GridTypes.Wall,  GridTypes.Empty},
-                { GridTypes.Wall, GridTypes.Floor, GridTypes.Floor, GridTypes.Floor, GridTypes.Wall},
-                { GridTypes.Wall, GridTypes.Floor, GridTypes.Floor, GridTypes.Floor, GridTypes.Wall},
-                { GridTypes.Empty, GridTypes.Wall, GridTypes.Wall, GridTypes.Wall,  GridTypes.Empty},
+                { GridTypes.Empty, GridTypes.Empty, GridTypes.Wall, GridTypes.Wall,  GridTypes.Empty},
+                { GridTypes.Empty, GridTypes.DoorFloor, GridTypes.Floor, GridTypes.Floor, GridTypes.Wall},
+                { GridTypes.Empty, GridTypes.Roof, GridTypes.WallFloor, GridTypes.WallFloor, GridTypes.Empty},
+                { GridTypes.Empty, GridTypes.Empty, GridTypes.Empty, GridTypes.Empty,  GridTypes.Empty},
             }, // Floor 1
             {
-                { GridTypes.Empty, GridTypes.Empty, GridTypes.Wall, GridTypes.Wall,  GridTypes.Empty},
-                { GridTypes.Empty, GridTypes.Door, GridTypes.Floor, GridTypes.Floor, GridTypes.Wall},
-                { GridTypes.Empty, GridTypes.Floor, GridTypes.Wall, GridTypes.Wall, GridTypes.Empty},
+                { GridTypes.Empty, GridTypes.Empty, GridTypes.Empty, GridTypes.Empty,  GridTypes.Empty},
+                { GridTypes.Empty, GridTypes.Empty, GridTypes.Roof, GridTypes.Roof, GridTypes.Empty},
+                { GridTypes.Empty, GridTypes.Empty, GridTypes.Empty, GridTypes.Empty, GridTypes.Empty},
                 { GridTypes.Empty, GridTypes.Empty, GridTypes.Empty, GridTypes.Empty,  GridTypes.Empty},
             }, // Floor 2
+        };*/
+
+        /*GridTypes[,,] ggrid = new GridTypes[,,]
+        {
+            {
+                { GridTypes.Empty, GridTypes.Wall, GridTypes.Empty},
+                { GridTypes.Empty, GridTypes.Floor, GridTypes.Wall},
+                { GridTypes.Empty, GridTypes.Empty, GridTypes.Empty},
+            }
+
         };
+
+        foreach (KeyValuePair<Rotation, GridTypes> value in GetGridTypeAllDirections(ggrid, new Vector3Int(1, 0, 1)))
+        {
+            Debug.Log(value.Key + ": " + value.Value);
+        }
+        */
 
         return grid;
     }
@@ -149,13 +204,33 @@ public class BuildingGenerator : MonoBehaviour, Generator
 
         switch (gridType)
         {
+            case GridTypes.DoorFloor:
+                foreach (Rotation rotation in GetElementWallDirections(grid, gridPosition))
+                {
+                    GenerateDoor(buildingFolder, position, rotation);
+                }
+                GenerateFloor(buildingFolder, position);
+                break;
+            case GridTypes.WallFloor:
+                foreach (Rotation rotation in GetElementWallDirections(grid, gridPosition))
+                {
+                    GenerateWall(buildingFolder, position, rotation);
+                }
+                GenerateFloor(buildingFolder, position);
+                break;
             case GridTypes.Wall:
-                GenerateWall(buildingFolder, position, GetElementWallDirection(grid, gridPosition)); // TODO: Check for multiple walls instead of only one
+                foreach (Rotation rotation in GetElementWallDirections(grid, gridPosition))
+                {
+                    GenerateWall(buildingFolder, position, rotation);
+                }
                 break;
             case GridTypes.Door:
-                GenerateDoor(buildingFolder, position, GetElementWallDirection(grid, gridPosition)); // TODO: Check for multiple walls instead of only one
+                foreach (Rotation rotation in GetElementWallDirections(grid, gridPosition))
+                {
+                    GenerateDoor(buildingFolder, position, rotation);
+                }
                 break;
-            case GridTypes.Floor:
+            case GridTypes.Floor:               
                 GenerateFloor(buildingFolder, position);
                 break;
             case GridTypes.Roof:
@@ -166,38 +241,63 @@ public class BuildingGenerator : MonoBehaviour, Generator
         }
     }
 
-    private Rotation GetElementWallDirection(GridTypes[,,] grid, Vector3Int gridPosition)
+    // Get correct wall placement, only for wall placements
+    private List<Rotation> GetElementWallDirections(GridTypes[,,] grid, Vector3Int gridPosition)
     {
-
+        List<Rotation> rotations = new List<Rotation>();
         if (gridPosition.z + 1 <= grid.GetLength(2) - 1 && grid[gridPosition.y, gridPosition.x, gridPosition.z + 1] == GridTypes.Floor)
         {
-            return Rotation.South;
+            rotations.Add(Rotation.South);
         }
-        else if (gridPosition.z - 1 >= 0 && grid[gridPosition.y, gridPosition.x, gridPosition.z - 1] == GridTypes.Floor)
+        if (gridPosition.z - 1 >= 0 && grid[gridPosition.y, gridPosition.x, gridPosition.z - 1] == GridTypes.Floor)
         {
-            return Rotation.North;
+            rotations.Add(Rotation.North);
         }
-        else if (gridPosition.x + 1 <= grid.GetLength(1) - 1 && grid[gridPosition.y, gridPosition.x + 1, gridPosition.z] == GridTypes.Floor)
+        if (gridPosition.x + 1 <= grid.GetLength(1) - 1 && grid[gridPosition.y, gridPosition.x + 1, gridPosition.z] == GridTypes.Floor)
         {
-            return Rotation.West;
+            rotations.Add(Rotation.West);
         }
-        else if (gridPosition.x - 1 >= 0 && grid[gridPosition.y, gridPosition.x - 1, gridPosition.z] == GridTypes.Floor)
+        if (gridPosition.x - 1 >= 0 && grid[gridPosition.y, gridPosition.x - 1, gridPosition.z] == GridTypes.Floor)
         {
-            return Rotation.East;
+            rotations.Add(Rotation.East);
         }
-        else
-        {
-            // Shouldn't happen
-            Debug.Log("GetElementWallDirection shouln't happen");
-            return Rotation.Up;
-        }
+        return rotations;
+    }
 
+    // Get all the GridTypes for all direction from gridPosition
+    private Dictionary<Rotation, GridTypes> GetGridTypeAllDirections(GridTypes[,,] grid, Vector3Int gridPosition)
+    {
+        Dictionary<Rotation, GridTypes> gridTypes = new Dictionary<Rotation, GridTypes>();
+        if (gridPosition.z + 1 <= grid.GetLength(2) - 1)
+        {
+            gridTypes.Add(Rotation.South, grid[gridPosition.y, gridPosition.x, gridPosition.z + 1]);
+        }
+        if (gridPosition.z - 1 >= 0)
+        {
+            gridTypes.Add(Rotation.North, grid[gridPosition.y, gridPosition.x, gridPosition.z - 1]);
+        }
+        if (gridPosition.x + 1 <= grid.GetLength(1) - 1)
+        {
+            gridTypes.Add(Rotation.West, grid[gridPosition.y, gridPosition.x + 1, gridPosition.z]);
+        }
+        if (gridPosition.x - 1 >= 0)
+        {
+            gridTypes.Add(Rotation.East, grid[gridPosition.y, gridPosition.x - 1, gridPosition.z]);
+        }
+        if(gridPosition.y - 1 >= 0)
+        {
+            gridTypes.Add(Rotation.Down, grid[gridPosition.y - 1, gridPosition.x, gridPosition.z]);
+        }
+        if (gridPosition.y + 1 <= grid.GetLength(0) - 1)
+        {
+            gridTypes.Add(Rotation.Up, grid[gridPosition.y + 1, gridPosition.x, gridPosition.z]);
+        }
+        return gridTypes;
     }
 
     public void Generate()
     {
         // Temp values test
-        Debug.Log("Generate");
         seed = 69420;
         System.Random random = new System.Random(seed);
         this.randomNumbers = new int[100];
@@ -205,27 +305,18 @@ public class BuildingGenerator : MonoBehaviour, Generator
         {
             this.randomNumbers[i] = random.Next(0, 10);
         }
-        Debug.Log(seed);
         parentObject = GameObject.Find("Buildings");
         Vector3 position = new Vector3(0, 0, 0);
-        roomWidthHeight = 4f;
+
+        // Delete old building
+        foreach (Transform child in parentObject.transform)
+        {
+            GameObject.DestroyImmediate(child.gameObject);
+        }
 
         // Grid
         GridTypes[,,] grid = GenerateGrid();
         SpawnBuilding(position, grid);
-
-        /* Make building folder
-        Transform buildingFolder = new GameObject("Building").transform;
-        buildingFolder.SetParent(parentObject.transform);
-
-        // Generate 1x1 building
-        GenerateRoof(buildingFolder, position);
-        GenerateFloor(buildingFolder, position);
-        GenerateWall(buildingFolder, position, Rotation.North);
-        GenerateWall(buildingFolder, position, Rotation.East);
-        GenerateDoor(buildingFolder, position, Rotation.South);
-        GenerateWall(buildingFolder, position, Rotation.West);
-        */
     }
 
     public void GenerateRoof(Transform buildingFolder, Vector3 position)
@@ -233,7 +324,8 @@ public class BuildingGenerator : MonoBehaviour, Generator
         // TODO: Make actual roofs
         Transform roof = Instantiate(
           floors[0].transform,
-          new Vector3(position.x, position.y + roomWidthHeight, position.z),
+          //new Vector3(position.x, position.y + roomWidthHeight, position.z),
+          new Vector3(position.x, position.y, position.z),
           GetQuaternionFrom(Rotation.Up),
           buildingFolder);
         roof.name = "Roof";
@@ -340,22 +432,4 @@ public class BuildingGenerator : MonoBehaviour, Generator
         return this.randomNumbers[randomizer * seed % randomNumbers.Length] % (end + 1);
     }
 
-    public Bounds CalculateBounds(GameObject go)
-    {
-        Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
-
-        if (renderers.Length > 0)
-        {
-            Bounds bounds = renderers[0].bounds;
-            for (int i = 1, ni = renderers.Length; i < ni; i++)
-            {
-                bounds.Encapsulate(renderers[i].bounds);
-            }
-            return bounds;
-        }
-        else
-        {
-            return new Bounds();
-        }
-    }
 }
