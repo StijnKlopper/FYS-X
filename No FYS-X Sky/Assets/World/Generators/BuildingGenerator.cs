@@ -76,14 +76,18 @@ public class BuildingGenerator : MonoBehaviour, Generator
 
     private GridTypes[,,] GenerateGrid()
     {
-        int temp = 1231;
+        int temp = 12345; // TODO: Should be coordinate x * y 
         int floors = GetRandomNumberTo(maxFloors, temp);
-        floors = floors > 0 ? floors : 1;
+        floors = floors > 1 ? floors : 2;
         int depth = GetRandomNumberTo(maxDepth, temp + 1);
-        depth = depth > 0 ? depth : 1;
+        depth = depth > 1 ? depth : 2;
 
         Debug.Log("Floors: " + floors);
         Debug.Log("Depth: " + depth);
+
+        // Add extra fields for wall margin
+        depth += 2;
+        floors += 1;
 
         // Initialize grid y/floors, x/depth, z/depth
         GridTypes[,,] grid = new GridTypes[floors, depth, depth];
@@ -95,46 +99,83 @@ public class BuildingGenerator : MonoBehaviour, Generator
             {
                 for (int z = 0; z < depth; z++)
                 {
-                    if ((z == 0 && x == 0) || (z == depth - 1 && x == 0) || (z == 0 && x == depth - 1) || (z == depth - 1 && x == depth - 1))
+                    if (x == 0 || x == depth - 1 || z == 0 || z == depth - 1 || y == floors - 1)
                     {
-                        // Make all the corners empty
+                        // Add empty margin for wall and roof placement
                         grid[y, x, z] = GridTypes.Empty;
-                        continue;
                     }
                     else
                     {
                         grid[y, x, z] = GridTypes.Floor;
-                        /* Only place floors next to other floors or above a floor
-                        Dictionary<Rotation, GridTypes> nearbyGridTypes = GetGridTypeAllDirections(grid, new Vector3Int(x, y, z));
-                        bool shouldPlace = Convert.ToBoolean(this.randomNumbers[(y * x * z + 1) % this.randomNumbers.Length] % 2);
-
-                        if (shouldPlace && (y == 0 || nearbyGridTypes.ContainsValue(GridTypes.Floor)))
-                        {
-                            grid[y, x, z] = GridTypes.Floor;
-                        }
-                        else
-                        {
-                            grid[y, x, z] = GridTypes.Empty;
-                        }*/
-
                     }
                 }
             }
         }
 
-        // Remove blocks of the building 
+        // Removes one random block of the building
+        bool shouldRemoveParts = floors * depth * depth > 24 ? true : false;
+        int maxBlockSize = 2;
+        if (shouldRemoveParts)
+        {
+            int blockYStart = GetRandomNumberTo(floors, temp + 14) - 1;
+            int blockXStart = GetRandomNumberTo(maxBlockSize, temp + 15);
+            int blockZStart = GetRandomNumberTo(maxBlockSize, temp + 16);
+
+            for (int y = 0; y < floors; y++)
+            {
+                for (int x = 0; x < depth; x++)
+                {
+                    for (int z = 0; z < depth; z++)
+                    {
+                        if (y >= blockYStart && x >= blockXStart && z >= blockZStart)
+                        {
+                            grid[y, x, z] = GridTypes.Empty;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        // Loop through all floors from top to bottom and add roofs if a floor is below
+        for (int y = floors - 1; y >= 0; y--)
+        {
+            for (int x = 0; x < depth; x++)
+            {
+                for (int z = 0; z < depth; z++)
+                {
+                    if (grid[y, x, z] == GridTypes.Floor && y + 1 < floors && grid[y + 1, x, z] == GridTypes.Empty)
+                    {
+                        // Make roofs
+                        grid[y, x, z] = GridTypes.Roof;
+                    }
+                }
+            }
+        }
+
+        // Add walls and roofs
         for (int y = 0; y < floors; y++)
         {
             for (int x = 0; x < depth; x++)
             {
                 for (int z = 0; z < depth; z++)
                 {
-                    // TODO: Remove blocks of the building
+                    // Add walls next to floors
+                    Dictionary<Rotation, GridTypes> nearbyGridTypes = GetGridTypeAllDirections(grid, new Vector3Int(x, y, z), true);
+
+                    if (grid[y, x, z] == GridTypes.Empty && nearbyGridTypes.ContainsValue(GridTypes.Floor))
+                    {
+                        grid[y, x, z] = GridTypes.Wall;
+                    }
+
+                    // Add WallFloors if a roof has a floor next to it
+                    if (grid[y, x, z] == GridTypes.Roof && nearbyGridTypes.ContainsValue(GridTypes.Floor))
+                    {
+                        grid[y, x, z] = GridTypes.WallFloor;
+                    }
                 }
             }
         }
-
-        // TODO: Add walls, doors etc
 
         /*grid = new GridTypes[,,]
         {
@@ -157,22 +198,6 @@ public class BuildingGenerator : MonoBehaviour, Generator
                 { GridTypes.Empty, GridTypes.Empty, GridTypes.Empty, GridTypes.Empty,  GridTypes.Empty},
             }, // Floor 2
         };*/
-
-        /*GridTypes[,,] ggrid = new GridTypes[,,]
-        {
-            {
-                { GridTypes.Empty, GridTypes.Wall, GridTypes.Empty},
-                { GridTypes.Empty, GridTypes.Floor, GridTypes.Wall},
-                { GridTypes.Empty, GridTypes.Empty, GridTypes.Empty},
-            }
-
-        };
-
-        foreach (KeyValuePair<Rotation, GridTypes> value in GetGridTypeAllDirections(ggrid, new Vector3Int(1, 0, 1)))
-        {
-            Debug.Log(value.Key + ": " + value.Value);
-        }
-        */
 
         return grid;
     }
@@ -265,7 +290,7 @@ public class BuildingGenerator : MonoBehaviour, Generator
     }
 
     // Get all the GridTypes for all direction from gridPosition
-    private Dictionary<Rotation, GridTypes> GetGridTypeAllDirections(GridTypes[,,] grid, Vector3Int gridPosition)
+    private Dictionary<Rotation, GridTypes> GetGridTypeAllDirections(GridTypes[,,] grid, Vector3Int gridPosition, bool sidesOnly=false)
     {
         Dictionary<Rotation, GridTypes> gridTypes = new Dictionary<Rotation, GridTypes>();
         if (gridPosition.z + 1 <= grid.GetLength(2) - 1)
@@ -284,11 +309,11 @@ public class BuildingGenerator : MonoBehaviour, Generator
         {
             gridTypes.Add(Rotation.East, grid[gridPosition.y, gridPosition.x - 1, gridPosition.z]);
         }
-        if(gridPosition.y - 1 >= 0)
+        if(!sidesOnly && gridPosition.y - 1 >= 0)
         {
             gridTypes.Add(Rotation.Down, grid[gridPosition.y - 1, gridPosition.x, gridPosition.z]);
         }
-        if (gridPosition.y + 1 <= grid.GetLength(0) - 1)
+        if (!sidesOnly && gridPosition.y + 1 <= grid.GetLength(0) - 1)
         {
             gridTypes.Add(Rotation.Up, grid[gridPosition.y + 1, gridPosition.x, gridPosition.z]);
         }
@@ -303,7 +328,7 @@ public class BuildingGenerator : MonoBehaviour, Generator
         this.randomNumbers = new int[100];
         for (int i = 0; i < this.randomNumbers.Length; i++)
         {
-            this.randomNumbers[i] = random.Next(0, 10);
+            this.randomNumbers[i] = random.Next(10000, 100000);
         }
         parentObject = GameObject.Find("Buildings");
         Vector3 position = new Vector3(0, 0, 0);
@@ -426,9 +451,11 @@ public class BuildingGenerator : MonoBehaviour, Generator
     // Returns a random number from 0 to end (including end)
     public int GetRandomNumberTo(int end, int randomizer)
     {
-        if (seed == 0) seed = 1;
-        if (randomizer == 0) randomizer = 1;
+        if (seed <= 0) seed = 1;
+        if (randomizer <= 0) randomizer = 1;
 
+        // TODO: Gaat soms fout omdat het niet allemaal prime numbers zijn waardoor % gedaan wordt ??
+        //Debug.Log("Seed: " + seed + ", Randomizer: " + randomizer + ", End: " + end + ", Output: " + (this.randomNumbers[randomizer * seed % randomNumbers.Length] % (end + 1)));
         return this.randomNumbers[randomizer * seed % randomNumbers.Length] % (end + 1);
     }
 
