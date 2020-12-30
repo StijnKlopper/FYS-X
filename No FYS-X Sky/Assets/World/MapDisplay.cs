@@ -1,17 +1,10 @@
 ﻿#if UNITY_EDITOR
-using UnityEditor;
 #endif
 using UnityEngine;
-using UnityEngine.Tilemaps;
-using UnityEngine.UIElements;
-using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 public class MapDisplay : MonoBehaviour
 {
-    public enum DrawMode {NoiseMap, ColourMap, Mesh, CityMap}
+    public enum DrawMode { NoiseMap, ColourMap, Mesh, CityMap }
     public DrawMode drawMode;
     public int mapWidth;
     public int mapHeight;
@@ -19,7 +12,7 @@ public class MapDisplay : MonoBehaviour
 
     public float noiseScale;
     public int octaves;
-    [Range(0,1)]
+    [Range(0, 1)]
     public float persistance;
     public float lacunarity;
 
@@ -37,7 +30,7 @@ public class MapDisplay : MonoBehaviour
     public void GenerateMap()
     {
         //tile.GenerateHeightMap(mapWidth, mapHeight, noiseScale, octaves, persistance, lacunarity, offsets);
-        float[,] noiseMap = GenerateCityNoiseMap(mapWidth,mapHeight,offsets);
+        float[,] noiseMap = GenerateCityNoiseMap(mapWidth, mapHeight, offsets);
 
         Texture2D texture = new Texture2D(mapWidth, mapHeight);
 
@@ -48,9 +41,9 @@ public class MapDisplay : MonoBehaviour
             for (int x = 0; x < mapWidth; x++)
             {
                 float currentHeight = noiseMap[x, y];
-                for(int i =0; i< regions.Length; i++)
+                for (int i = 0; i < regions.Length; i++)
                 {
-                    if(currentHeight <= regions[i].height)
+                    if (currentHeight <= regions[i].height)
                     {
                         colourMapC[y * mapWidth + x] = regions[i].color;
                         break;
@@ -59,8 +52,8 @@ public class MapDisplay : MonoBehaviour
                 noiseMapC[y * mapWidth + x] = Color.Lerp(Color.black, Color.white, noiseMap[x, y]);
             }
         }
-        if(drawMode == DrawMode.NoiseMap) texture.SetPixels(noiseMapC);
-        if(drawMode == DrawMode.ColourMap) texture.SetPixels(colourMapC);
+        if (drawMode == DrawMode.NoiseMap) texture.SetPixels(noiseMapC);
+        if (drawMode == DrawMode.ColourMap) texture.SetPixels(colourMapC);
         // Prevents blurryness and makes the colours hold on to points
         texture.filterMode = FilterMode.Point;
         texture.wrapMode = TextureWrapMode.Clamp;
@@ -71,7 +64,7 @@ public class MapDisplay : MonoBehaviour
 
     public void CopyCurve()
     {
-        string result = "this.heightCurve = new AnimationCurve(";
+        string result = "this.HeightCurve = new AnimationCurve(";
         string split = "f, ";
 
         foreach (Keyframe keyframe in heightCurve.keys)
@@ -95,44 +88,44 @@ public class MapDisplay : MonoBehaviour
     {
         ///string animationCurveString = EditorGUIUtility.systemCopyBuffer.Trim();
 
-       /* if (animationCurveString.Contains("AnimationCurve"))
-        {
-            // Strip and make animation curve
-            String[] sep = { "AnimationCurve(", ");" };
-            animationCurveString = animationCurveString.Split(sep, 3, StringSplitOptions.None)[1].Trim();
+        /* if (animationCurveString.Contains("AnimationCurve"))
+         {
+             // Strip and make animation curve
+             String[] sep = { "AnimationCurve(", ");" };
+             animationCurveString = animationCurveString.Split(sep, 3, StringSplitOptions.None)[1].Trim();
 
-            // Regex the values of the key frames
-            Regex rgx = new Regex("-?[0-9]\\.?[0-9]*");
-            MatchCollection matches = rgx.Matches(animationCurveString);
-            Keyframe[] keys = new Keyframe[matches.Count / 6];
-            for (int i = 0; i < matches.Count; i+=6)
-            {
-                keys[i / 6] = new Keyframe(
-                    float.Parse(matches[i].Value),
-                    float.Parse(matches[i + 1].Value),
-                    float.Parse(matches[i + 2].Value),
-                    float.Parse(matches[i + 3].Value),
-                    float.Parse(matches[i + 4].Value),
-                    float.Parse(matches[i + 5].Value)
-                    );
+             // Regex the values of the key frames
+             Regex rgx = new Regex("-?[0-9]\\.?[0-9]*");
+             MatchCollection matches = rgx.Matches(animationCurveString);
+             Keyframe[] keys = new Keyframe[matches.Count / 6];
+             for (int i = 0; i < matches.Count; i+=6)
+             {
+                 keys[i / 6] = new Keyframe(
+                     float.Parse(matches[i].Value),
+                     float.Parse(matches[i + 1].Value),
+                     float.Parse(matches[i + 2].Value),
+                     float.Parse(matches[i + 3].Value),
+                     float.Parse(matches[i + 4].Value),
+                     float.Parse(matches[i + 5].Value)
+                     );
 
-                *//*
-                Debug.Log(float.Parse(matches[i].Value) + " " +
-                    float.Parse(matches[i + 1].Value) + " " +
-                    float.Parse(matches[i + 2].Value) + " " +
-                    float.Parse(matches[i + 3].Value) + " " +
-                    float.Parse(matches[i + 4].Value) + " " +
-                    float.Parse(matches[i + 5].Value));
-                *//*
-            }
+                 *//*
+                 Debug.Log(float.Parse(matches[i].Value) + " " +
+                     float.Parse(matches[i + 1].Value) + " " +
+                     float.Parse(matches[i + 2].Value) + " " +
+                     float.Parse(matches[i + 3].Value) + " " +
+                     float.Parse(matches[i + 4].Value) + " " +
+                     float.Parse(matches[i + 5].Value));
+                 *//*
+             }
 
-            // Set AnimationCurve
-            this.heightCurve = new AnimationCurve(keys);
-        }
-        else
-        {
-            Debug.Log("You didn't copy the correct string!");
-        }*/
+             // Set AnimationCurve
+             this.HeightCurve = new AnimationCurve(keys);
+         }
+         else
+         {
+             Debug.Log("You didn't copy the correct string!");
+         }*/
 
     }
 

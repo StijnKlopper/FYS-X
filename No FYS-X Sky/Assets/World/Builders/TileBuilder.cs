@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using LibNoise.Generator;
+﻿using LibNoise.Generator;
+using System.Collections;
 using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
@@ -13,18 +13,17 @@ public class TileBuilder : MonoBehaviour
     [SerializeField]
     private MeshCollider meshCollider;
 
+
     [System.NonSerialized]
     public float[,] heightMap;
 
-    public AnimationCurve heightCurve;
 
-    TerrainGenerator terrainGenerator;
+    private TerrainGenerator terrainGenerator;
 
-    CityGenerator cityGenerator;
+    private CityGenerator cityGenerator;
 
-    float[] tileTextureData;
 
-    GameObject oceanTile;
+    private float[] tileTextureData;
 
     private Texture2DArray splatmapsArray;
 
@@ -32,8 +31,8 @@ public class TileBuilder : MonoBehaviour
 
     private bool hasOcean;
 
-    // Start is called before the first frame update
-    public float[,] Instantiate() {
+    public float[,] Instantiate()
+    {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
 
@@ -49,14 +48,14 @@ public class TileBuilder : MonoBehaviour
         int tileWidth = tileHeight;
 
         Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
-        
+
         // Offsets which are used by CityGenerator
         Vector2 cityOffsets = new Vector2(this.gameObject.transform.position.x - 5, this.gameObject.transform.position.z - 5);
 
         // Instead of generating height map:
         GenerateHeightMap(offsets);
 
-        int levelOfDetail = WorldBuilder.GetTile(new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z)).levelOfDetail;
+        int levelOfDetail = WorldBuilder.GetTile(new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z)).LevelOfDetail;
 
         MeshData meshData = GenerateMesh(levelOfDetail, this.heightMap);
         Mesh mesh = meshData.CreateMesh();
@@ -67,7 +66,7 @@ public class TileBuilder : MonoBehaviour
         ocean.SetActive(hasOcean);
 
         Mesh oceanMesh = GenerateMesh(levelOfDetail, null, true).CreateMesh();
-        
+
         MeshFilter oceanMeshFilter = ocean.GetComponent<MeshFilter>();
         oceanMeshFilter.mesh = oceanMesh;
 
@@ -85,7 +84,7 @@ public class TileBuilder : MonoBehaviour
 
     public void GenerateHeightMap(Vector2 offsets)
     {
-        int tileSize = WorldBuilder.chunkSize + 1;
+        int tileSize = WorldBuilder.CHUNK_SIZE + 1;
         int splatmapSize = tileSize * tileSize;
 
         Color[] splatMap1 = new Color[splatmapSize];
@@ -108,7 +107,7 @@ public class TileBuilder : MonoBehaviour
         float scale = 50.777f;
         int heightMultiplier = 15;
 
-        Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, terrainGenerator.seed, LibNoise.QualityMode.High);
+        Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, terrainGenerator.Seed, LibNoise.QualityMode.High);
 
         for (int i = 0; i < octaves; i++)
         {
@@ -120,11 +119,11 @@ public class TileBuilder : MonoBehaviour
         {
             for (int x = 0; x < tileSize; x++)
             {
-                
+
                 double sampleX = (x + offsets.x) / scale;
                 double sampleY = (y + offsets.y) / scale;
 
-                float noiseHeight = (float) perlin.GetValue(sampleX, 0, sampleY);
+                float noiseHeight = (float)perlin.GetValue(sampleX, 0, sampleY);
 
                 int colorIndex = y * tileSize + x;
 
@@ -134,11 +133,11 @@ public class TileBuilder : MonoBehaviour
                 // Change height based on height curve and heightMultiplier
                 Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
 
-                splatMap1[colorIndex] = biome.biomeType.color;
-                splatMap2[colorIndex] = biome.biomeType.color2;
-                splatMap3[colorIndex] = biome.biomeType.color3;
+                splatMap1[colorIndex] = biome.BiomeType.Color;
+                splatMap2[colorIndex] = biome.BiomeType.Color2;
+                splatMap3[colorIndex] = biome.BiomeType.Color3;
 
-                if (biome.biomeType is OceanBiomeType)
+                if (biome.BiomeType is OceanBiomeType)
                 {
                     oceanMap[colorIndex] = new Color(1, 0, 0);
                     hasOcean = true;
@@ -146,11 +145,11 @@ public class TileBuilder : MonoBehaviour
 
                 else { oceanMap[colorIndex] = new Color(0, 1, 0); }
 
-                oceanMap[colorIndex] = biome.biomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
+                oceanMap[colorIndex] = biome.BiomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
 
-                tileTextureData[x + y * tileSize] = biome.biomeType.biomeTypeId;
+                tileTextureData[x + y * tileSize] = biome.BiomeType.BiomeTypeId;
 
-                noiseHeight = biome.biomeType.heightCurve.Evaluate(noiseHeight) * heightMultiplier;
+                noiseHeight = biome.BiomeType.HeightCurve.Evaluate(noiseHeight) * heightMultiplier;
                 heightMap[x, y] = noiseHeight;
             }
         }
@@ -173,10 +172,10 @@ public class TileBuilder : MonoBehaviour
 
     public MeshData GenerateMesh(int levelOfDetail, float[,] heightMap = null, bool isOcean = false)
     {
-        int size = WorldBuilder.chunkSize + 1;
+        int size = WorldBuilder.CHUNK_SIZE + 1;
         float topLeft = (size - 1) / 2f;
 
-        // Must be divisible by WorldBuilder.chunkSize
+        // Must be divisible by WorldBuilder.CHUNK_SIZE
         int meshSimplificationIncrement = levelOfDetail;
         int verticesPerLine = (size - 1) / meshSimplificationIncrement + 1;
 
@@ -189,8 +188,8 @@ public class TileBuilder : MonoBehaviour
             {
                 float heightValue = isOcean ? 0f : heightMap[x, y];
 
-                meshData.vertices[vertexIndex] = new Vector3(topLeft - x, heightValue, topLeft - y);
-                meshData.uvs[vertexIndex] = new Vector2(x / (float)size, y / (float)size);
+                meshData.Vertices[vertexIndex] = new Vector3(topLeft - x, heightValue, topLeft - y);
+                meshData.UVs[vertexIndex] = new Vector2(x / (float)size, y / (float)size);
 
                 if (x < size - 1 && y < size - 1)
                 {

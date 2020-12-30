@@ -3,25 +3,25 @@ using UnityEngine;
 
 public class Tile
 {
-    public List<GameObject> loadedObjects;
+    public List<GameObject> LoadedObjects;
 
-    public float[,] heightMap;
+    public float[,] HeightMap;
 
-    public int levelOfDetail;
+    public int LevelOfDetail;
 
     public Tile()
     {
-        this.loadedObjects = new List<GameObject>();
+        this.LoadedObjects = new List<GameObject>();
     }
 
     public void AddObject(GameObject obj)
     {
-        this.loadedObjects.Add(obj);
+        this.LoadedObjects.Add(obj);
     }
 
     public void DestroyObjects(ObjectPool objectPool)
     {
-        foreach (GameObject obj in loadedObjects)
+        foreach (GameObject obj in LoadedObjects)
         {
             objectPool.UnloadPooledObject(obj);
         }
@@ -29,7 +29,7 @@ public class Tile
 
     public void RegenerateMesh()
     {
-        TileBuilder tileBuilder = this.loadedObjects[0].GetComponent<TileBuilder>();
-        tileBuilder.SetMesh(tileBuilder.GenerateMesh(levelOfDetail, heightMap).CreateMesh());
+        TileBuilder tileBuilder = this.LoadedObjects[0].GetComponent<TileBuilder>();
+        tileBuilder.SetMesh(tileBuilder.GenerateMesh(LevelOfDetail, HeightMap).CreateMesh());
     }
 }
