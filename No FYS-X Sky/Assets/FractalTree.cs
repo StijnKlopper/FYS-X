@@ -54,8 +54,8 @@ public class FractalTree : MonoBehaviour {
         points.Clear();
         branches.Clear();
 
-        //F[-F]F[+F][F]
-        rules.Add('F', "F[-F][F]");
+        //F[*F]F[%F][+F]F[-F][F]
+        rules.Add('F', "F[*F]F[%F][+F]F[-F][F]");
 
         // Apply rules for i interations
         output = input;
@@ -164,6 +164,12 @@ public class FractalTree : MonoBehaviour {
                 case ']': // Load Saved State
                     lastPoint = returnValues.Pop();
                     break;
+                case '%': // Rotate -30
+                    lastPoint.Angle.z += -60.0f + Random.Range(0, 20);
+                    break;
+                case '*': // Rotate -30
+                    lastPoint.Angle.z += 60.0f + Random.Range(0, 20);
+                    break;
             }
         }
     }
@@ -222,7 +228,7 @@ public class FractalTree : MonoBehaviour {
     {
         GameObject newCylinder = (GameObject)Instantiate(woodPrefab, startPosition, Quaternion.identity);
         newCylinder.name = "point 1 " + point1.Point + "point 2" + point2.Point;
-        newCylinder.GetComponent<Cone>().Generate(oldSize, newSize, lastTrunk);
+        newCylinder.GetComponent<Cone>().GenerateCone(oldSize, newSize, lastTrunk);
         newCylinder.SetActive(true);
 
         float length = Vector3.Distance(point2.Point, point1.Point);
@@ -232,8 +238,6 @@ public class FractalTree : MonoBehaviour {
         
         newCylinder.transform.localScale = scale;
         newCylinder.transform.position = newCylinder.transform.position + point1.Point;
-        point2.Angle.x = point2.Angle.x + 270;
-        point2.Angle.z = 0;
         newCylinder.transform.Rotate(point2.Angle);
         newCylinder.transform.parent = wood.transform;
 
