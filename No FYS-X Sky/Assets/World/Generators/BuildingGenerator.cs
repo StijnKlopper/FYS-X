@@ -66,7 +66,7 @@ public class BuildingGenerator : MonoBehaviour, Generator
 
         // Make some random numbers for usage
         System.Random random = new System.Random(seed);
-        this.randomNumbers = new int[50];
+        this.randomNumbers = new int[100];
 
         for (int i = 0; i < this.randomNumbers.Length; i++)
         {
@@ -117,24 +117,31 @@ public class BuildingGenerator : MonoBehaviour, Generator
         int maxBlockSize = 2;
         if (shouldRemoveParts)
         {
-            int blockYStart = GetRandomNumberTo(floors, temp + 14) - 1;
+            int blockYEnd = GetRandomNumberTo(floors - 1, temp + 14);
             int blockXStart = GetRandomNumberTo(maxBlockSize, temp + 15);
             int blockZStart = GetRandomNumberTo(maxBlockSize, temp + 16);
 
+            int blockXWidth = GetRandomNumberTo(maxBlockSize, temp + 17);
+            int blockZWidth = GetRandomNumberTo(maxBlockSize, temp + 18);
+
+            Debug.Log("blockYEnd: " + blockYEnd + ", blockXStart: " + blockXStart + ", blockZStart: " + blockZStart);
+
+            int removeCount = 0;
             for (int y = 0; y < floors; y++)
             {
                 for (int x = 0; x < depth; x++)
                 {
                     for (int z = 0; z < depth; z++)
                     {
-                        if (y >= blockYStart && x >= blockXStart && z >= blockZStart)
+                        if (y >= blockYEnd && x >= blockXStart && z >= blockZStart)
                         {
                             grid[y, x, z] = GridTypes.Empty;
+                            removeCount++;
                         }
                     }
                 }
             }
-
+            Debug.Log("Blocks removed: " + removeCount);
         }
 
         // Loop through all floors from top to bottom and add roofs if a floor is below
@@ -446,6 +453,7 @@ public class BuildingGenerator : MonoBehaviour, Generator
     {
         // TODO: Make fake values
         Debug.Log("TODO");
+        RandomNumberValidator();
     }
 
     // Returns a random number from 0 to end (including end)
@@ -459,4 +467,34 @@ public class BuildingGenerator : MonoBehaviour, Generator
         return this.randomNumbers[randomizer * seed % randomNumbers.Length] % (end + 1);
     }
 
+    private void RandomNumberValidator()
+    {
+        int total = 1000;
+        int maxSizeRandomNumber = 10;
+        SortedDictionary<int, List<int>> listOfNumbers = new SortedDictionary<int, List<int>>();
+        for (int i = 0; i < total; i++)
+        {
+            int generatedRandomNumber = GetRandomNumberTo(maxSizeRandomNumber, i);
+            for (int j = maxSizeRandomNumber / 10; j <= maxSizeRandomNumber; j += maxSizeRandomNumber / 10)
+            {
+                if (!listOfNumbers.ContainsKey(j)) listOfNumbers.Add(j, new List<int>());
+                if (generatedRandomNumber <= j)
+                {
+                    listOfNumbers[j].Add(generatedRandomNumber);
+                    break;
+                }
+            }
+        }
+
+        // Display generated numbers
+        foreach (KeyValuePair<int, List<int>> item in listOfNumbers)
+        {
+            Debug.Log(item.Value.Count + " numbers generated from last to " + item.Key);
+
+            // Show generated numbers on one line
+            string numbersString = "";
+            foreach (int numb in item.Value) numbersString += numb + ", ";
+            //Debug.Log(numbersString);
+        }
+    }
 }
