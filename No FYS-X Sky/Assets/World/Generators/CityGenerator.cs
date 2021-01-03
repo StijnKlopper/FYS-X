@@ -13,20 +13,19 @@ public class CityGenerator : MonoBehaviour, Generator
 
     TerrainGenerator terrainGenerator;
     BuildingGenerator buildingGenerator;
-
+    
     [SerializeField]
     public List<GameObject> houses;
 
-    [System.NonSerialized]
-    GameObject parentObject;
+    private GameObject parentObject;
 
     void Start()
     {
-        this.mapWidth = WorldBuilder.chunkSize + 1;
-        this.mapHeight = WorldBuilder.chunkSize + 1;
+        this.mapWidth = WorldBuilder.CHUNK_SIZE + 1;
+        this.mapHeight = WorldBuilder.CHUNK_SIZE + 1;
 
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        seed = terrainGenerator.seed;
+        this.seed = terrainGenerator.Seed;
 
         buildingGenerator = GameObject.Find("Buildings").GetComponent<BuildingGenerator>();
 
@@ -47,7 +46,7 @@ public class CityGenerator : MonoBehaviour, Generator
     }
 
     // Validate house position to prevent overlapping
-    bool ValidHousePosition(Vector3 position, Bounds bounds)
+    private bool ValidHousePosition(Vector3 position, Bounds bounds)
     {
         float buildingMargin = 1.5f;
         float radius = 1;
@@ -66,7 +65,7 @@ public class CityGenerator : MonoBehaviour, Generator
         return true;
     }
 
-    Vector3 PositionCorrection(Vector3 position)
+    private Vector3 PositionCorrection(Vector3 position)
     {
         // Gives the correct Y value (with the height of the ground)
         Vector3 rayStartPosition = new Vector3(position.x, 10, position.z);
@@ -89,7 +88,6 @@ public class CityGenerator : MonoBehaviour, Generator
         int aboveGroundPlaceholderY = 10;
         int checkForEveryCoordinates = 50;
         float minNoiseHeight = 0.05f;
-        float scale = 500.6667f;
         float[,] noiseMap = GenerateCityNoiseMap(this.mapWidth, this.mapHeight, this.offsets);
 
         for (int y = 0; y < mapHeight; y += checkForEveryCoordinates)
@@ -118,8 +116,8 @@ public class CityGenerator : MonoBehaviour, Generator
                         building.transform.position = housePosition;
 
                         // Turn house with consistent random numbers
-                        int xRandomIndex = terrainGenerator.randomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.x) % terrainGenerator.randomNumbers.Length];
-                        int zRandomIndex = terrainGenerator.randomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.y) % (terrainGenerator.randomNumbers.Length - 1)];
+                        int xRandomIndex = terrainGenerator.RandomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.x) % terrainGenerator.RandomNumbers.Length];
+                        int zRandomIndex = terrainGenerator.RandomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.y) % (terrainGenerator.RandomNumbers.Length - 1)];
                         Vector3 lookAtPosition = new Vector3(xRandomIndex, building.transform.position.y, zRandomIndex);
                         building.transform.LookAt(lookAtPosition);
 
@@ -136,7 +134,7 @@ public class CityGenerator : MonoBehaviour, Generator
     }
 
     // Calculate bounds of buildings
-    public Bounds CalculateBounds(GameObject go)
+    private Bounds CalculateBounds(GameObject go)
     {
         Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
 
@@ -166,7 +164,7 @@ public class CityGenerator : MonoBehaviour, Generator
         int octaves = 1;
         float scale = 100.777f;
 
-        Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, seed, LibNoise.QualityMode.High);
+        Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, terrainGenerator.Seed, LibNoise.QualityMode.High);
 
         for (int y = 0; y < mapHeight; y++)
         {
@@ -181,7 +179,7 @@ public class CityGenerator : MonoBehaviour, Generator
                 Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
 
                 // Exclude some biomes from noisemap 
-                if (biome.biomeType is OceanBiomeType || biome.biomeType is MountainBiomeType)
+                if (biome.BiomeType is OceanBiomeType || biome.BiomeType is MountainBiomeType)
                 {
                     noiseMap[x, y] = 1f;
                 }

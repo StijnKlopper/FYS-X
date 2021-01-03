@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GenerateUV
 {
@@ -76,7 +74,7 @@ public class GenerateUV
         {
             FacesThisWay(v, Vector3.down, Facing.Up, ref maxDot, ref ret);
         }
-        
+
         return ret;
     }
 

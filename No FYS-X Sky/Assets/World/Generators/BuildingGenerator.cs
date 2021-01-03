@@ -6,8 +6,8 @@ public class BuildingGenerator : MonoBehaviour
 {
     public int seed;
 
-    protected float roomWidthHeight = 4.0f;
-    protected float roomWidthHeightRadius = 2f;
+    protected float roomWidthHeight;
+    protected float roomWidthHeightRadius;
 
     [Range(1, 10)]
     public int maxDepth;
@@ -57,12 +57,14 @@ public class BuildingGenerator : MonoBehaviour
     {
         // Set seed
         TerrainGenerator terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        seed = terrainGenerator.seed;
+        seed = terrainGenerator.Seed;
 
         // Set parent object for buildings to be placed in
         parentObject = GameObject.Find("Buildings");
 
-        this.random = new System.Random(seed);
+        random = new System.Random(seed);
+        roomWidthHeight = 4f;
+        roomWidthHeightRadius = roomWidthHeight / 2;
     }
 
     public GameObject Generate(Vector3 position)
@@ -74,7 +76,7 @@ public class BuildingGenerator : MonoBehaviour
 
     private GridTypes[,,] GenerateGrid()
     {
-        int floors = GetRandomNumberTo(1, maxFloors);
+        int floors = GetRandomNumberTo(2, maxFloors);
         int depth = GetRandomNumberTo(2, maxDepth);
 
         // Add extra fields for wall margin

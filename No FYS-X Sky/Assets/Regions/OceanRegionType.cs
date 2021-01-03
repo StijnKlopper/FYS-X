@@ -1,14 +1,11 @@
-﻿using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class OceanRegionType : RegionType
 {
 
     public OceanRegionType()
     {
-        this.availableBiomes = new List<BiomeType>();
-        this.availableBiomes.Add(new OceanBiomeType());
+        this.AvailableBiomes = new List<BiomeType>();
+        this.AvailableBiomes.Add(new OceanBiomeType());
     }
 }
