@@ -12,6 +12,7 @@ public class CityGenerator : MonoBehaviour, Generator
     int seed;
 
     TerrainGenerator terrainGenerator;
+    BuildingGenerator buildingGenerator;
 
     [SerializeField]
     public List<GameObject> houses;
@@ -26,6 +27,8 @@ public class CityGenerator : MonoBehaviour, Generator
 
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         seed = terrainGenerator.seed;
+
+        buildingGenerator = GameObject.Find("Buildings").GetComponent<BuildingGenerator>();
 
         parentObject = GameObject.Find("CityPoints");
     }
@@ -99,12 +102,12 @@ public class CityGenerator : MonoBehaviour, Generator
                 if (noiseMap[x, y] <= minNoiseHeight)
                 {
                     // Get random building index from thhe list of buildings 
-                    int randomHouseIndex = (int)Math.Round(((terrainGenerator.perlin.GetValue(position.x + terrainGenerator.randomNumbers[y] / scale, 0, position.y + terrainGenerator.randomNumbers[y] / scale) + 1) / 2f) * houses.Count);
-                    
+                    GameObject building = buildingGenerator.Generate(position);
+
                     // Calculate bounds and calculate the houseposition for the center of the house, also get the correct Y value for the building
-                    Bounds houseBounds = CalculateBounds(houses[randomHouseIndex]);
+                    Bounds houseBounds = CalculateBounds(building);
                     Vector3 housePosition = PositionCorrection(new Vector3(position.x - houseBounds.center.x, 0, position.z - houseBounds.center.z));
-                    housePosition = new Vector3(housePosition.x, houses[randomHouseIndex].transform.position.y + housePosition.y, housePosition.z);
+                    housePosition = new Vector3(housePosition.x, building.transform.position.y + housePosition.y, housePosition.z);
 
                     // Get tile and check if it exists before making a house
                     Tile tile = WorldBuilder.GetTile(position);
@@ -112,16 +115,20 @@ public class CityGenerator : MonoBehaviour, Generator
                     // Check if valid position
                     if (tile != null && ValidHousePosition(housePosition, houseBounds))
                     {
-                        GameObject house = Instantiate(houses[randomHouseIndex], housePosition, Quaternion.identity, parentObject.transform.GetChild(0).transform) as GameObject;
+                        building.transform.position = housePosition;
 
                         // Turn house with consistent random numbers
                         int xRandomIndex = terrainGenerator.randomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.x) % terrainGenerator.randomNumbers.Length];
                         int zRandomIndex = terrainGenerator.randomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.y) % (terrainGenerator.randomNumbers.Length - 1)];
-                        Vector3 lookAtPosition = new Vector3(xRandomIndex, house.transform.position.y, zRandomIndex);
-                        house.transform.LookAt(lookAtPosition);
+                        Vector3 lookAtPosition = new Vector3(xRandomIndex, building.transform.position.y, zRandomIndex);
+                        building.transform.LookAt(lookAtPosition);
 
                         // Add house to tile 
-                        tile.AddObject(house);
+                        tile.AddObject(building);
+                    }
+                    else
+                    {
+                        DestroyImmediate(building);
                     }
                 }
             }

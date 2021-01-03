@@ -9,16 +9,9 @@ public class BuildingGeneratorEditor : Editor
         DrawDefaultInspector();
         BuildingGenerator buildingGenerator = (BuildingGenerator)target;
 
-        if (GUILayout.Button("Random values"))
+        if (GUILayout.Button("Generate a house"))
         {
-            buildingGenerator.RandomValues();
+            buildingGenerator.GeneratePreviewHouse();
         }
-
-        if (GUILayout.Button("Generate"))
-        {
-            buildingGenerator.Generate();
-        }
-
     }
-
 }

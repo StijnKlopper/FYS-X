@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildingGenerator : MonoBehaviour, Generator
+public class BuildingGenerator : MonoBehaviour
 {
-    private int[] randomNumbers;
-
     public int seed;
 
     protected float roomWidthHeight = 4.0f;
@@ -19,16 +16,21 @@ public class BuildingGenerator : MonoBehaviour, Generator
     public int maxFloors;
 
     [SerializeField]
-    List<GameObject> floors;
+    public List<GameObject> floors;
 
     [SerializeField]
-    List<GameObject> walls;
+    public List<GameObject> walls;
 
     [SerializeField]
-    List<GameObject> doors;
+    public List<GameObject> doors;
+
+    [SerializeField]
+    public List<GameObject> roofs;
 
     [System.NonSerialized]
-    GameObject parentObject;
+    private GameObject parentObject;
+
+    private System.Random random; 
 
     enum Rotation
     {
@@ -51,39 +53,29 @@ public class BuildingGenerator : MonoBehaviour, Generator
         Roof
     }
 
-    BuildingGenerator()
-    {
-    }
-
     private void Start()
     {
         // Set seed
-        TerrainGenerator terrainGenerator = new TerrainGenerator();
+        TerrainGenerator terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         seed = terrainGenerator.seed;
 
         // Set parent object for buildings to be placed in
         parentObject = GameObject.Find("Buildings");
 
-        // Make some random numbers for usage
-        System.Random random = new System.Random(seed);
-        this.randomNumbers = new int[100];
+        this.random = new System.Random(seed);
+    }
 
-        for (int i = 0; i < this.randomNumbers.Length; i++)
-        {
-            this.randomNumbers[i] = random.Next(10000, 100000);
-        }
+    public GameObject Generate(Vector3 position)
+    {
+        // Generate grid and make building
+        GridTypes[,,] grid = GenerateGrid();
+        return SpawnBuilding(position, grid);
     }
 
     private GridTypes[,,] GenerateGrid()
     {
-        int temp = 12345; // TODO: Should be coordinate x * y 
-        int floors = GetRandomNumberTo(maxFloors, temp);
-        floors = floors > 1 ? floors : 2;
-        int depth = GetRandomNumberTo(maxDepth, temp + 1);
-        depth = depth > 1 ? depth : 2;
-
-        Debug.Log("Floors: " + floors);
-        Debug.Log("Depth: " + depth);
+        int floors = GetRandomNumberTo(1, maxFloors);
+        int depth = GetRandomNumberTo(2, maxDepth);
 
         // Add extra fields for wall margin
         depth += 2;
@@ -114,34 +106,28 @@ public class BuildingGenerator : MonoBehaviour, Generator
 
         // Removes one random block of the building
         bool shouldRemoveParts = floors * depth * depth > 24 ? true : false;
-        int maxBlockSize = 2;
         if (shouldRemoveParts)
         {
-            int blockYEnd = GetRandomNumberTo(floors - 1, temp + 14);
-            int blockXStart = GetRandomNumberTo(maxBlockSize, temp + 15);
-            int blockZStart = GetRandomNumberTo(maxBlockSize, temp + 16);
+            int blockYEnd = GetRandomNumberTo(2, floors - 1);
+            int blockXStart = GetRandomNumberTo(depth);
+            int blockZStart = GetRandomNumberTo(depth);
 
-            int blockXWidth = GetRandomNumberTo(maxBlockSize, temp + 17);
-            int blockZWidth = GetRandomNumberTo(maxBlockSize, temp + 18);
+            int blockXWidth = GetRandomNumberTo(1, depth / 2);
+            int blockZWidth = GetRandomNumberTo(1, depth / 2);
 
-            Debug.Log("blockYEnd: " + blockYEnd + ", blockXStart: " + blockXStart + ", blockZStart: " + blockZStart);
-
-            int removeCount = 0;
             for (int y = 0; y < floors; y++)
             {
                 for (int x = 0; x < depth; x++)
                 {
                     for (int z = 0; z < depth; z++)
                     {
-                        if (y >= blockYEnd && x >= blockXStart && z >= blockZStart)
+                        if (y >= blockYEnd && x >= blockXStart && z >= blockZStart && x <= blockXStart + blockXWidth && z <= blockZStart + blockZWidth)
                         {
                             grid[y, x, z] = GridTypes.Empty;
-                            removeCount++;
                         }
                     }
                 }
             }
-            Debug.Log("Blocks removed: " + removeCount);
         }
 
         // Loop through all floors from top to bottom and add roofs if a floor is below
@@ -160,7 +146,8 @@ public class BuildingGenerator : MonoBehaviour, Generator
             }
         }
 
-        // Add walls and roofs
+        // Add walls, roofs and doors
+        SortedDictionary<int, bool> doorsOnFloor = new SortedDictionary<int, bool>();
         for (int y = 0; y < floors; y++)
         {
             for (int x = 0; x < depth; x++)
@@ -180,40 +167,31 @@ public class BuildingGenerator : MonoBehaviour, Generator
                     {
                         grid[y, x, z] = GridTypes.WallFloor;
                     }
+
+                    // Add doors, only one per Y level 
+                    if (grid[y, x, z] == GridTypes.WallFloor || (grid[y, x, z] == GridTypes.Wall && y == 0))
+                    {
+                        if (!doorsOnFloor.ContainsKey(y)) doorsOnFloor[y] = false;
+                        if (!doorsOnFloor[y])
+                        {
+                            grid[y, x, z] = grid[y, x, z] == GridTypes.WallFloor ? GridTypes.DoorFloor : GridTypes.Door;
+                            doorsOnFloor[y] = true;
+
+                        }
+                    }
+                    
                 }
             }
         }
 
-        /*grid = new GridTypes[,,]
-        {
-            {
-                { GridTypes.Empty, GridTypes.Wall, GridTypes.Empty, GridTypes.Wall,  GridTypes.Empty},
-                { GridTypes.Wall, GridTypes.Floor, GridTypes.Wall, GridTypes.Floor, GridTypes.Wall},
-                { GridTypes.Wall, GridTypes.Floor, GridTypes.Floor, GridTypes.Floor, GridTypes.Wall},
-                { GridTypes.Empty, GridTypes.Wall, GridTypes.Wall, GridTypes.Door,  GridTypes.Empty},
-            }, // Floor 0
-            {
-                { GridTypes.Empty, GridTypes.Empty, GridTypes.Wall, GridTypes.Wall,  GridTypes.Empty},
-                { GridTypes.Empty, GridTypes.DoorFloor, GridTypes.Floor, GridTypes.Floor, GridTypes.Wall},
-                { GridTypes.Empty, GridTypes.Roof, GridTypes.WallFloor, GridTypes.WallFloor, GridTypes.Empty},
-                { GridTypes.Empty, GridTypes.Empty, GridTypes.Empty, GridTypes.Empty,  GridTypes.Empty},
-            }, // Floor 1
-            {
-                { GridTypes.Empty, GridTypes.Empty, GridTypes.Empty, GridTypes.Empty,  GridTypes.Empty},
-                { GridTypes.Empty, GridTypes.Empty, GridTypes.Roof, GridTypes.Roof, GridTypes.Empty},
-                { GridTypes.Empty, GridTypes.Empty, GridTypes.Empty, GridTypes.Empty, GridTypes.Empty},
-                { GridTypes.Empty, GridTypes.Empty, GridTypes.Empty, GridTypes.Empty,  GridTypes.Empty},
-            }, // Floor 2
-        };*/
-
         return grid;
     }
 
-    private void SpawnBuilding(Vector3 position, GridTypes[,,] grid)
+    private GameObject SpawnBuilding(Vector3 position, GridTypes[,,] grid)
     {
         // Make building folder
-        Transform buildingFolder = new GameObject("Building").transform;
-        buildingFolder.SetParent(parentObject.transform);
+        GameObject buildingFolder = new GameObject("Building");
+        buildingFolder.transform.SetParent(parentObject.transform);
 
         // Spawn grid elements
         for (int y = 0; y < grid.GetLength(0); y++)
@@ -224,16 +202,17 @@ public class BuildingGenerator : MonoBehaviour, Generator
                 {
                     // Loop through every element of the grid and place prefabs accordingly
                     if (grid[y, x, z] == GridTypes.Empty) continue;
-                    SpawnGridElement(buildingFolder, new Vector3(position.x + (x * roomWidthHeight), position.y + (y * roomWidthHeight), position.z + (z * roomWidthHeight)), grid, new Vector3Int(x, y, z));
+                    SpawnGridElement(buildingFolder.transform, new Vector3(position.x + (x * roomWidthHeight), position.y + (y * roomWidthHeight), position.z + (z * roomWidthHeight)), grid, new Vector3Int(x, y, z));
                 }
             }
         }
+
+        return buildingFolder;
     }
 
     private void SpawnGridElement(Transform buildingFolder, Vector3 position, GridTypes[,,] grid, Vector3Int gridPosition)
     {
         GridTypes gridType = grid[gridPosition.y, gridPosition.x, gridPosition.z];
-
         switch (gridType)
         {
             case GridTypes.DoorFloor:
@@ -327,53 +306,27 @@ public class BuildingGenerator : MonoBehaviour, Generator
         return gridTypes;
     }
 
-    public void Generate()
+    private void GenerateRoof(Transform buildingFolder, Vector3 position)
     {
-        // Temp values test
-        seed = 69420;
-        System.Random random = new System.Random(seed);
-        this.randomNumbers = new int[100];
-        for (int i = 0; i < this.randomNumbers.Length; i++)
-        {
-            this.randomNumbers[i] = random.Next(10000, 100000);
-        }
-        parentObject = GameObject.Find("Buildings");
-        Vector3 position = new Vector3(0, 0, 0);
-
-        // Delete old building
-        foreach (Transform child in parentObject.transform)
-        {
-            GameObject.DestroyImmediate(child.gameObject);
-        }
-
-        // Grid
-        GridTypes[,,] grid = GenerateGrid();
-        SpawnBuilding(position, grid);
-    }
-
-    public void GenerateRoof(Transform buildingFolder, Vector3 position)
-    {
-        // TODO: Make actual roofs
         Transform roof = Instantiate(
-          floors[0].transform,
-          //new Vector3(position.x, position.y + roomWidthHeight, position.z),
-          new Vector3(position.x, position.y, position.z),
-          GetQuaternionFrom(Rotation.Up),
+          roofs[GetRandomNumberTo(roofs.Count - 1)].transform,
+          new Vector3(position.x, position.y + 0.8f, position.z),
+          GetQuaternionFrom(Rotation.North),
           buildingFolder);
         roof.name = "Roof";
     }
 
-    public void GenerateFloor(Transform buildingFolder, Vector3 position)
+    private void GenerateFloor(Transform buildingFolder, Vector3 position)
     {
         Transform floor = Instantiate(
-          floors[0].transform, // TODO: Random floor
+          floors[GetRandomNumberTo(floors.Count - 1)].transform,
           position,
           GetQuaternionFrom(Rotation.Up),
           buildingFolder);
         floor.name = "Floor";
     }
 
-    public void GenerateWall(Transform buildingFolder, Vector3 position, Enum rotation)
+    private void GenerateWall(Transform buildingFolder, Vector3 position, Enum rotation)
     {
         Vector3 wallPosition = Vector3.zero;
         switch (rotation)
@@ -395,14 +348,14 @@ public class BuildingGenerator : MonoBehaviour, Generator
         }
 
         Transform wall = Instantiate(
-          walls[0].transform, // TODO: Random wall
+          walls[GetRandomNumberTo(walls.Count - 1)].transform,
           wallPosition,
           GetQuaternionFrom(rotation),
           buildingFolder);
         wall.name = "Wall";
     }
 
-    public void GenerateDoor(Transform buildingFolder, Vector3 position, Enum rotation)
+    private void GenerateDoor(Transform buildingFolder, Vector3 position, Enum rotation)
     {
         position = new Vector3(position.x, position.y + 0.25f, position.z);
         Vector3 doorPosition = Vector3.zero;
@@ -425,14 +378,14 @@ public class BuildingGenerator : MonoBehaviour, Generator
         }
 
         Transform door = Instantiate(
-          doors[0].transform, // TODO: Random door
+          doors[GetRandomNumberTo(doors.Count - 1)].transform,
           doorPosition,
           GetQuaternionFrom(rotation),
           buildingFolder);
         door.name = "Door";
     }
 
-    public Quaternion GetQuaternionFrom(Enum rotation)
+    private Quaternion GetQuaternionFrom(Enum rotation)
     {
         switch (rotation)
         {
@@ -449,32 +402,45 @@ public class BuildingGenerator : MonoBehaviour, Generator
         }
     }
 
-    public void RandomValues()
+    public void GeneratePreviewHouse()
     {
-        // TODO: Make fake values
-        Debug.Log("TODO");
-        RandomNumberValidator();
+        // Set values to be able to generate a house
+        seed = 69420;
+        this.random = new System.Random(seed);
+        parentObject = GameObject.Find("Buildings");
+        Vector3 position = new Vector3(0, 0, 0);
+
+        // Delete old building
+        foreach (Transform child in parentObject.transform)
+        {
+            GameObject.DestroyImmediate(child.gameObject);
+        }
+
+        Generate(position);
     }
 
     // Returns a random number from 0 to end (including end)
-    public int GetRandomNumberTo(int end, int randomizer)
+    private int GetRandomNumberTo(int start, int end)
     {
-        if (seed <= 0) seed = 1;
-        if (randomizer <= 0) randomizer = 1;
-
-        // TODO: Gaat soms fout omdat het niet allemaal prime numbers zijn waardoor % gedaan wordt ??
-        //Debug.Log("Seed: " + seed + ", Randomizer: " + randomizer + ", End: " + end + ", Output: " + (this.randomNumbers[randomizer * seed % randomNumbers.Length] % (end + 1)));
-        return this.randomNumbers[randomizer * seed % randomNumbers.Length] % (end + 1);
+        return this.random.Next(start, end + 1);
     }
 
+    private int GetRandomNumberTo(int end)
+    {
+        return GetRandomNumberTo(0, end);
+    }
+
+    // Checks the output of random numbers, put those numbers into buckets to see the random distribution
     private void RandomNumberValidator()
     {
         int total = 1000;
         int maxSizeRandomNumber = 10;
         SortedDictionary<int, List<int>> listOfNumbers = new SortedDictionary<int, List<int>>();
+
+        // Make the random numbers and put them into buckets (dictonary)
         for (int i = 0; i < total; i++)
         {
-            int generatedRandomNumber = GetRandomNumberTo(maxSizeRandomNumber, i);
+            int generatedRandomNumber = GetRandomNumberTo(maxSizeRandomNumber);
             for (int j = maxSizeRandomNumber / 10; j <= maxSizeRandomNumber; j += maxSizeRandomNumber / 10)
             {
                 if (!listOfNumbers.ContainsKey(j)) listOfNumbers.Add(j, new List<int>());
@@ -494,7 +460,7 @@ public class BuildingGenerator : MonoBehaviour, Generator
             // Show generated numbers on one line
             string numbersString = "";
             foreach (int numb in item.Value) numbersString += numb + ", ";
-            //Debug.Log(numbersString);
+            Debug.Log(numbersString);
         }
     }
 }
