@@ -71,7 +71,11 @@ public class BuildingGenerator : MonoBehaviour
     {
         // Generate grid and make building
         GridTypes[,,] grid = GenerateGrid();
-        return SpawnBuilding(position, grid);
+
+        GameObject building = SpawnBuilding(Vector3.zero, grid);
+        building.transform.position = position;
+
+        return building;
     }
 
     private GridTypes[,,] GenerateGrid()
@@ -407,10 +411,10 @@ public class BuildingGenerator : MonoBehaviour
     public void GeneratePreviewHouse()
     {
         // Set values to be able to generate a house
-        seed = 69420;
+        seed = 12345;
         this.random = new System.Random(seed);
         parentObject = GameObject.Find("Buildings");
-        Vector3 position = new Vector3(0, 0, 0);
+        Vector3 position = Vector3.zero;
 
         // Delete old building
         foreach (Transform child in parentObject.transform)
