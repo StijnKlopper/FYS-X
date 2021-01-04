@@ -9,8 +9,8 @@ public class CityGenerator : MonoBehaviour, Generator
     private int mapHeight;
     private Vector2 offsets;
 
-    TerrainGenerator terrainGenerator;
-    BuildingGenerator buildingGenerator;
+    private TerrainGenerator terrainGenerator;
+    private BuildingGenerator buildingGenerator;
     
     [SerializeField]
     public List<GameObject> houses;
@@ -23,7 +23,6 @@ public class CityGenerator : MonoBehaviour, Generator
         this.mapHeight = WorldBuilder.CHUNK_SIZE + 1;
 
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-
         buildingGenerator = GameObject.Find("Buildings").GetComponent<BuildingGenerator>();
 
         parentObject = GameObject.Find("CityPoints");

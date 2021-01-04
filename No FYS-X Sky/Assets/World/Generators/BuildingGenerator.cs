@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BuildingGenerator : MonoBehaviour
 {
-    public int seed;
+    private int Seed;
 
     protected float roomWidthHeight;
     protected float roomWidthHeightRadius;
@@ -16,16 +16,16 @@ public class BuildingGenerator : MonoBehaviour
     public int maxFloors;
 
     [SerializeField]
-    public List<GameObject> floors;
+    private List<GameObject> floors;
 
     [SerializeField]
-    public List<GameObject> walls;
+    private List<GameObject> walls;
 
     [SerializeField]
-    public List<GameObject> doors;
+    private List<GameObject> doors;
 
     [SerializeField]
-    public List<GameObject> roofs;
+    private List<GameObject> roofs;
 
     [System.NonSerialized]
     private GameObject parentObject;
@@ -57,12 +57,12 @@ public class BuildingGenerator : MonoBehaviour
     {
         // Set seed
         TerrainGenerator terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        seed = terrainGenerator.Seed;
+        Seed = terrainGenerator.Seed;
 
         // Set parent object for buildings to be placed in
         parentObject = GameObject.Find("Buildings");
 
-        random = new System.Random(seed);
+        random = new System.Random(Seed);
         roomWidthHeight = 4f;
         roomWidthHeightRadius = roomWidthHeight / 2;
     }
@@ -411,8 +411,8 @@ public class BuildingGenerator : MonoBehaviour
     public void GeneratePreviewHouse()
     {
         // Set values to be able to generate a house
-        seed = 12345;
-        this.random = new System.Random(seed);
+        TerrainGenerator terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        this.random = new System.Random(terrainGenerator.Seed);
         parentObject = GameObject.Find("Buildings");
         Vector3 position = Vector3.zero;
 
@@ -434,39 +434,5 @@ public class BuildingGenerator : MonoBehaviour
     private int GetRandomNumberTo(int end)
     {
         return GetRandomNumberTo(0, end);
-    }
-
-    // Checks the output of random numbers, put those numbers into buckets to see the random distribution
-    private void RandomNumberValidator()
-    {
-        int total = 1000;
-        int maxSizeRandomNumber = 10;
-        SortedDictionary<int, List<int>> listOfNumbers = new SortedDictionary<int, List<int>>();
-
-        // Make the random numbers and put them into buckets (dictonary)
-        for (int i = 0; i < total; i++)
-        {
-            int generatedRandomNumber = GetRandomNumberTo(maxSizeRandomNumber);
-            for (int j = maxSizeRandomNumber / 10; j <= maxSizeRandomNumber; j += maxSizeRandomNumber / 10)
-            {
-                if (!listOfNumbers.ContainsKey(j)) listOfNumbers.Add(j, new List<int>());
-                if (generatedRandomNumber <= j)
-                {
-                    listOfNumbers[j].Add(generatedRandomNumber);
-                    break;
-                }
-            }
-        }
-
-        // Display generated numbers
-        foreach (KeyValuePair<int, List<int>> item in listOfNumbers)
-        {
-            Debug.Log(item.Value.Count + " numbers generated from last to " + item.Key);
-
-            // Show generated numbers on one line
-            string numbersString = "";
-            foreach (int numb in item.Value) numbersString += numb + ", ";
-            Debug.Log(numbersString);
-        }
     }
 }
