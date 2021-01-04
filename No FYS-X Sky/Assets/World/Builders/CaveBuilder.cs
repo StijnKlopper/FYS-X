@@ -18,33 +18,31 @@ public class CaveBuilder : MonoBehaviour
 
 
 
-/*    public void UpdateCaveMesh()
+    public void UpdateCaveMesh(GameObject gameObject)
     {
         int height = 30;
-        RequestCaveData(OnCaveDataReceived);
-    }*/
+        RequestCaveData(OnCaveDataReceived, gameObject.transform.position);
+    }
 
-    public void RequestCaveData(Action<SafeMesh> callback)
+    public void RequestCaveData(Action<SafeMesh> callback, Vector3 position)
     {
 
-        Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
+        //Vector2 offsets = new Vector2(position.x, position.z);
 
        
         ThreadStart threadStart = delegate
         {
-            CaveDataThread(callback, offsets);
+            CaveDataThread(callback, position);
         };
         Thread thread = new Thread(threadStart);
         thread.IsBackground = true;
         thread.Priority = System.Threading.ThreadPriority.Lowest;
 
-
-
         thread.Start();
         //new Thread(threadStart).Start();
     }
 
-    void CaveDataThread(Action<SafeMesh> callback, Vector2 offsets)
+    void CaveDataThread(Action<SafeMesh> callback, Vector3 offsets)
     {
         SafeMesh safeMesh = GenerateCaveMap(offsets, 30);
 
@@ -67,25 +65,29 @@ public class CaveBuilder : MonoBehaviour
 
     public void OnCaveDataReceived(SafeMesh safeMesh)
     {
-        Mesh mesh = GetComponent<MeshFilter>().mesh;
-        MeshCollider meshCollider = GetComponent<MeshCollider>();
+
+        GameObject gameObject = WorldBuilder.GetTile(safeMesh.position).loadedObjects[1];
+
+        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
+        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
+        MeshRenderer meshRenderer = gameObject.GetComponent<MeshRenderer>();
         mesh.Clear();
         mesh.vertices = safeMesh.Vertices;
         mesh.triangles = safeMesh.Triangles;
 
         //mesh.uv = GenerateUV.CalculateUVs(safeMesh.Vertices, 1);
 
-        mesh.Optimize();
+        //mesh.Optimize();
         mesh.RecalculateNormals();
 
         //Find out what this does
         meshCollider.sharedMesh = null;
         meshCollider.sharedMesh = mesh;
 
-
+        meshRenderer.enabled = true;
     }
 
-    public SafeMesh GenerateCaveMap(Vector2 offsets, int height)
+    public SafeMesh GenerateCaveMap(Vector3 offsets, int height)
     {
         int size = 11;
         // Gets added to coordinates, is a decimal to make sure it does not end up at an integer
@@ -115,13 +117,13 @@ public class CaveBuilder : MonoBehaviour
                     }
                     else if (y <= 2)
                     {
-                        double tempVal = ridgedMultifractal.GetValue((z + offsets.y + addendum) / scale, (y + addendum) / scale, (x + offsets.x + addendum) / scale);
+                        double tempVal = ridgedMultifractal.GetValue((z + offsets.z + addendum) / scale, (y + addendum) / scale, (x + offsets.x + addendum) / scale);
                         int isCave = tempVal < 0 ? 0 : 1;
                         caveMap[x, y, z] = isCave;
                     }
                     else
                     {
-                        double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, (y + addendum) / scale, (z + offsets.y + addendum) / scale);
+                        double tempVal = ridgedMultifractal.GetValue((x + offsets.x + addendum) / scale, (y + addendum) / scale, (z + offsets.z + addendum) / scale);
                         int isCave = tempVal < 0.35 ? 0 : 1;
                         caveMap[x, y, z] = isCave;
                     }
@@ -132,35 +134,9 @@ public class CaveBuilder : MonoBehaviour
         MarchingCubes marchingCubes = new MarchingCubes();
 
         SafeMesh safeMesh = marchingCubes.BuildMesh(caveMap);
+
+        safeMesh.position = offsets;
         return safeMesh;
-    }
-
-
-
-    public long FindPrimeNumber(int n)
-    {
-        int count = 0;
-        long a = 2;
-        while (count < n)
-        {
-            long b = 2;
-            int prime = 1;// to check if found a prime
-            while (b * b <= a)
-            {
-                if (a % b == 0)
-                {
-                    prime = 0;
-                    break;
-                }
-                b++;
-            }
-            if (prime > 0)
-            {
-                count++;
-            }
-            a++;
-        }
-        return (--a);
     }
 
 

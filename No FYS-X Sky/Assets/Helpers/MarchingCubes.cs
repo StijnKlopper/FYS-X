@@ -87,7 +87,7 @@ public class MarchingCubes {
             return;
         }
 
-        /*for (i = 0; i < edges; i++)
+        for (i = 0; i < edges; i++)
         {
             if ((num1 & 1 << (i & 31)) != 0)
             {
@@ -116,6 +116,7 @@ public class MarchingCubes {
             else
             {
                 break;
-            }*/
+            }
         }
+		}
     }

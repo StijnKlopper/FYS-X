@@ -8,14 +8,14 @@ using System.Collections.Generic;
 
 public class TileBuilder : MonoBehaviour
 {
-    [SerializeField]
+/*    [SerializeField]
     private MeshRenderer tileRenderer;
 
     [SerializeField]
     private MeshFilter meshFilter;
 
     [SerializeField]
-    private MeshCollider meshCollider;
+    private MeshCollider meshCollider;*/
 
     [System.NonSerialized]
     public float[,] heightMap;
@@ -34,6 +34,8 @@ public class TileBuilder : MonoBehaviour
 
     private bool hasOcean;
 
+    //private GameObject currentGameObject;
+
     // Start is called before the first frame update
 
     Queue<MapThreadInfo<MapData>> mapDataThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
@@ -45,9 +47,8 @@ public class TileBuilder : MonoBehaviour
         return heightMap;
     }*/
 
-    public void RequestMapData(Action<MapData> callback)
+    public void RequestMapData(Action<MapData> callback, Vector3 offsets)
     {
-        Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
         ThreadStart threadStart = delegate
         {
             MapDataThread(callback, offsets);
@@ -68,9 +69,8 @@ public class TileBuilder : MonoBehaviour
 
     }
 
-    void MapDataThread(Action<MapData> callback, Vector2 offsets)
+    void MapDataThread(Action<MapData> callback, Vector3 offsets)
     {
-
         MapData mapData = GenerateHeightMap(11, 11, offsets);
         lock (mapDataThreadInfoQueue)
         {
@@ -85,33 +85,35 @@ public class TileBuilder : MonoBehaviour
         public Color[] splatMap2;
         public Color[] splatMap3;
         public Color[] oceanMap;
+        public Vector3 offsets;
 
-        public MapData(float[,] heightMap, Color[] splatMap1, Color[] splatMap2, Color[] splatMap3, Color[] oceanMap)
+        public MapData(float[,] heightMap, Color[] splatMap1, Color[] splatMap2, Color[] splatMap3, Color[] oceanMap, Vector2 offsets)
         {
             this.heightMap = heightMap;
             this.splatMap1 = splatMap1;
             this.splatMap2 = splatMap2;
             this.splatMap3 = splatMap3;
             this.oceanMap = oceanMap;
+            this.offsets = offsets;
         }
     }
 
-    public void GenerateTile()
+    public void GenerateTile(GameObject gameObject)
     {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         hasOcean = false;
-        Vector3[] meshVertices = this.meshFilter.mesh.vertices;
-        int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
-        int tileWidth = tileHeight;
 
-        //RequestMapData
-
-        RequestMapData(OnMapDataReceived);
+        //GameObject
+       
+        
+        RequestMapData(OnMapDataReceived, gameObject.transform.position);
     }
 
     public void OnMapDataReceived(MapData mapData)
     {
-        Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
+        GameObject currentGameObject = WorldBuilder.GetTile(mapData.offsets).loadedObjects[0];
+        
+        Vector2 offsets = new Vector2(currentGameObject.transform.position.x, currentGameObject.transform.position.z);
         splatmapsArray = new Texture2DArray(11, 11, 3, TextureFormat.RGBA32, true);
         oceanSplatmap = new Texture2D(11, 11);
 
@@ -126,18 +128,21 @@ public class TileBuilder : MonoBehaviour
 
         splatmapsArray.wrapMode = TextureWrapMode.Clamp;
         splatmapsArray.Apply();
-
-        this.tileRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
-        UpdateMeshVertices(mapData.heightMap, offsets);
-
-        GameObject ocean = this.transform.GetChild(0).gameObject;
+        
+        currentGameObject.GetComponent<MeshRenderer>().material.SetTexture("_SplatMaps", splatmapsArray);
+        //this.tileRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
+        
+        
+        GameObject ocean = currentGameObject.transform.GetChild(0).gameObject;
         ocean.SetActive(hasOcean);
         ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
-        ocean.transform.position = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
+        ocean.transform.position = new Vector3(offsets.x, 0, offsets.y);
+        UpdateMeshVertices(mapData.heightMap, offsets, currentGameObject);
     }
 
 
-    public MapData GenerateHeightMap(int width, int height, Vector2 offsets)
+
+    public MapData GenerateHeightMap(int width, int height, Vector3 offsets)
     {
         int tileHeight = width;
         int tileWidth = height;
@@ -177,7 +182,7 @@ public class TileBuilder : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 double sampleX = (x + offsets.x) / scale;
-                double sampleY = (y + offsets.y) / scale;
+                double sampleY = (y + offsets.z) / scale;
 
                 float noiseHeight = (float) perlin.GetValue(sampleX, 0, sampleY);
 
@@ -187,7 +192,7 @@ public class TileBuilder : MonoBehaviour
                 noiseHeight = (noiseHeight + 1) / (2f * maxPossibleHeight / 1.75f);
 
                 // Change height based on height curve and heightMultiplier
-                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
+                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.z));
 
                 splatMap1[colorIndex] = biome.biomeType.color;
                 splatMap2[colorIndex] = biome.biomeType.color2;
@@ -201,13 +206,11 @@ public class TileBuilder : MonoBehaviour
 
                 else { oceanMap[colorIndex] = new Color(0, 1, 0); }
 
-                oceanMap[colorIndex] = biome.biomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
+                //oceanMap[colorIndex] = biome.biomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
 
                 //AnimationCurve heightCurve = new AnimationCurve(biome.biomeType.heightCurve.keys);
 
                 noiseHeight = biome.biomeType.heightCurve.Evaluate(noiseHeight) * heightMultiplier;
-
-
 
                 //noiseHeight = UnityEngine.Random.Range(-10.0f, 10.0f);
                 //noiseHeight = 1;
@@ -221,6 +224,7 @@ public class TileBuilder : MonoBehaviour
         mapData.splatMap2 = splatMap2;
         mapData.splatMap3 = splatMap3;
         mapData.oceanMap = oceanMap;
+        mapData.offsets = offsets;
 
         //WorldBuilder.tileDict[new Vector3(-(offsets.x + 5), 0, -(offsets.y + 5))].heightMap = heightMap;
         //this.heightMap = heightMap;
@@ -229,11 +233,16 @@ public class TileBuilder : MonoBehaviour
         return mapData;
     }
 
-    private void UpdateMeshVertices(float[,] heightMap, Vector2 offsets)
+    private void UpdateMeshVertices(float[,] heightMap, Vector2 offsets, GameObject gameObject)
     {
         int height = heightMap.GetLength(0);
         int width = heightMap.GetLength(1);
-        Vector3[] meshVertices = this.meshFilter.mesh.vertices;
+
+        MeshFilter meshFilter = gameObject.GetComponent<MeshFilter>();
+        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
+        MeshRenderer meshRenderer = gameObject.GetComponent<MeshRenderer>();
+
+        Vector3[] meshVertices = meshFilter.mesh.vertices;
 
         int vertexIndex = 0;
 
@@ -249,12 +258,14 @@ public class TileBuilder : MonoBehaviour
             }
         }
 
-        this.meshFilter.mesh.vertices = meshVertices;
-        this.meshFilter.mesh.RecalculateBounds();
-        this.meshFilter.mesh.RecalculateNormals();
-
-        this.meshCollider.sharedMesh = this.meshFilter.mesh;
+        meshFilter.mesh.vertices = meshVertices;
+        meshFilter.mesh.RecalculateBounds();
+        meshFilter.mesh.RecalculateNormals();
+        meshRenderer.enabled = true;
+        meshCollider.sharedMesh = meshFilter.mesh;
     }
+
+
     void Update()
     {
         if (mapDataThreadInfoQueue.Count > 0)

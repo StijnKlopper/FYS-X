@@ -52,7 +52,6 @@
                 float4 splat =  tex2D(_OceanSplatmap, i.uv);
 
                 fixed4 col = tex2D(_MainTex, i.uv) * splat.r;
-                col.a = 0.5;
                 return col;
             }
             ENDCG

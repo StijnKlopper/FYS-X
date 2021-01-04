@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Tile
 {
-    private List<GameObject> loadedObjects;
+    public List<GameObject> loadedObjects;
 
     public float[,] heightMap;
 

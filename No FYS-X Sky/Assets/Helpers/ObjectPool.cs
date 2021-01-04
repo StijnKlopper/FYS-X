@@ -26,22 +26,22 @@ public class ObjectPool : MonoBehaviour
 
     void Start()
     {
-        poolAmount = Mathf.FloorToInt((WorldBuilder.chunkRenderDistance * 4.4f));
+        poolAmount = Mathf.FloorToInt((WorldBuilder.chunkRenderDistance * 8.4f));
         gameObjectDict = new Dictionary<GameObjectType, List<GameObject>>();
 
         for (int i = 0; i < poolAmount; i++ )
         {
-            
-
-
+         
             GameObject terrain = (GameObject)Instantiate(terrainPrefab);
             GameObject cave = (GameObject)Instantiate(cavePrefab);
             GameObject ocean = (GameObject)Instantiate(oceanPrefab);
 
+            terrain.GetComponent<MeshRenderer>().enabled = false;
+            cave.GetComponent<MeshRenderer>().enabled = false;
+
             terrain.transform.SetParent(terrainGenerator.transform);
             terrain.transform.rotation = Quaternion.Euler(0, -180, 0);
             cave.transform.SetParent(terrainGenerator.transform);
-            cave.transform.rotation = Quaternion.Euler(0, -180, 0);
             ocean.transform.SetParent(terrain.transform);
 
             terrain.SetActive(false);
@@ -75,6 +75,7 @@ public class ObjectPool : MonoBehaviour
     }
 
     public void UnloadPooledObject(GameObject gameObject) {
+        gameObject.GetComponent<MeshRenderer>().enabled = false;
         gameObject.SetActive(false);
     }
 }
