@@ -111,9 +111,9 @@ public class TileBuilder : MonoBehaviour
 
     public void OnMapDataReceived(MapData mapData)
     {
-        GameObject currentGameObject = WorldBuilder.GetTile(mapData.offsets).loadedObjects[0];
+        Tile currentTile = WorldBuilder.GetTile(mapData.offsets);
         
-        Vector2 offsets = new Vector2(currentGameObject.transform.position.x, currentGameObject.transform.position.z);
+        Vector2 offsets = new Vector2(currentTile.terrain.transform.position.x, currentTile.terrain.transform.position.z);
         splatmapsArray = new Texture2DArray(11, 11, 3, TextureFormat.RGBA32, true);
         oceanSplatmap = new Texture2D(11, 11);
 
@@ -129,15 +129,15 @@ public class TileBuilder : MonoBehaviour
         splatmapsArray.wrapMode = TextureWrapMode.Clamp;
         splatmapsArray.Apply();
         
-        currentGameObject.GetComponent<MeshRenderer>().material.SetTexture("_SplatMaps", splatmapsArray);
+        currentTile.terrainMeshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
         //this.tileRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
         
         
-        GameObject ocean = currentGameObject.transform.GetChild(0).gameObject;
-        ocean.SetActive(hasOcean);
+        GameObject ocean = currentTile.ocean;
+        ocean.SetActive(true);
         ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
         ocean.transform.position = new Vector3(offsets.x, 0, offsets.y);
-        UpdateMeshVertices(mapData.heightMap, offsets, currentGameObject);
+        UpdateMeshVertices(mapData.heightMap, offsets, currentTile);
     }
 
 
@@ -198,7 +198,7 @@ public class TileBuilder : MonoBehaviour
                 splatMap2[colorIndex] = biome.biomeType.color2;
                 splatMap3[colorIndex] = biome.biomeType.color3;
 
-                if (biome.biomeType is OceanBiomeType)
+                if (true)
                 {
                     oceanMap[colorIndex] = new Color(1, 0, 0);
                     hasOcean = true;
@@ -233,16 +233,12 @@ public class TileBuilder : MonoBehaviour
         return mapData;
     }
 
-    private void UpdateMeshVertices(float[,] heightMap, Vector2 offsets, GameObject gameObject)
+    private void UpdateMeshVertices(float[,] heightMap, Vector2 offsets, Tile currentTile)
     {
         int height = heightMap.GetLength(0);
         int width = heightMap.GetLength(1);
 
-        MeshFilter meshFilter = gameObject.GetComponent<MeshFilter>();
-        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
-        MeshRenderer meshRenderer = gameObject.GetComponent<MeshRenderer>();
-
-        Vector3[] meshVertices = meshFilter.mesh.vertices;
+        Vector3[] meshVertices = currentTile.terrainMeshFilter.mesh.vertices;
 
         int vertexIndex = 0;
 
@@ -258,11 +254,11 @@ public class TileBuilder : MonoBehaviour
             }
         }
 
-        meshFilter.mesh.vertices = meshVertices;
-        meshFilter.mesh.RecalculateBounds();
-        meshFilter.mesh.RecalculateNormals();
-        meshRenderer.enabled = true;
-        meshCollider.sharedMesh = meshFilter.mesh;
+        currentTile.terrainMeshFilter.mesh.vertices = meshVertices;
+        currentTile.terrainMeshFilter.mesh.RecalculateBounds();
+        currentTile.terrainMeshFilter.mesh.RecalculateNormals();
+        currentTile.terrainMeshRenderer.enabled = true;
+        currentTile.terrainMeshCollider.sharedMesh = currentTile.terrainMeshFilter.mesh;
     }
 
 
@@ -278,9 +274,5 @@ public class TileBuilder : MonoBehaviour
         }
     }
 
-    void OnDestroy()
-    {
-        Destroy(oceanTile);
-    }
 
 }

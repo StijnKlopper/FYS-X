@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
-    public List<GameObject> caveObjectPool;
-    public List<GameObject> terrainObjectPool;
-    public List<GameObject> oceanObjectPool;
+    /*    public List<GameObject> caveObjectPool;
+        public List<GameObject> terrainObjectPool;
+        public List<GameObject> oceanObjectPool;*/
+    public List<Tile> tilePool;
 
     public enum GameObjectType
     {
@@ -15,7 +16,8 @@ public class ObjectPool : MonoBehaviour
         Ocean
     }
 
-    private Dictionary<GameObjectType, List<GameObject>> gameObjectDict;
+    //private Dictionary<GameObjectType, List<GameObject>> gameObjectDict;
+    private List<Tile> tileObjectList;
 
     private int poolAmount;
     public GameObject terrainPrefab;
@@ -27,7 +29,8 @@ public class ObjectPool : MonoBehaviour
     void Start()
     {
         poolAmount = Mathf.FloorToInt((WorldBuilder.chunkRenderDistance * 8.4f));
-        gameObjectDict = new Dictionary<GameObjectType, List<GameObject>>();
+        //gameObjectDict = new Dictionary<GameObjectType, List<GameObject>>();
+        tileObjectList = new List<Tile>();
 
         for (int i = 0; i < poolAmount; i++ )
         {
@@ -48,17 +51,21 @@ public class ObjectPool : MonoBehaviour
             cave.SetActive(false);
             ocean.SetActive(false);
 
-            terrainObjectPool.Add(terrain);
+            Tile tile = new Tile(terrain, cave, ocean);
+            tile.active = false;
+            tileObjectList.Add(tile);
+
+/*            terrainObjectPool.Add(terrain);
             caveObjectPool.Add(cave);
-            oceanObjectPool.Add(ocean);
+            oceanObjectPool.Add(ocean);*/
         }
 
-        gameObjectDict.Add(GameObjectType.Terrain, terrainObjectPool);
+/*        gameObjectDict.Add(GameObjectType.Terrain, terrainObjectPool);
         gameObjectDict.Add(GameObjectType.Cave, caveObjectPool);
-        gameObjectDict.Add(GameObjectType.Ocean, oceanObjectPool);
+        gameObjectDict.Add(GameObjectType.Ocean, oceanObjectPool);*/
     }
 
-    public GameObject GetPooledObject(GameObjectType gameObjectType)
+/*    public GameObject GetPooledObject(GameObjectType gameObjectType)
     {
         List<GameObject> objectList = gameObjectDict[gameObjectType];
 
@@ -72,10 +79,29 @@ public class ObjectPool : MonoBehaviour
         }
 
         return null;
+    }*/
+
+    public Tile GetPooledTile()
+    {
+        for (int i = 0; i < tileObjectList.Count; i++)
+        {
+            if (!tileObjectList[i].active)
+            {
+                tileObjectList[i].enableTile();
+                return tileObjectList[i];
+            }
+        }
+        return null;
     }
 
     public void UnloadPooledObject(GameObject gameObject) {
         gameObject.GetComponent<MeshRenderer>().enabled = false;
         gameObject.SetActive(false);
+    }
+
+    public void UnloadPooledTile(Tile tile)
+    {
+        //gameObject.GetComponent<MeshRenderer>().enabled = false;
+        tile.disableTile();
     }
 }

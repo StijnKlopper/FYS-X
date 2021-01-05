@@ -81,36 +81,18 @@ class WorldBuilder
                 Vector3 newChunkPosition = new Vector3(i, 0, j);
                 if (!tileDict.ContainsKey(newChunkPosition))
                 {
-                    //TODO TILE veranderen
-                    Tile tile = new Tile();
-                    GameObject terrain = objectPool.GetPooledObject(ObjectPool.GameObjectType.Terrain);
-                    GameObject cave = objectPool.GetPooledObject(ObjectPool.GameObjectType.Cave);
+                    Tile tile = objectPool.GetPooledTile();
 
                     Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, 0, newChunkPosition.z + 5);
                     Vector3 cavePosition = new Vector3(newChunkPosition.x, -30, newChunkPosition.z + 5);
 
-                    terrain.transform.position = terrainPosition;
-                    cave.transform.position = cavePosition;
-                    //errain.SetActive(true);
+                    tile.terrain.transform.position = terrainPosition;
+                    tile.cave.transform.position = cavePosition;
 
-                    
-                    tile.AddObject(terrain);
-                    tile.AddObject(cave);
                     tileDict.Add(newChunkPosition, tile);
-                    //terrain.GetComponent<TileBuilder>().GenerateTile();
 
-                    tileBuilder.GenerateTile(terrain);
-
-                    //caveBuilder.UpdateCaveMesh();
-
-                    //float[,] heightmap =
-                    //cave.GetComponent<CaveBuilder>().UpdateCaveMesh();
-
-                    caveBuilder.UpdateCaveMesh(cave);
-
-                    //cave.GetComponent<CaveBuilder>().RequestCaveData(cave.GetComponent<CaveBuilder>().OnCaveDataReceived);
-
-                    //RequestCaveData(OnCaveDataReceived);
+                    tileBuilder.GenerateTile(tile.terrain);
+                    caveBuilder.UpdateCaveMesh(tile.cave);
                 }
             }
         }
@@ -128,7 +110,8 @@ class WorldBuilder
         {
             if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
             {
-                tile.Value.DestroyObjects(objectPool);
+                //tile.Value.DestroyObjects(objectPool);
+                tile.Value.disableTile();
                 tileDict.Remove(tile.Key);
             }
         }

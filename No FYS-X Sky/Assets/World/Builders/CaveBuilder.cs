@@ -1,11 +1,7 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using LibNoise.Generator;
-
-using CielaSpike;
 using System;
 using System.Threading;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 
 public class CaveBuilder : MonoBehaviour
@@ -66,11 +62,12 @@ public class CaveBuilder : MonoBehaviour
     public void OnCaveDataReceived(SafeMesh safeMesh)
     {
 
-        GameObject gameObject = WorldBuilder.GetTile(safeMesh.position).loadedObjects[1];
+        Tile currentTile = WorldBuilder.GetTile(safeMesh.position);
 
-        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
-        MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
-        MeshRenderer meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        Mesh mesh = currentTile.caveMeshFilter.mesh;
+        MeshCollider meshCollider = currentTile.caveMeshCollider;
+        MeshRenderer meshRenderer = currentTile.caveMeshRenderer;
+
         mesh.Clear();
         mesh.vertices = safeMesh.Vertices;
         mesh.triangles = safeMesh.Triangles;
@@ -78,13 +75,13 @@ public class CaveBuilder : MonoBehaviour
         //mesh.uv = GenerateUV.CalculateUVs(safeMesh.Vertices, 1);
 
         //mesh.Optimize();
-        mesh.RecalculateNormals();
+        //mesh.RecalculateNormals();
 
         //Find out what this does
-        meshCollider.sharedMesh = null;
-        meshCollider.sharedMesh = mesh;
+        /*currentTile.caveMeshCollider.sharedMesh = null;
+        currentTile.caveMeshCollider.sharedMesh = mesh;*/
 
-        meshRenderer.enabled = true;
+        //currentTile.caveMeshRenderer.enabled = true;
     }
 
     public SafeMesh GenerateCaveMap(Vector3 offsets, int height)
