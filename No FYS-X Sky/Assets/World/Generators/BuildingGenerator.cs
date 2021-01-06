@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BuildingGenerator : MonoBehaviour
 {
-    private int Seed;
+    private int seed;
 
     protected float roomWidthHeight;
     protected float roomWidthHeightRadius;
@@ -57,12 +57,12 @@ public class BuildingGenerator : MonoBehaviour
     {
         // Set seed
         TerrainGenerator terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        Seed = terrainGenerator.Seed;
+        seed = terrainGenerator.Seed;
 
         // Set parent object for buildings to be placed in
         parentObject = GameObject.Find("Buildings");
 
-        random = new System.Random(Seed);
+        random = new System.Random(seed);
         roomWidthHeight = 4f;
         roomWidthHeightRadius = roomWidthHeight / 2;
     }

@@ -1240,9 +1240,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bdc6c5320e3cba4ba750a51af5f8b16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: 12345
   maxDepth: 3
-  maxFloors: 7
+  maxFloors: 6
   floors:
   - {fileID: 100000, guid: e3efab368209d564ba9ee6a80d1ca5f0, type: 3}
   walls:
