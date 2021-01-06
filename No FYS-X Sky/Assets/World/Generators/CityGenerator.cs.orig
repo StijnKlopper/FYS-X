@@ -9,9 +9,15 @@ public class CityGenerator : MonoBehaviour, Generator
     private int mapHeight;
     private Vector2 offsets;
 
+<<<<<<< HEAD
+    int seed;
+
+    TerrainGenerator terrainGenerator;
+    BuildingGenerator buildingGenerator;
+=======
     private TerrainGenerator terrainGenerator;
-    private BuildingGenerator buildingGenerator;
-    
+>>>>>>> 54d6bef96f1d2ea91417af750180a6820e2b4350
+
     [SerializeField]
     public List<GameObject> houses;
 
@@ -19,12 +25,17 @@ public class CityGenerator : MonoBehaviour, Generator
 
     void Start()
     {
-        this.mapWidth = WorldBuilder.CHUNK_SIZE + 1;
-        this.mapHeight = WorldBuilder.CHUNK_SIZE + 1;
+        this.mapWidth = WorldBuilder.chunkSize + 1;
+        this.mapHeight = WorldBuilder.chunkSize + 1;
 
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+<<<<<<< HEAD
+        seed = terrainGenerator.seed;
+
         buildingGenerator = GameObject.Find("Buildings").GetComponent<BuildingGenerator>();
 
+=======
+>>>>>>> 54d6bef96f1d2ea91417af750180a6820e2b4350
         parentObject = GameObject.Find("CityPoints");
     }
 
@@ -44,7 +55,7 @@ public class CityGenerator : MonoBehaviour, Generator
     // Validate house position to prevent overlapping
     private bool ValidHousePosition(Vector3 position, Bounds bounds)
     {
-        float buildingMargin = 2f;
+        float buildingMargin = 1.5f;
         float radius = 1;
         if (bounds.size.x > bounds.size.z) radius += bounds.size.x + buildingMargin;
         else radius += bounds.size.z + buildingMargin;
@@ -53,7 +64,7 @@ public class CityGenerator : MonoBehaviour, Generator
         foreach (var hitCollider in hitColliders)
         {
             // If gameobject is a building 
-            if (hitCollider.gameObject && hitCollider.gameObject.transform.root.name == "CityPoints")
+            if (hitCollider.gameObject.transform.root.name == ("CityPoints"))
             {
                 return false;
             }
@@ -70,7 +81,8 @@ public class CityGenerator : MonoBehaviour, Generator
         {
             if (hitInfo.point.y > -1)
             {
-                return hitInfo.point;
+                // Return with small extra correction
+                return new Vector3(hitInfo.point.x, hitInfo.point.y - 0.2f, hitInfo.point.z);
             }
         }
 
@@ -83,24 +95,29 @@ public class CityGenerator : MonoBehaviour, Generator
         int aboveGroundPlaceholderY = 10;
         int checkForEveryCoordinates = 50;
         float minNoiseHeight = 0.05f;
+        float scale = 500.6667f;
         float[,] noiseMap = GenerateCityNoiseMap(this.mapWidth, this.mapHeight, this.offsets);
 
         for (int y = 0; y < mapHeight; y += checkForEveryCoordinates)
         {
             for (int x = 0; x < mapWidth; x += checkForEveryCoordinates)
             {
+                Vector3 position = new Vector3(x + this.offsets.x, aboveGroundPlaceholderY, y + this.offsets.y);
+
                 // If the current location is within the noisemap position
                 if (noiseMap[x, y] <= minNoiseHeight)
                 {
-                    Vector3 position = new Vector3(x + this.offsets.x, aboveGroundPlaceholderY, y + this.offsets.y);
-
                     // Get random building index from thhe list of buildings 
+<<<<<<< HEAD
                     GameObject building = buildingGenerator.Generate(position);
-                    building.SetActive(false);
+=======
+                    int randomHouseIndex = (int)Math.Round(((terrainGenerator.Perlin.GetValue(position.x + terrainGenerator.RandomNumbers[y] / scale, 0, position.y + terrainGenerator.RandomNumbers[y] / scale) + 1) / 2f) * houses.Count);
+>>>>>>> 54d6bef96f1d2ea91417af750180a6820e2b4350
 
                     // Calculate bounds and calculate the houseposition for the center of the house, also get the correct Y value for the building
                     Bounds houseBounds = CalculateBounds(building);
-                    Vector3 housePosition = PositionCorrection(position);
+                    Vector3 housePosition = PositionCorrection(new Vector3(position.x - houseBounds.center.x, 0, position.z - houseBounds.center.z));
+                    housePosition = new Vector3(housePosition.x, building.transform.position.y + housePosition.y, housePosition.z);
 
                     // Get tile and check if it exists before making a house
                     Tile tile = WorldBuilder.GetTile(position);
@@ -109,13 +126,19 @@ public class CityGenerator : MonoBehaviour, Generator
                     if (tile != null && ValidHousePosition(housePosition, houseBounds))
                     {
                         building.transform.position = housePosition;
-                        building.SetActive(true);
 
                         // Turn house with consistent random numbers
-                        int xRandomIndex = terrainGenerator.RandomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.x) % terrainGenerator.RandomNumbers.Length];
-                        int zRandomIndex = terrainGenerator.RandomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.y) % (terrainGenerator.RandomNumbers.Length - 1)];
+<<<<<<< HEAD
+                        int xRandomIndex = terrainGenerator.randomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.x) % terrainGenerator.randomNumbers.Length];
+                        int zRandomIndex = terrainGenerator.randomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.y) % (terrainGenerator.randomNumbers.Length - 1)];
                         Vector3 lookAtPosition = new Vector3(xRandomIndex, building.transform.position.y, zRandomIndex);
                         building.transform.LookAt(lookAtPosition);
+=======
+                        int xRandomIndex = terrainGenerator.RandomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.x) % terrainGenerator.RandomNumbers.Length];
+                        int zRandomIndex = terrainGenerator.RandomNumbers[(x + 1) * (y + 1) * Math.Abs((int)this.offsets.y) % (terrainGenerator.RandomNumbers.Length - 1)];
+                        Vector3 lookAtPosition = new Vector3(xRandomIndex, house.transform.position.y, zRandomIndex);
+                        house.transform.LookAt(lookAtPosition);
+>>>>>>> 54d6bef96f1d2ea91417af750180a6820e2b4350
 
                         // Add house to tile 
                         tile.AddObject(building);

@@ -1070,8 +1070,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 5520266623367027301, guid: 0c31a200cbf2256439ca13b894b6f98b, type: 3}
   oceanPrefab: {fileID: 8703873624021677109, guid: b4c854845c276c3409741edef1149a9d, type: 3}
-  Seed: 69420
   textureData: {fileID: 11400000, guid: 9850fb257560b7a45a8dc1285bf4881a, type: 2}
+  Seed: 0
 --- !u!4 &1284178398
 Transform:
   m_ObjectHideFlags: 0
@@ -1206,6 +1206,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1564121594}
+  - component: {fileID: 1564121595}
   m_Layer: 0
   m_Name: Buildings
   m_TagString: Untagged
@@ -1221,12 +1222,40 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1564121593}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 827795474}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1564121595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1564121593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bdc6c5320e3cba4ba750a51af5f8b16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDepth: 3
+  maxFloors: 6
+  floors:
+  - {fileID: 100000, guid: e3efab368209d564ba9ee6a80d1ca5f0, type: 3}
+  walls:
+  - {fileID: 184102, guid: e39cc881e3e43214e96f2752e5a6e941, type: 3}
+  - {fileID: 186744, guid: f0d6d77c3d9975e45bf172d8c6236409, type: 3}
+  - {fileID: 115622, guid: ef3deb8c84c9dbe45a3253a6075aed43, type: 3}
+  - {fileID: 126550, guid: 25db32eb803383f4f99a1a2610afd65e, type: 3}
+  - {fileID: 100860, guid: faa5c0de257092c4eabb33ab09273eba, type: 3}
+  doors:
+  - {fileID: 107872, guid: 8f2c2d4fafa447449b7e18e9d34f5aab, type: 3}
+  - {fileID: 140128, guid: 7436795bbdef1b445a154106f4f02348, type: 3}
+  - {fileID: 107872, guid: 8f2c2d4fafa447449b7e18e9d34f5aab, type: 3}
+  roofs:
+  - {fileID: 174710, guid: 2fe5079bdaba20d49ab67c1e16f4a934, type: 3}
 --- !u!1 &1716791247 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100326, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}
