@@ -1,14 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
 
-    public void PlayGame ()
+    public void PlayGame()
     {
         LoadingScreen loadingScreen = GameObject.Find("Loading").GetComponent<LoadingScreen>();
         loadingScreen.LoadGame();
@@ -17,7 +12,7 @@ public class MainMenu : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
-        EditorApplication.isPlaying = false;
+        //EditorApplication.isPlaying = false;
     }
 
 }

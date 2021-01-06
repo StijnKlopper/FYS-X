@@ -1,9 +1,4 @@
-﻿using Assets.World;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UIElements;
+﻿using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
@@ -13,18 +8,20 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
+        QualitySettings.vSyncCount = 0;
         worldBuilder = new WorldBuilder();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         //Debug.Log("PLAYERPOSITION : " + player.transform.position + "This is X: " + Mathf.FloorToInt(player.transform.position.x / 10) + " This is Z : " + Mathf.FloorToInt(player.transform.position.z / 10));
         Vector3 position = player.transform.position;
-        worldBuilder.LoadRegions(position);
-        worldBuilder.LoadTiles(position);
         worldBuilder.UnloadTiles(position);
         worldBuilder.UnloadRegions(position);
+        worldBuilder.UnloadHouses();
+        worldBuilder.LoadRegions(position);
+        worldBuilder.LoadTiles(position);
 
     }
 

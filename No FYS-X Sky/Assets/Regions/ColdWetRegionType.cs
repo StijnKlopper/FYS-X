@@ -1,16 +1,13 @@
-﻿using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class ColdWetRegionType : RegionType
 {
 
     public ColdWetRegionType()
     {
-        this.availableBiomes = new List<BiomeType>();
-        this.availableBiomes.Add(new MountainBiomeType());
-        this.availableBiomes.Add(new SnowBiomeType());
-        this.availableBiomes.Add(new TaigaBiomeType());
+        this.AvailableBiomes = new List<BiomeType>();
+        this.AvailableBiomes.Add(new MountainBiomeType());
+        this.AvailableBiomes.Add(new SnowBiomeType());
+        this.AvailableBiomes.Add(new TaigaBiomeType());
     }
 }

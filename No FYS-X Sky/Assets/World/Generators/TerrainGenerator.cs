@@ -1,8 +1,6 @@
 ﻿using Assets.World.Generator;
-using JetBrains.Annotations;
-using System.Collections;
+using LibNoise.Generator;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour, Generator
@@ -15,56 +13,33 @@ public class TerrainGenerator : MonoBehaviour, Generator
     private GameObject oceanPrefab;
 
     [SerializeField]
-    private GameObject treePrefab;
+    private TextureData textureData;
 
-    private GameObject temp;
-
-    private int tileOffset = 5;
-
-    public int seed;
-
-    public TextureData textureData;
+    public int Seed;
 
     [System.NonSerialized]
-    public int[] randomNumbers;
+    public int[] RandomNumbers;
 
     [System.NonSerialized]
-    public Dictionary<Vector3, Region> regionDict = new Dictionary<Vector3, Region>();
+    public static Dictionary<Vector3, Region> RegionDict = new Dictionary<Vector3, Region>();
 
+    [System.NonSerialized]
+    public Perlin Perlin;
 
-    // Start is called before the first frame update
     void Start()
     {
+        System.Random random = new System.Random(Seed);
+        this.RandomNumbers = new int[20];
 
-        temp = new GameObject();
+        this.Perlin = new Perlin();
 
-        System.Random random = new System.Random(seed);
-        this.randomNumbers = new int[20];
-
-        for (int i = 0; i < this.randomNumbers.Length; i++)
+        for (int i = 0; i < this.RandomNumbers.Length; i++)
         {
-            this.randomNumbers[i] = random.Next(10000, 100000);
+            this.RandomNumbers[i] = random.Next(10000, 100000);
         }
 
         //set shared texture array for all tiles to use to preserve loading and unloading too many textures
         textureData.ApplyToMaterial(tilePrefab.GetComponent<Renderer>().sharedMaterial);
-        GameObject tree = Instantiate(treePrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-    }
-
-    public GameObject GenerateTile(Vector3 position)
-    {
-        Vector3 tilePosition = new Vector3(position.x + tileOffset, this.gameObject.transform.position.y, position.z + tileOffset);
-        GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
-        
-
-        return tile;
-    }
-
-    public GameObject GenerateOcean(Vector3 position) {
-        Vector3 tilePosition = new Vector3(position.x, this.gameObject.transform.position.y, position.z);
-        GameObject oceanTile = Instantiate(oceanPrefab, tilePosition, Quaternion.identity) as GameObject;
-        oceanTile.transform.SetParent(temp.transform);
-        return oceanTile;
     }
 
     public Biome GetBiomeByCoordinates(Vector2 coordinates)
@@ -73,23 +48,23 @@ public class TerrainGenerator : MonoBehaviour, Generator
         float scale = 0.17777f;
         float x = coordinates.x * scale;
         float z = coordinates.y * scale;
-        x += Mathf.PerlinNoise(x, z) * 2 - 1;
-        z += Mathf.PerlinNoise(x, z) * 2 - 1;
+        x += (float)Perlin.GetValue(x, 0, z);
+        z += (float)Perlin.GetValue(x, 0, z);
 
         Vector2 newCoordinates = new Vector2(x / scale, z / scale);
         Region region = GetRegionByCoordinates(newCoordinates);
         return region.GetBiomeByCoordinates(newCoordinates);
     }
 
-    public Region GetRegionByCoordinates(Vector2 coordinates)
+    public static Region GetRegionByCoordinates(Vector2 coordinates)
     {
         float distance = 10000f;
         Region nearestRegion = new Region();
 
         // Find distance of coordinates to the seed (middle) of the region
-        foreach (KeyValuePair<Vector3, Region> region in regionDict)
+        foreach (KeyValuePair<Vector3, Region> region in RegionDict)
         {
-            float distanceToSeed = Vector2.Distance(region.Value.seed, coordinates);
+            float distanceToSeed = Vector2.Distance(region.Value.Seed, coordinates);
             if (distanceToSeed < distance)
             {
                 nearestRegion = region.Value;

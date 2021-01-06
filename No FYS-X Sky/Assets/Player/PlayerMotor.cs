@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMotor : MonoBehaviour
@@ -12,10 +10,8 @@ public class PlayerMotor : MonoBehaviour
     private Vector3 rotation = Vector3.zero;
     private Vector3 CameraRotation = Vector3.zero;
 
-
-
     private Rigidbody rb;
-    // Start is called before the first frame update
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -26,7 +22,7 @@ public class PlayerMotor : MonoBehaviour
     public void Move(Vector3 _Velocity)
     {
         velocity = _Velocity;
-        
+
     }
 
     public void Rotate(Vector3 _Rotate)

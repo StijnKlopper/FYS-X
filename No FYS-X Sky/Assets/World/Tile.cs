@@ -1,28 +1,35 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Tile
 {
-    private List<GameObject> loadedObjects;
+    public List<GameObject> LoadedObjects;
 
-    public float[,] heightMap;
+    public float[,] HeightMap;
+
+    public int LevelOfDetail;
 
     public Tile()
     {
-        this.loadedObjects = new List<GameObject>();
+        this.LoadedObjects = new List<GameObject>();
     }
 
     public void AddObject(GameObject obj)
     {
-        this.loadedObjects.Add(obj);
+        this.LoadedObjects.Add(obj);
     }
 
-    public void DestroyObjects()
+    public void DestroyObjects(ObjectPool objectPool)
     {
-        foreach (GameObject obj in loadedObjects)
+        foreach (GameObject obj in LoadedObjects)
         {
-            UnityEngine.MonoBehaviour.Destroy(obj);
+            objectPool.UnloadPooledObject(obj);
         }
+    }
+
+    public void RegenerateMesh()
+    {
+        TileBuilder tileBuilder = this.LoadedObjects[0].GetComponent<TileBuilder>();
+        tileBuilder.SetMesh(tileBuilder.GenerateMesh(LevelOfDetail, HeightMap).CreateMesh());
     }
 }
