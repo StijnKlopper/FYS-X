@@ -9,7 +9,7 @@ class WorldBuilder
     public const int CHUNK_RENDER_DISTANCE = 100;
 
     // Must be factors of CHUNK_SIZE and 4 long
-    public static int[] levelsOfDetail = new int[] { 1, 2, 5, 10 };
+    public static int[] levelsOfDetail = new int[] { 1, 1, 2, 5 };
 
     private int regionRenderDistance;
 
