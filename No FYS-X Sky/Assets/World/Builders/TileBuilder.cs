@@ -6,13 +6,12 @@ using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
 {
-
     private TerrainGenerator terrainGenerator;
     private CityGenerator cityGenerator;
     private Texture2DArray splatmapsArray;
-    private Texture2D oceanSplatmap;
     private CaveBuilder caveBuilder;
     private ConcurrentQueue<MapThreadInfo<TileData>> terrainDataThreadInfoQueue;
+    public const int TILE_DIMENSION = 11;
 
     public void Start()
     {
@@ -26,7 +25,6 @@ public class TileBuilder : MonoBehaviour
     {
         RequestTileData(OnTileDataReceived, position);
     }
-
 
     //Start a thread to create TileData and perform a callback to the onTileDataReceived method
     private void RequestTileData(Action<TileData> callback, Vector3 offsets)
@@ -131,7 +129,6 @@ public class TileBuilder : MonoBehaviour
             for (int x = 0; x < size; x += meshSimplificationIncrement)
             {
                 float heightValue = isOcean ? 0f : heightMap[x, y];
-
                 meshData.Vertices[vertexIndex] = new Vector3(topLeft - x, heightValue, topLeft - y);
                 meshData.UVs[vertexIndex] = new Vector2(x / (float)size, y / (float)size);
 
@@ -140,7 +137,6 @@ public class TileBuilder : MonoBehaviour
                     meshData.AddTriangle(vertexIndex, vertexIndex + verticesPerLine + 1, vertexIndex + verticesPerLine);
                     meshData.AddTriangle(vertexIndex + verticesPerLine + 1, vertexIndex, vertexIndex + 1);
                 }
-
                 vertexIndex++;
             }
         }
@@ -161,17 +157,12 @@ public class TileBuilder : MonoBehaviour
             currentTile.HeightMap = tileData.heightMap;
             caveBuilder.Instantiate(tileData.offsets);
 
-            splatmapsArray = new Texture2DArray(11, 11, 3, TextureFormat.RGBA32, true);
-            oceanSplatmap = new Texture2D(11, 11);
+            splatmapsArray = new Texture2DArray(TILE_DIMENSION, TILE_DIMENSION, 3, TextureFormat.RGBA32, true);
             int levelOfDetail = WorldBuilder.GetTile(tileData.offsets).LevelOfDetail;
-
 
             splatmapsArray.SetPixels(tileData.splatMap1, 0);
             splatmapsArray.SetPixels(tileData.splatMap2, 1);
             splatmapsArray.SetPixels(tileData.splatMap3, 2);
-
-            oceanSplatmap.wrapMode = TextureWrapMode.Clamp;
-            oceanSplatmap.Apply();
 
             splatmapsArray.wrapMode = TextureWrapMode.Clamp;
             splatmapsArray.Apply();
@@ -197,7 +188,7 @@ public class TileBuilder : MonoBehaviour
 
     private void TileDataThread(Action<TileData> callback, Vector3 offsets)
     {
-        TileData tileData = GenerateHeightMap(11, 11, offsets);
+        TileData tileData = GenerateHeightMap(TILE_DIMENSION, TILE_DIMENSION, offsets);
         lock (terrainDataThreadInfoQueue)
         {
             terrainDataThreadInfoQueue.Enqueue(new MapThreadInfo<TileData>(callback, tileData));

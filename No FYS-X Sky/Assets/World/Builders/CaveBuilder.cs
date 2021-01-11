@@ -21,7 +21,7 @@ public class CaveBuilder : MonoBehaviour
         RequestCaveData(OnCaveDataReceived, position);
     }
 
-    //Use Threadpool
+    //Start a thread to create CaveData and perform a callback to the onCaveDataReceived method
     private void RequestCaveData(Action<SafeMesh> callback, Vector3 position)
     {
         ThreadPool.QueueUserWorkItem(delegate
@@ -33,7 +33,6 @@ public class CaveBuilder : MonoBehaviour
     private void CaveDataThread(Action<SafeMesh> callback, Vector3 offsets)
     {
         SafeMesh safeMesh = GenerateCaveMap(offsets);
-
         caveDataThreadInfoQueue.Enqueue(new CaveThreadInfo<SafeMesh>(callback, safeMesh));
     }
 
@@ -61,7 +60,6 @@ public class CaveBuilder : MonoBehaviour
 
     private SafeMesh GenerateCaveMap(Vector3 offsets)
     {
-
         int size = WorldBuilder.CHUNK_SIZE + 1;
         Tile currentTile = WorldBuilder.GetTile(offsets);
 
@@ -120,7 +118,6 @@ public class CaveBuilder : MonoBehaviour
             this.callback = callback;
             this.parameter = parameter;
         }
-
     }
 
     void Update()
