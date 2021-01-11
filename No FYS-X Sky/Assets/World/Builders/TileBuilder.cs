@@ -20,6 +20,8 @@ public class TileBuilder : MonoBehaviour
 
     private TerrainGenerator terrainGenerator;
 
+    private DecorationGenerator decorationGenerator;
+
     private CityGenerator cityGenerator;
 
 
@@ -35,6 +37,7 @@ public class TileBuilder : MonoBehaviour
     {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
+        decorationGenerator = GameObject.Find("Level").GetComponent<DecorationGenerator>();
 
         hasOcean = false;
         StartCoroutine("GenerateTile");
@@ -78,6 +81,8 @@ public class TileBuilder : MonoBehaviour
 
         // Spawning city points
         cityGenerator.Generate(tileWidth, tileHeight, cityOffsets);
+
+        //decorationGenerator.Generate(tileWidth, tileHeight, offsets);
 
         yield return null;
     }

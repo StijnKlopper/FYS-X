@@ -13,6 +13,8 @@ class WorldBuilder
 
     private int regionRenderDistance;
 
+    private DecorationGenerator decorationGenerator;
+
     private static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
 
     private ObjectPool objectPool;
@@ -23,6 +25,7 @@ class WorldBuilder
         this.regionRenderDistance = Mathf.CeilToInt(CHUNK_RENDER_DISTANCE / Region.REGION_SIZE) * Region.REGION_SIZE + Region.REGION_SIZE;
         this.objectPool = GameObject.Find("Level").GetComponent<ObjectPool>();
         this.cityPoints = GameObject.Find("CityPoints/Buildings");
+        decorationGenerator = GameObject.Find("Level").GetComponent<DecorationGenerator>();
     }
 
     public void LoadRegions(Vector3 position)
@@ -104,6 +107,8 @@ class WorldBuilder
                     float[,] heightMap = terrain.GetComponent<TileBuilder>().Instantiate();
                     tile.HeightMap = heightMap;
                     cave.GetComponent<CaveBuilder>().Instantiate(heightMap);
+                    decorationGenerator.Generate(tile.HeightMap, newChunkPosition);
+
                 }
             }
         }
