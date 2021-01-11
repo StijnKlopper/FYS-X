@@ -93,8 +93,8 @@ class WorldBuilder
                     Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, 0, newChunkPosition.z + 5);
                     Vector3 cavePosition = new Vector3(newChunkPosition.x + 5, -30, newChunkPosition.z + 5);
 
-                    tile.terrain.gameObject.transform.position = terrainPosition;
-                    tile.cave.gameObject.transform.position = cavePosition;
+                    tile.Terrain.GameObject.transform.position = terrainPosition;
+                    tile.Cave.GameObject.transform.position = cavePosition;
 
                     tileDict.Add(newChunkPosition, tile);
                     tile.LevelOfDetail = levelOfDetail;

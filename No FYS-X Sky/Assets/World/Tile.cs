@@ -3,54 +3,54 @@ using UnityEngine;
 
 public class Tile
 {
-    public TileInfo terrain;
-    public TileInfo cave;
-    public TileInfo ocean;
-    public List<GameObject> buildingObjects;
-    public bool active;
+    public TileInfo Terrain;
+    public TileInfo Cave;
+    public TileInfo Ocean;
+    public List<GameObject> BuildingObjects;
+    public bool Active;
     public int LevelOfDetail;
     public float[,] HeightMap;
 
     public class TileInfo 
     {
-        public GameObject gameObject;
-        public MeshRenderer meshRenderer;
-        public MeshFilter meshFilter;
-        public MeshCollider meshCollider;
+        public GameObject GameObject;
+        public MeshRenderer MeshRenderer;
+        public MeshFilter MeshFilter;
+        public MeshCollider MeshCollider;
 
         public TileInfo(GameObject gameObject) 
         {
-            this.gameObject = gameObject;
-            this.meshRenderer = gameObject.GetComponent<MeshRenderer>();
-            this.meshFilter = gameObject.GetComponent<MeshFilter>();
-            this.meshCollider = gameObject.GetComponent<MeshCollider>();
+            this.GameObject = gameObject;
+            this.MeshRenderer = gameObject.GetComponent<MeshRenderer>();
+            this.MeshFilter = gameObject.GetComponent<MeshFilter>();
+            this.MeshCollider = gameObject.GetComponent<MeshCollider>();
         }
     }
 
     public Tile(GameObject terrain, GameObject cave, GameObject ocean)
     {
-        buildingObjects = new List<GameObject>();
+        BuildingObjects = new List<GameObject>();
 
-        this.terrain = new TileInfo(terrain);
-        this.cave = new TileInfo(cave);
-        this.ocean = new TileInfo(ocean);
+        this.Terrain = new TileInfo(terrain);
+        this.Cave = new TileInfo(cave);
+        this.Ocean = new TileInfo(ocean);
 
-        active = true;
+        Active = true;
     }
 
     public void AddBuilding(GameObject building) 
     {
-        buildingObjects.Add(building);
+        BuildingObjects.Add(building);
     }
 
     public void disableTile()
     {
-        this.terrain.gameObject.SetActive(false);
-        this.cave.gameObject.SetActive(false);
-        this.ocean.gameObject.SetActive(false);
-        this.active = false;
+        this.Terrain.GameObject.SetActive(false);
+        this.Cave.GameObject.SetActive(false);
+        this.Ocean.GameObject.SetActive(false);
+        this.Active = false;
 
-        foreach (GameObject building in buildingObjects) 
+        foreach (GameObject building in BuildingObjects) 
         {
             if (building != null) 
             {
@@ -61,7 +61,7 @@ public class Tile
 
     public void enableTile() 
     {
-        this.active = true;
+        this.Active = true;
     }
 
     public void RegenerateMesh()

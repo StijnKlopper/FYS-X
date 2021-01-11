@@ -3,18 +3,19 @@ using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
-    public List<Tile> tilePool;
-    public GameObject terrainPrefab;
-    public GameObject cavePrefab;
-    public GameObject oceanPrefab;
-    public TerrainGenerator terrainGenerator;
+    public List<Tile> TilePool;
+    public GameObject TerrainPrefab;
+    public GameObject CavePrefab;
+    public GameObject OceanPrefab;
+    [System.NonSerialized]
+    public TerrainGenerator TerrainGenerator;
 
     private List<Tile> TileObjectList;
     private int PoolAmount;
 
     void Start()
     {
-        terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        TerrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         PoolAmount = (((WorldBuilder.CHUNK_RENDER_DISTANCE * WorldBuilder.CHUNK_RENDER_DISTANCE) / (WorldBuilder.CHUNK_SIZE * WorldBuilder.CHUNK_SIZE))) * 4;
         PoolAmount = PoolAmount + Mathf.CeilToInt(0.1f * PoolAmount);
 
@@ -23,13 +24,13 @@ public class ObjectPool : MonoBehaviour
         for (int i = 0; i < PoolAmount; i++)
         {
 
-            GameObject terrain = (GameObject)Instantiate(terrainPrefab);
-            GameObject cave = (GameObject)Instantiate(cavePrefab);
-            GameObject ocean = (GameObject)Instantiate(oceanPrefab);
+            GameObject terrain = (GameObject)Instantiate(TerrainPrefab);
+            GameObject cave = (GameObject)Instantiate(CavePrefab);
+            GameObject ocean = (GameObject)Instantiate(OceanPrefab);
 
-            terrain.transform.SetParent(terrainGenerator.transform);
+            terrain.transform.SetParent(TerrainGenerator.transform);
             terrain.transform.rotation = Quaternion.Euler(0, -180, 0);
-            cave.transform.SetParent(terrainGenerator.transform);
+            cave.transform.SetParent(TerrainGenerator.transform);
             ocean.transform.SetParent(terrain.transform);
 
             terrain.SetActive(false);
@@ -37,7 +38,7 @@ public class ObjectPool : MonoBehaviour
             ocean.SetActive(false);
 
             Tile tile = new Tile(terrain, cave, ocean);
-            tile.active = false;
+            tile.Active = false;
             TileObjectList.Add(tile);
         }
     }
@@ -46,7 +47,7 @@ public class ObjectPool : MonoBehaviour
     {
         for (int i = 0; i < TileObjectList.Count; i++)
         {
-            if (!TileObjectList[i].active)
+            if (!TileObjectList[i].Active)
             {
                 TileObjectList[i].enableTile();
                 return TileObjectList[i];

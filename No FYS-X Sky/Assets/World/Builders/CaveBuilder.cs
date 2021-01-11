@@ -8,7 +8,7 @@ public class CaveBuilder : MonoBehaviour
 {
     private RidgedMultifractal ridgedMultifractal;
     private ConcurrentQueue<CaveThreadInfo<SafeMesh>> caveDataThreadInfoQueue;
-    private const int CAVE_DEPTH = 30;
+    public const int CAVE_DEPTH = 30;
 
     public void Start()
     {
@@ -46,16 +46,16 @@ public class CaveBuilder : MonoBehaviour
             Mesh mesh = new Mesh();
             mesh.vertices = safeMesh.Vertices;
             mesh.triangles = safeMesh.Triangles;
-            currentTile.cave.meshFilter.mesh = mesh;
+            currentTile.Cave.MeshFilter.mesh = mesh;
             mesh.uv = GenerateUV.CalculateUVs(safeMesh.Vertices, 1);
 
             //mesh.Optimize();
             mesh.RecalculateNormals();
 
             //Find out what this does
-            currentTile.cave.meshCollider.sharedMesh = null;
-            currentTile.cave.meshCollider.sharedMesh = mesh;
-            currentTile.cave.gameObject.SetActive(true);
+            currentTile.Cave.MeshCollider.sharedMesh = null;
+            currentTile.Cave.MeshCollider.sharedMesh = mesh;
+            currentTile.Cave.GameObject.SetActive(true);
         }
     }
 

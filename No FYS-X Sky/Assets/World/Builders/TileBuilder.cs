@@ -176,14 +176,14 @@ public class TileBuilder : MonoBehaviour
             splatmapsArray.wrapMode = TextureWrapMode.Clamp;
             splatmapsArray.Apply();
 
-            currentTile.terrain.meshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
+            currentTile.Terrain.MeshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
 
-            GameObject ocean = currentTile.ocean.gameObject;
+            GameObject ocean = currentTile.Ocean.GameObject;
             ocean.transform.position = new Vector3(offsets.x, 0, offsets.y);
             ocean.SetActive(tileData.hasOcean);
             MeshData meshData = GenerateMesh(levelOfDetail, tileData.heightMap, false);
             SetMesh(meshData.CreateMesh(), currentTile);
-            currentTile.terrain.gameObject.SetActive(true);
+            currentTile.Terrain.GameObject.SetActive(true);
 
             cityGenerator.Generate(cityOffsets);
         }
@@ -191,8 +191,8 @@ public class TileBuilder : MonoBehaviour
 
     public void SetMesh(Mesh mesh, Tile currentTile)
     {
-        currentTile.terrain.meshFilter.mesh = mesh;
-        currentTile.terrain.meshCollider.sharedMesh = mesh;
+        currentTile.Terrain.MeshFilter.mesh = mesh;
+        currentTile.Terrain.MeshCollider.sharedMesh = mesh;
     }
 
     private void TileDataThread(Action<TileData> callback, Vector3 offsets)
