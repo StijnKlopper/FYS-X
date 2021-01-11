@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: cceanMaterial
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: FT_EDGE_TESS S_TRI_PLANAR _PARALLAXMAP
+  m_ShaderKeywords: FT_EDGE_TESS S_TRI_PLANAR _ENABLE_DBLEND _ENABLE_REFLECTION _PARALLAXMAP
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -19,7 +19,15 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _Bump:
+        m_Texture: {fileID: 2800000, guid: 54e91690224ac7648854d490168a7d8d, type: 3}
+        m_Scale: {x: 1.06, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ColorControl:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -47,16 +55,36 @@ Material:
         m_Texture: {fileID: 2800000, guid: 73c7a4f1614281f4eb129eba2f1f67b1, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _DitherMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1.4, y: 1.4}
         m_Offset: {x: 1, y: 1}
+    - _FoamTex:
+        m_Texture: {fileID: 2800000, guid: 088dc43e27dae9c4cbe75b04d5bc747c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamTexture:
+        m_Texture: {fileID: 2800000, guid: 088dc43e27dae9c4cbe75b04d5bc747c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Fresnel:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _HeightBumpTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _HeightTex:
         m_Texture: {fileID: 2800000, guid: 5484c48151f8d7e4e9643b1a77eb24d9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeightTexture:
+        m_Texture: {fileID: 2800000, guid: de6627eed37f8c84bad9d46d427ce245, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -91,6 +119,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 2d58a8dcc681f54488a1f82b59a3e61d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NormalTexture:
+        m_Texture: {fileID: 2800000, guid: 54e91690224ac7648854d490168a7d8d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -101,6 +133,38 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
         m_Texture: {fileID: 2800000, guid: 964967370447e10429c5ba1d20b53db7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ReflectionTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ReflectionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ReflectiveColor:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RefractionTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ShoreTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ShoreTexture:
+        m_Texture: {fileID: 2800000, guid: bb096ff6bb7b8264ab80713bb216b7bf, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SkyCubemap:
+        m_Texture: {fileID: 8900000, guid: 9ad6d942a89e67e48a8c76816ddd5e6e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SkyTexture:
+        m_Texture: {fileID: 8900000, guid: 9ad6d942a89e67e48a8c76816ddd5e6e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Splat0:
@@ -127,38 +191,75 @@ Material:
         m_Texture: {fileID: 2800000, guid: 6b38faf5a061786418a1b320a599030b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _TerrainHolesTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _TessellationMap:
         m_Texture: {fileID: 2800000, guid: 5484c48151f8d7e4e9643b1a77eb24d9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _AmbientDensity: 0.377
+    - _BigWave_Tiling_X: 4.37
+    - _BigWave_Tiling_Y: 5.81
     - _BlendExponent: 4
     - _BlendOffset: 0
+    - _BoxReflection: 0
+    - _BumpReflectionStr: 0.5
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
+    - _DiffuseDensity: 0.628
     - _DispOffset: 0.345
     - _Displacement: 0.932
     - _DisplacementDistance: 1
     - _DisplacementStrength: 0.5
     - _DisplacementTessellationStrength: 0.5
+    - _Distortion: 0.1188
     - _DstBlend: 0
     - _EdgeLength: 37.7
+    - _EnableDepthBlend: 1
+    - _EnableReflection: 1
+    - _EnableRefraction: 0
+    - _EnableWave: 0
+    - _FPOW: 5
+    - _FoamIntensity: 0.228
+    - _FoamSpeed: 10
+    - _FresnelScale: 0.75
+    - _GerstnerIntensity: 1
     - _GlossMapScale: 0
-    - _Glossiness: 0.5
+    - _Glossiness: 0.639
     - _GlossyReflections: 1
+    - _HeightIntensity: 0.773
     - _HeightMapScale: 1
-    - _Metallic: 0
+    - _Metallic: 0.553
     - _Mode: 0
+    - _NormalIntensity: 0.823
+    - _Normal_Intensity: 0.981
     - _OcclusionStrength: 1
+    - _Overall_Speed: 1
     - _Parallax: 0.074899994
     - _Phong: 0
+    - _R0: 0.05
+    - _RadianceFactor: 0.929
+    - _ReflDistort: 0.44
+    - _ReflToRefrExponent: 1
+    - _Reflection_Alpha: 0.314
+    - _RefrDistort: 0.4
+    - _Refraction: 1
+    - _RefractionScale: 0.0059
+    - _Refractive_Index: 1.33
     - _ShadowLOD: 0
     - _ShadowTessellationEdgeLength: 1.5
+    - _Shininess: 0
+    - _ShoreFade: 0.73
+    - _Skybox_Alpha: 0.143
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SplatHeightBlendStrength: 0.5
     - _SrcBlend: 1
+    - _StaticAlbedo: 0
     - _Tess: 1
     - _TessMode: 1
     - _TessellationEdgeLength: 1.5
@@ -169,16 +270,68 @@ Material:
     - _TessellationShadowEdgeLength: 0.75
     - _TessllationDistance: 100
     - _TextureScale: 1
+    - _TextureTiling: 1
     - _TriplanarBlendSharpness: 1
     - _TriplanarHeightBlendStrength: 0.5
     - _UVSec: 0
+    - _UseDisplacement: 0
+    - _UseFiltering: 0
+    - _UseFoam: 0
+    - _UseMeanSky: 0
+    - _UsePhong: 0
     - _UseTriPlanar: 1
+    - _WaterClarity: 2.8
+    - _WaterTransparency: 25.7
+    - _WaveAmplitudeFactor: 1
+    - _WaveScale: 0.063
+    - _WaveSteepness: 0.691
+    - _WaveTiling: 1
+    - _Weight_1: 0.35
+    - _Weight_2: 0.55
     - _ZWrite: 1
     - _divergenceOffset: 0.5
     - _maxDist: 25
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - WaveSpeed: {r: 19, g: 9, b: -16, a: -7}
+    - _AnimationDirection: {r: 1, g: 1, b: 1, a: 1}
+    - _AnimationTiling: {r: 2.2, g: 2.2, b: -1.1, a: -1.1}
+    - _BaseColor: {r: 0.54, g: 0.95, b: 0.99, a: 0.5}
+    - _BumpDirection: {r: 1, g: 1, b: -1, a: 1}
+    - _BumpTiling: {r: 1, g: 1, b: -2, a: 3}
+    - _Color: {r: 0.8578676, g: 0.8578676, b: 0.9622642, a: 1}
+    - _DepthColor: {r: 0.0216727, g: 0, b: 0.8018868, a: 1}
+    - _DistortParams: {r: 1, g: 1, b: 2, a: 1.15}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Foam: {r: 0, g: 0, b: 0, a: 0}
+    - _FoamNoise: {r: 0.1, g: 0.3, b: 0.1, a: 0.3}
+    - _FoamRanges: {r: 2, g: 3, b: 100, a: 1}
+    - _FoamTiling: {r: 2, g: 0.5, b: 0, a: 1}
+    - _GAmplitude: {r: 0.3, g: 0.35, b: 0.25, a: 0.25}
+    - _GDirectionAB: {r: 0.3, g: 0.85, b: 0.85, a: 0.25}
+    - _GDirectionCD: {r: 0.1, g: 0.9, b: 0.5, a: 0.5}
+    - _GFrequency: {r: 1.3, g: 1.35, b: 1.25, a: 1.25}
+    - _GSpeed: {r: 1.2, g: 1.375, b: 1.1, a: 1.5}
+    - _GSteepness: {r: 1, g: 1, b: 1, a: 1}
+    - _HorizonColor: {r: 0.172, g: 0.463, b: 0.435, a: 1}
+    - _HorizontalExtinction: {r: 5.86, g: 16.4, b: 12, a: 1}
+    - _InvFadeParemeter: {r: 0.15, g: 0.15, b: 0.5, a: 1}
+    - _MainTex_Params: {r: 0.35, g: 0.9, b: 0.05, a: 0.07}
+    - _ReflectColor: {r: 1, g: 1, b: 1, a: 0.5}
+    - _ReflectionColor: {r: 0.54, g: 0.95, b: 0.99, a: 0.5}
+    - _RefrColor: {r: 0.34, g: 0.85, b: 0.92, a: 1}
+    - _RefractionValues: {r: 0.3, g: 0.01, b: 1, a: 1}
+    - _ShoreColor: {r: 0.0078, g: 0.5176, b: 0.7, a: 1}
     - _SpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - _SpecularColor: {r: 0.72, g: 0.72, b: 0.72, a: 1}
+    - _SpecularValues: {r: 12, g: 768, b: 0.15, a: 1}
+    - _SurfaceColor: {r: 0.0078, g: 0.5176, b: 0.7, a: 1}
     - _TriPlanarSize: {r: 1, g: 1, b: 1, a: 0}
+    - _VWaveParameter: {r: 0.3, g: 0.35, b: 0.25, a: 0.25}
+    - _WaveAmplitude: {r: 13.35, g: 3.52, b: 2.9, a: 1.6}
+    - _WaveSpeed: {r: 0.5, g: 0.8, b: -1.88, a: 0.4}
+    - _WavesIntensity: {r: 31.9, g: 2, b: 2, a: 10}
+    - _WavesNoise: {r: 0.05, g: 0.15, b: 0.03, a: 0.05}
+    - _WindDirection: {r: 10.97, g: 8.81, b: 0, a: 1}
+    - _WorldLightDir: {r: 0, g: 0.1, b: -0.5, a: 0}
+    - _horizonColor: {r: 0.172, g: 0.463, b: 0.435, a: 0}
   m_BuildTextureStacks: []

@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.01
+  m_FogDensity: 1
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -562,15 +562,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400326, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 25
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 400326, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 10
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 400326, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 391
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 400326, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}
       propertyPath: m_LocalRotation.x
@@ -1049,6 +1049,8 @@ GameObject:
   - component: {fileID: 1284178398}
   - component: {fileID: 1284178397}
   - component: {fileID: 1284178401}
+  - component: {fileID: 1284178399}
+  - component: {fileID: 1284178400}
   m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
@@ -1086,6 +1088,30 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1284178399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284178396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2567748ade6485549b90943e549d318a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1284178400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284178396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54ad6cf70475d3a49a2ff05c6cd4c716, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1284178401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1098,13 +1124,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a76cd6f88503f048979724bee90638a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CaveObjectPool: []
-  TerrainObjectPool: []
-  OceanObjectPool: []
-  TerrainPrefab: {fileID: 5520266623367027301, guid: 0c31a200cbf2256439ca13b894b6f98b, type: 3}
-  CavePrefab: {fileID: 5849594575968623539, guid: 414f10da3431ef44f88a77f5c556f3b2, type: 3}
-  OceanPrefab: {fileID: 8703873624021677109, guid: b4c854845c276c3409741edef1149a9d, type: 3}
-  TerrainGenerator: {fileID: 1284178397}
+  terrainPrefab: {fileID: 5520266623367027301, guid: 0c31a200cbf2256439ca13b894b6f98b, type: 3}
+  cavePrefab: {fileID: 5849594575968623539, guid: 414f10da3431ef44f88a77f5c556f3b2, type: 3}
+  oceanPrefab: {fileID: 8703873624021677109, guid: b4c854845c276c3409741edef1149a9d, type: 3}
+  terrainGenerator: {fileID: 0}
 --- !u!1 &1469793297
 GameObject:
   m_ObjectHideFlags: 0
