@@ -170,7 +170,6 @@ public class TileBuilder : MonoBehaviour
             currentTile.Terrain.MeshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
 
             GameObject ocean = currentTile.Ocean.GameObject;
-            ocean.transform.position = new Vector3(offsets.x, 0, offsets.y);
             ocean.SetActive(tileData.hasOcean);
             MeshData meshData = GenerateMesh(levelOfDetail, tileData.heightMap, false);
             SetMesh(meshData.CreateMesh(), currentTile);
