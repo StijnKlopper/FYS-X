@@ -186,6 +186,11 @@ public class TileBuilder : MonoBehaviour
         currentTile.Terrain.MeshCollider.sharedMesh = mesh;
     }
 
+    public void RegenerateMesh(Tile tile)
+    {
+        if (tile.HeightMap != null) { SetMesh(GenerateMesh(tile.LevelOfDetail, tile.HeightMap).CreateMesh(), tile); }
+    }
+
     private void TileDataThread(Action<TileData> callback, Vector3 offsets)
     {
         TileData tileData = GenerateHeightMap(TILE_DIMENSION, TILE_DIMENSION, offsets);

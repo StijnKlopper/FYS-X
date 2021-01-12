@@ -63,10 +63,4 @@ public class Tile
     {
         this.Active = true;
     }
-
-    public void RegenerateMesh()
-    {
-        TileBuilder tileBuilder = GameObject.Find("Level").GetComponent<TileBuilder>();
-        if (HeightMap != null) { tileBuilder.SetMesh(tileBuilder.GenerateMesh(LevelOfDetail, HeightMap).CreateMesh(), this); }
-    }
 }

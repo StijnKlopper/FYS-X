@@ -83,7 +83,7 @@ class WorldBuilder
                         // Regenerate the terrain mesh if the level of detail is different
                         Tile tile = tileDict[newChunkPosition];
                         tile.LevelOfDetail = levelOfDetail;
-                        tile.RegenerateMesh();
+                        tileBuilder.RegenerateMesh(tile);
                     }
                 }
                 else
