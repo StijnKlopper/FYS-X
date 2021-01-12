@@ -16,6 +16,7 @@ public class ObjectPool : MonoBehaviour
     void Start()
     {
         TerrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        // Total rendered area divided by chunk size area + 10%
         PoolAmount = (((WorldBuilder.CHUNK_RENDER_DISTANCE * WorldBuilder.CHUNK_RENDER_DISTANCE) / (WorldBuilder.CHUNK_SIZE * WorldBuilder.CHUNK_SIZE))) * 4;
         PoolAmount = PoolAmount + Mathf.CeilToInt(0.1f * PoolAmount);
 
@@ -53,7 +54,7 @@ public class ObjectPool : MonoBehaviour
                 return TileObjectList[i];
             }
         }
-        //Maybe add some kind of warning/error?
+        // Tile amount are calculated using render distance and should not be a problem so this is only to satisfy the method
         return null;
     }
 }

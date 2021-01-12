@@ -21,7 +21,7 @@ public class CaveBuilder : MonoBehaviour
         RequestCaveData(OnCaveDataReceived, position);
     }
 
-    //Start a thread to create CaveData and perform a callback to the onCaveDataReceived method
+    // Start a thread to create CaveData and perform a callback to the onCaveDataReceived method
     private void RequestCaveData(Action<SafeMesh> callback, Vector3 position)
     {
         ThreadPool.QueueUserWorkItem(delegate
@@ -39,7 +39,7 @@ public class CaveBuilder : MonoBehaviour
     private void OnCaveDataReceived(SafeMesh safeMesh)
     {
         Tile currentTile = WorldBuilder.GetTile(safeMesh.position);
-        //check if currentTile is not already unloaded
+        // check if currentTile is not already unloaded
         if (currentTile != null) 
         {
             Mesh mesh = new Mesh();
@@ -47,8 +47,6 @@ public class CaveBuilder : MonoBehaviour
             mesh.triangles = safeMesh.Triangles;
             currentTile.Cave.MeshFilter.mesh = mesh;
             mesh.uv = GenerateUV.CalculateUVs(safeMesh.Vertices, 1);
-
-            //mesh.Optimize();
             mesh.RecalculateNormals();
 
             //Find out what this does
@@ -77,7 +75,6 @@ public class CaveBuilder : MonoBehaviour
             for (int z = 0; z < size; z++)
             {
                 // -5 to make the amount of rocks sticking out of the terrain lower
-                //int coordinateHeight =  - 5;
                 int coordinateHeight = Mathf.FloorToInt(currentTile.HeightMap[x, z]) - 5;
                 int caveHeight = coordinateHeight + CAVE_DEPTH;
                 // Cave height make height dynamic based on heightmap[x,z]

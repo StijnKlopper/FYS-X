@@ -8,7 +8,7 @@ class WorldBuilder
 
     public const int CHUNK_RENDER_DISTANCE = 100;
 
-    //Maximum number of chunk that is being set per frame
+    // Maximum number of chunk that is being set per frame
     public const int MAX_CHUNK_PER_FRAME = 5;
 
     // Must be factors of CHUNK_SIZE and 4 long

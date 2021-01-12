@@ -26,7 +26,7 @@ public class TileBuilder : MonoBehaviour
         RequestTileData(OnTileDataReceived, position);
     }
 
-    //Start a thread to create TileData and perform a callback to the onTileDataReceived method
+    // Start a thread to create TileData and perform a callback to the onTileDataReceived method
     private void RequestTileData(Action<TileData> callback, Vector3 offsets)
     {
         ThreadPool.QueueUserWorkItem(delegate
@@ -35,7 +35,7 @@ public class TileBuilder : MonoBehaviour
         });
     }
 
-    //Generate Perlin noise map and set get texture info per biome
+    // Generate Perlin noise map and set get texture info per biome
     private TileData GenerateHeightMap(int width, int height, Vector3 offsets)
     {
         int tileHeight = width;
@@ -144,12 +144,12 @@ public class TileBuilder : MonoBehaviour
         return meshData;
     }
 
-    //When thread is done set all the unity specific values
+    // When thread is done set all the unity specific values
     private void OnTileDataReceived(TileData tileData)
     {
         Tile currentTile = WorldBuilder.GetTile(tileData.offsets);
 
-        //check to see if the current tile is not already unloaded
+        // check to see if the current tile is not already unloaded
         if (currentTile != null) 
         {
             Vector2 offsets = new Vector2(tileData.offsets.x, tileData.offsets.z);
@@ -228,7 +228,7 @@ public class TileBuilder : MonoBehaviour
 
     void Update()
     {
-        //Check to see if any of the terrainData is done being created
+        // Check to see if any of the terrainData is done being created
         if (terrainDataThreadInfoQueue.Count > 0)
         {
             for (int i = 0; i < terrainDataThreadInfoQueue.Count; i++)
