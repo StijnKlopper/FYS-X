@@ -6,10 +6,10 @@ using UnityEngine;
 
 public class CaveBuilder : MonoBehaviour
 {
+    public const int CAVE_DEPTH = 30;
     private RidgedMultifractal ridgedMultifractal;
     private ConcurrentQueue<CaveThreadInfo<SafeMesh>> caveDataThreadInfoQueue;
-    public const int CAVE_DEPTH = 30;
-
+    
     public void Start()
     {
         caveDataThreadInfoQueue = new ConcurrentQueue<CaveThreadInfo<SafeMesh>>();
@@ -40,7 +40,8 @@ public class CaveBuilder : MonoBehaviour
     private void OnCaveDataReceived(SafeMesh safeMesh)
     {
         Tile currentTile = WorldBuilder.GetTile(safeMesh.position);
-        // check if currentTile is not already unloaded
+
+        // Check if currentTile is not already unloaded
         if (currentTile != null) 
         {
             Mesh mesh = new Mesh();
@@ -50,7 +51,7 @@ public class CaveBuilder : MonoBehaviour
             mesh.uv = GenerateUV.CalculateUVs(safeMesh.Vertices, 1);
             mesh.RecalculateNormals();
 
-            //Find out what this does
+            // Find out what this does
             currentTile.Cave.MeshCollider.sharedMesh = null;
             currentTile.Cave.MeshCollider.sharedMesh = mesh;
             currentTile.Cave.GameObject.SetActive(true);

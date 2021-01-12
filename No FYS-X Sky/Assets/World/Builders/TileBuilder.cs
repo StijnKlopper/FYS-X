@@ -6,12 +6,12 @@ using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
 {
+    public const int TILE_DIMENSION = 11;
     private TerrainGenerator terrainGenerator;
     private CityGenerator cityGenerator;
     private Texture2DArray splatmapsArray;
     private CaveBuilder caveBuilder;
     private ConcurrentQueue<MapThreadInfo<TileData>> terrainDataThreadInfoQueue;
-    public const int TILE_DIMENSION = 11;
 
     public void Start()
     {
@@ -149,7 +149,7 @@ public class TileBuilder : MonoBehaviour
     {
         Tile currentTile = WorldBuilder.GetTile(tileData.offsets);
 
-        // check to see if the current tile is not already unloaded
+        // Check to see if the current tile is not already unloaded
         if (currentTile != null) 
         {
             Vector2 offsets = new Vector2(tileData.offsets.x, tileData.offsets.z);
