@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
@@ -12,7 +13,9 @@ public class MainMenu : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
-        //EditorApplication.isPlaying = false;
+        #if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+        #endif
     }
 
 }

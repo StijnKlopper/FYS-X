@@ -8,6 +8,9 @@ class WorldBuilder
 
     public const int CHUNK_RENDER_DISTANCE = 100;
 
+    // Maximum number of chunk that is being set per frame
+    public const int MAX_CHUNK_PER_FRAME = 5;
+
     // Must be factors of CHUNK_SIZE and 4 long
     public static int[] levelsOfDetail = new int[] { 1, 1, 2, 5 };
 
@@ -17,11 +20,13 @@ class WorldBuilder
 
     private ObjectPool objectPool;
     private GameObject cityPoints;
+    private TileBuilder tileBuilder;
 
     public WorldBuilder()
     {
         this.regionRenderDistance = Mathf.CeilToInt(CHUNK_RENDER_DISTANCE / Region.REGION_SIZE) * Region.REGION_SIZE + Region.REGION_SIZE;
         this.objectPool = GameObject.Find("Level").GetComponent<ObjectPool>();
+        this.tileBuilder = GameObject.Find("Level").GetComponent<TileBuilder>();
         this.cityPoints = GameObject.Find("CityPoints/Buildings");
     }
 
@@ -78,32 +83,22 @@ class WorldBuilder
                         // Regenerate the terrain mesh if the level of detail is different
                         Tile tile = tileDict[newChunkPosition];
                         tile.LevelOfDetail = levelOfDetail;
-                        tile.RegenerateMesh();
+                        tileBuilder.RegenerateMesh(tile);
                     }
                 }
                 else
                 {
                     // Generate new tile
-                    Tile tile = new Tile();
-
-                    GameObject terrain = objectPool.GetPooledObject(ObjectPool.GameObjectType.Terrain);
-                    GameObject cave = objectPool.GetPooledObject(ObjectPool.GameObjectType.Cave);
-
+                    Tile tile = objectPool.GetPooledTile();
                     Vector3 terrainPosition = new Vector3(newChunkPosition.x + 5, 0, newChunkPosition.z + 5);
-                    Vector3 cavePosition = new Vector3(newChunkPosition.x, -30, newChunkPosition.z);
+                    Vector3 cavePosition = new Vector3(newChunkPosition.x + 5, -30, newChunkPosition.z + 5);
 
-                    terrain.transform.position = terrainPosition;
-                    cave.transform.position = cavePosition;
-
-                    tile.AddObject(terrain);
-                    tile.AddObject(cave);
-
-                    tile.LevelOfDetail = levelOfDetail;
+                    tile.Terrain.GameObject.transform.position = terrainPosition;
+                    tile.Cave.GameObject.transform.position = cavePosition;
 
                     tileDict.Add(newChunkPosition, tile);
-                    float[,] heightMap = terrain.GetComponent<TileBuilder>().Instantiate();
-                    tile.HeightMap = heightMap;
-                    cave.GetComponent<CaveBuilder>().Instantiate(heightMap);
+                    tile.LevelOfDetail = levelOfDetail;
+                    tileBuilder.Instantiate(newChunkPosition);
                 }
             }
         }
@@ -128,7 +123,7 @@ class WorldBuilder
         {
             if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
             {
-                tile.Value.DestroyObjects(objectPool);
+                tile.Value.disableTile();
                 tileDict.Remove(tile.Key);
             }
         }
@@ -165,11 +160,15 @@ class WorldBuilder
     {
         int x = CalcCoord(coordinate.x, CHUNK_SIZE);
         int z = CalcCoord(coordinate.z, CHUNK_SIZE);
-
-        return tileDict[new Vector3(x, 0, z)];
+        Tile tile;
+        if (tileDict.TryGetValue(new Vector3(x, 0, z), out tile))
+        {
+            return tile;
+        }
+        else { return null; }
     }
 
-    private int CalculateLevelOfDetail(float distance)
+        private int CalculateLevelOfDetail(float distance)
     {
         // Calculate the level of detail by taking the distance from the player to the chunk and dividing it over the different LOD levels
         int levels = levelsOfDetail.Length;
@@ -179,6 +178,8 @@ class WorldBuilder
 
         float stepSize = (float)maxDistance / levels;
 
-        return levelsOfDetail[Mathf.CeilToInt(distance / stepSize) - 1];
+        int levelOfDetail = Mathf.Max(Mathf.CeilToInt(distance / stepSize) - 1, 0);
+
+        return levelsOfDetail[levelOfDetail];
     }
 }

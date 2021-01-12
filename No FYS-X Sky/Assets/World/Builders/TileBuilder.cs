@@ -1,101 +1,55 @@
 ﻿using LibNoise.Generator;
-using System.Collections;
+using System;
+using System.Collections.Concurrent;
+using System.Threading;
 using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
 {
-    [SerializeField]
-    private MeshRenderer meshRenderer;
-
-    [SerializeField]
-    private MeshFilter meshFilter;
-
-    [SerializeField]
-    private MeshCollider meshCollider;
-
-
-    [System.NonSerialized]
-    public float[,] heightMap;
-
-
+    public const int TILE_DIMENSION = 11;
     private TerrainGenerator terrainGenerator;
-
     private CityGenerator cityGenerator;
-
-
-    private float[] tileTextureData;
-
     private Texture2DArray splatmapsArray;
+    private CaveBuilder caveBuilder;
+    private ConcurrentQueue<MapThreadInfo<TileData>> terrainDataThreadInfoQueue;
 
-    private Texture2D oceanSplatmap;
-
-    private bool hasOcean;
-
-    public float[,] Instantiate()
+    public void Start()
     {
+        terrainDataThreadInfoQueue = new ConcurrentQueue<MapThreadInfo<TileData>>();
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+        caveBuilder = GameObject.Find("Level").GetComponent<CaveBuilder>();
         cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
-
-        hasOcean = false;
-        StartCoroutine("GenerateTile");
-        return heightMap;
     }
 
-    private IEnumerator GenerateTile()
+    public void Instantiate(Vector3 position)
     {
-        Vector3[] meshVertices = this.meshFilter.mesh.vertices;
-        int tileHeight = (int)Mathf.Sqrt(meshVertices.Length);
-        int tileWidth = tileHeight;
-
-        Vector2 offsets = new Vector2(this.gameObject.transform.position.x, this.gameObject.transform.position.z);
-
-        // Offsets which are used by CityGenerator
-        Vector2 cityOffsets = new Vector2(this.gameObject.transform.position.x - 5, this.gameObject.transform.position.z - 5);
-
-        // Instead of generating height map:
-        GenerateHeightMap(offsets);
-
-        int levelOfDetail = WorldBuilder.GetTile(new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z)).LevelOfDetail;
-
-        MeshData meshData = GenerateMesh(levelOfDetail, this.heightMap);
-        Mesh mesh = meshData.CreateMesh();
-        SetMesh(mesh);
-        this.meshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
-
-        GameObject ocean = this.transform.GetChild(0).gameObject;
-        ocean.SetActive(hasOcean);
-
-        Mesh oceanMesh = GenerateMesh(levelOfDetail, null, true).CreateMesh();
-
-        MeshFilter oceanMeshFilter = ocean.GetComponent<MeshFilter>();
-        oceanMeshFilter.mesh = oceanMesh;
-
-        MeshCollider oceanMeshCollider = ocean.GetComponent<MeshCollider>();
-        oceanMeshCollider.sharedMesh = oceanMesh;
-
-        ocean.GetComponent<MeshRenderer>().material.SetTexture("_OceanSplatmap", oceanSplatmap);
-        ocean.transform.position = new Vector3(this.gameObject.transform.position.x, 0, this.gameObject.transform.position.z);
-
-        // Spawning city points
-        cityGenerator.Generate(cityOffsets);
-
-        yield return null;
+        RequestTileData(OnTileDataReceived, position);
     }
 
-    public void GenerateHeightMap(Vector2 offsets)
+    // Start a thread to create TileData and perform a callback to the onTileDataReceived method
+    private void RequestTileData(Action<TileData> callback, Vector3 offsets)
     {
-        int tileSize = WorldBuilder.CHUNK_SIZE + 1;
-        int splatmapSize = tileSize * tileSize;
+        ThreadPool.QueueUserWorkItem(delegate
+        {
+            TileDataThread(callback, offsets);
+        });
+    }
+
+    // Generate Perlin noise map and set get texture info per biome
+    private TileData GenerateHeightMap(int width, int height, Vector3 offsets)
+    {
+        int tileHeight = width;
+        int tileWidth = height;
+
+        int splatmapSize = tileHeight * tileWidth;
 
         Color[] splatMap1 = new Color[splatmapSize];
         Color[] splatMap2 = new Color[splatmapSize];
         Color[] splatMap3 = new Color[splatmapSize];
 
-        Color[] oceanMap = new Color[splatmapSize];
+        float[,] heightMap = new float[width, height];
 
-        float[,] heightMap = new float[tileSize, tileSize];
-
-        tileTextureData = new float[tileSize * tileSize];
+        bool hasOcean = false;
 
         float maxPossibleHeight = 0f;
         float frequency = 1f;
@@ -115,23 +69,22 @@ public class TileBuilder : MonoBehaviour
             amplitude *= 0.5f;
         }
 
-        for (int y = 0; y < tileSize; y++)
+        for (int y = 0; y < height; y++)
         {
-            for (int x = 0; x < tileSize; x++)
+            for (int x = 0; x < width; x++)
             {
-
                 double sampleX = (x + offsets.x) / scale;
-                double sampleY = (y + offsets.y) / scale;
+                double sampleY = (y + offsets.z) / scale;
 
                 float noiseHeight = (float)perlin.GetValue(sampleX, 0, sampleY);
 
-                int colorIndex = y * tileSize + x;
+                int colorIndex = y * tileWidth + x;
 
                 // Normalise noise map between minimum and maximum noise heights
                 noiseHeight = (noiseHeight + 1) / (2f * maxPossibleHeight / 1.75f);
 
                 // Change height based on height curve and heightMultiplier
-                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
+                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.z));
 
                 splatMap1[colorIndex] = biome.BiomeType.Color;
                 splatMap2[colorIndex] = biome.BiomeType.Color2;
@@ -139,35 +92,24 @@ public class TileBuilder : MonoBehaviour
 
                 if (biome.BiomeType is OceanBiomeType)
                 {
-                    oceanMap[colorIndex] = new Color(1, 0, 0);
                     hasOcean = true;
                 }
-
-                else { oceanMap[colorIndex] = new Color(0, 1, 0); }
-
-                oceanMap[colorIndex] = biome.BiomeType is OceanBiomeType ? new Color(1, 0, 0) : new Color(0, 1, 0);
-
-                tileTextureData[x + y * tileSize] = biome.BiomeType.BiomeTypeId;
 
                 noiseHeight = biome.BiomeType.HeightCurve.Evaluate(noiseHeight) * heightMultiplier;
                 heightMap[x, y] = noiseHeight;
             }
         }
-        splatmapsArray = new Texture2DArray(tileSize, tileSize, 3, TextureFormat.RGBA32, true);
-        oceanSplatmap = new Texture2D(tileSize, tileSize);
 
-        splatmapsArray.SetPixels(splatMap1, 0);
-        splatmapsArray.SetPixels(splatMap2, 1);
-        splatmapsArray.SetPixels(splatMap3, 2);
-
-        oceanSplatmap.SetPixels(oceanMap);
-        oceanSplatmap.wrapMode = TextureWrapMode.Clamp;
-        oceanSplatmap.Apply();
-
-        splatmapsArray.wrapMode = TextureWrapMode.Clamp;
-        splatmapsArray.Apply();
-
-        this.heightMap = heightMap;
+        TileData tileData = new TileData
+        {
+            splatMap1 = splatMap1,
+            splatMap2 = splatMap2,
+            splatMap3 = splatMap3,
+            offsets = offsets,
+            hasOcean = hasOcean,
+            heightMap = heightMap
+        };
+        return tileData;
     }
 
     public MeshData GenerateMesh(int levelOfDetail, float[,] heightMap = null, bool isOcean = false)
@@ -187,7 +129,6 @@ public class TileBuilder : MonoBehaviour
             for (int x = 0; x < size; x += meshSimplificationIncrement)
             {
                 float heightValue = isOcean ? 0f : heightMap[x, y];
-
                 meshData.Vertices[vertexIndex] = new Vector3(topLeft - x, heightValue, topLeft - y);
                 meshData.UVs[vertexIndex] = new Vector2(x / (float)size, y / (float)size);
 
@@ -196,7 +137,6 @@ public class TileBuilder : MonoBehaviour
                     meshData.AddTriangle(vertexIndex, vertexIndex + verticesPerLine + 1, vertexIndex + verticesPerLine);
                     meshData.AddTriangle(vertexIndex + verticesPerLine + 1, vertexIndex, vertexIndex + 1);
                 }
-
                 vertexIndex++;
             }
         }
@@ -204,9 +144,111 @@ public class TileBuilder : MonoBehaviour
         return meshData;
     }
 
-    public void SetMesh(Mesh mesh)
+    // When thread is done set all the unity specific values
+    private void OnTileDataReceived(TileData tileData)
     {
-        this.meshFilter.mesh = mesh;
-        this.meshCollider.sharedMesh = mesh;
+        Tile currentTile = WorldBuilder.GetTile(tileData.offsets);
+
+        // Check to see if the current tile is not already unloaded
+        if (currentTile != null) 
+        {
+            Vector2 offsets = new Vector2(tileData.offsets.x, tileData.offsets.z);
+            Vector2 cityOffsets = new Vector2(tileData.offsets.x - 5, tileData.offsets.z - 5);
+            currentTile.HeightMap = tileData.heightMap;
+            caveBuilder.Instantiate(tileData.offsets);
+
+            splatmapsArray = new Texture2DArray(TILE_DIMENSION, TILE_DIMENSION, 3, TextureFormat.RGBA32, true);
+            int levelOfDetail = WorldBuilder.GetTile(tileData.offsets).LevelOfDetail;
+
+            splatmapsArray.SetPixels(tileData.splatMap1, 0);
+            splatmapsArray.SetPixels(tileData.splatMap2, 1);
+            splatmapsArray.SetPixels(tileData.splatMap3, 2);
+
+            splatmapsArray.wrapMode = TextureWrapMode.Clamp;
+            splatmapsArray.Apply();
+
+            currentTile.Terrain.MeshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
+
+            GameObject ocean = currentTile.Ocean.GameObject;
+            ocean.transform.position = new Vector3(offsets.x, 0, offsets.y);
+            ocean.SetActive(tileData.hasOcean);
+            MeshData meshData = GenerateMesh(levelOfDetail, tileData.heightMap, false);
+            SetMesh(meshData.CreateMesh(), currentTile);
+            currentTile.Terrain.GameObject.SetActive(true);
+
+            cityGenerator.Generate(cityOffsets);
+        }
+    }
+
+    public void SetMesh(Mesh mesh, Tile currentTile)
+    {
+        currentTile.Terrain.MeshFilter.mesh = mesh;
+        currentTile.Terrain.MeshCollider.sharedMesh = mesh;
+    }
+
+    public void RegenerateMesh(Tile tile)
+    {
+        if (tile.HeightMap != null) { SetMesh(GenerateMesh(tile.LevelOfDetail, tile.HeightMap).CreateMesh(), tile); }
+    }
+
+    private void TileDataThread(Action<TileData> callback, Vector3 offsets)
+    {
+        TileData tileData = GenerateHeightMap(TILE_DIMENSION, TILE_DIMENSION, offsets);
+        lock (terrainDataThreadInfoQueue)
+        {
+            terrainDataThreadInfoQueue.Enqueue(new MapThreadInfo<TileData>(callback, tileData));
+        }
+    }
+
+    struct MapThreadInfo<T>
+    {
+        public readonly Action<T> callback;
+        public readonly T parameter;
+
+        public MapThreadInfo(Action<T> callback, T parameter)
+        {
+            this.callback = callback;
+            this.parameter = parameter;
+        }
+    }
+    private struct TileData
+    {
+        public float[,] heightMap;
+        public Color[] splatMap1;
+        public Color[] splatMap2;
+        public Color[] splatMap3;
+        public Vector3 offsets;
+        public bool hasOcean;
+
+        TileData(float[,] heightMap, Color[] splatMap1, Color[] splatMap2, Color[] splatMap3, Vector2 offsets, bool hasOcean)
+        {
+            this.heightMap = heightMap;
+            this.splatMap1 = splatMap1;
+            this.splatMap2 = splatMap2;
+            this.splatMap3 = splatMap3;
+            this.offsets = offsets;
+            this.hasOcean = hasOcean;
+        }
+    }
+
+    void Update()
+    {
+        // Check to see if any of the terrainData is done being created
+        if (terrainDataThreadInfoQueue.Count > 0)
+        {
+            for (int i = 0; i < terrainDataThreadInfoQueue.Count; i++)
+            {
+                if (i < WorldBuilder.MAX_CHUNK_PER_FRAME)
+                {
+                    MapThreadInfo<TileData> result;
+
+                    if (terrainDataThreadInfoQueue.TryDequeue(out result))
+                    {
+                        result.callback(result.parameter);
+                    }
+                }
+                else { break; }
+            }
+        }
     }
 }

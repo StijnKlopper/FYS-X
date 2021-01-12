@@ -102,12 +102,14 @@ public class CityGenerator : MonoBehaviour, Generator
                     Bounds houseBounds = CalculateBounds(building);
                     Vector3 housePosition = PositionCorrection(position);
 
-                    // Get tile and check if it exists before making a house
-                    Tile tile = WorldBuilder.GetTile(position);
+                    Vector3 tilePosition = new Vector3(this.offsets.x, 0, this.offsets.y);
 
+                    // Get tile and check if it exists before making a house
+                    Tile tile = WorldBuilder.GetTile(tilePosition);
                     // Check if valid position
                     if (tile != null && ValidHousePosition(housePosition, houseBounds))
                     {
+
                         building.transform.position = housePosition;
                         building.SetActive(true);
 
@@ -118,11 +120,11 @@ public class CityGenerator : MonoBehaviour, Generator
                         building.transform.LookAt(lookAtPosition);
 
                         // Add house to tile 
-                        tile.AddObject(building);
+                        tile.AddBuilding(building);
                     }
                     else
                     {
-                        DestroyImmediate(building);
+                        Destroy(building);
                     }
                 }
             }
