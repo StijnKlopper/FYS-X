@@ -14,6 +14,7 @@ public class CaveBuilder : MonoBehaviour
     {
         caveDataThreadInfoQueue = new ConcurrentQueue<CaveThreadInfo<SafeMesh>>();
         ridgedMultifractal = new RidgedMultifractal();
+        ridgedMultifractal.OctaveCount = 3;
     }
 
     public void Instantiate(Vector3 position)
@@ -66,7 +67,6 @@ public class CaveBuilder : MonoBehaviour
 
         // Coordinates are divided by scale, larger scale = larger/more spread out caves
         float scale = 20f;
-        ridgedMultifractal.OctaveCount = 3;
 
         float[,,] caveMap = new float[size, CAVE_DEPTH * 2, size];
 
