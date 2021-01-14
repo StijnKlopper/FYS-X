@@ -13,34 +13,33 @@ namespace UnityStandardAssets.Water
     [ExecuteInEditMode]
     public class WaterBase : MonoBehaviour
     {
-        public Material sharedMaterial;
-        public WaterQuality waterQuality = WaterQuality.High;
-        public bool edgeBlend = true;
-
+        public Material SharedMaterial;
+        public WaterQuality WaterQuality = WaterQuality.High;
+        public bool EdgeBlend = true;
 
         public void UpdateShader()
         {
-            if (waterQuality > WaterQuality.Medium)
+            if (WaterQuality > WaterQuality.Medium)
             {
-                sharedMaterial.shader.maximumLOD = 501;
+                SharedMaterial.shader.maximumLOD = 501;
             }
-            else if (waterQuality > WaterQuality.Low)
+            else if (WaterQuality > WaterQuality.Low)
             {
-                sharedMaterial.shader.maximumLOD = 301;
+                SharedMaterial.shader.maximumLOD = 301;
             }
             else
             {
-                sharedMaterial.shader.maximumLOD = 201;
+                SharedMaterial.shader.maximumLOD = 201;
             }
 
             // If the system does not support depth textures (ie. NaCl), turn off edge bleeding,
             // as the shader will render everything as transparent if the depth texture is not valid.
             if (!SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth))
             {
-                edgeBlend = false;
+                EdgeBlend = false;
             }
 
-            if (edgeBlend)
+            if (EdgeBlend)
             {
                 Shader.EnableKeyword("WATER_EDGEBLEND_ON");
                 Shader.DisableKeyword("WATER_EDGEBLEND_OFF");
@@ -57,19 +56,17 @@ namespace UnityStandardAssets.Water
             }
         }
 
-
         public void WaterTileBeingRendered(Transform tr, Camera currentCam)
         {
-            if (currentCam && edgeBlend)
+            if (currentCam && EdgeBlend)
             {
                 currentCam.depthTextureMode |= DepthTextureMode.Depth;
             }
         }
 
-
         public void Update()
         {
-            if (sharedMaterial)
+            if (SharedMaterial)
             {
                 UpdateShader();
             }

@@ -8,12 +8,10 @@ namespace UnityStandardAssets.Water
     {
         public WaterBase waterBase;
 
-
         public void Start()
         {
             AcquireComponents();
         }
-
 
         void AcquireComponents()
         {
@@ -30,7 +28,6 @@ namespace UnityStandardAssets.Water
                 }
             }
         }
-
 
 #if UNITY_EDITOR
         public void Update()

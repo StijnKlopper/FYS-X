@@ -5,23 +5,23 @@ namespace UnityStandardAssets.Water
 {
     public class MeshContainer
     {
-        public Mesh mesh;
-        public Vector3[] vertices;
-        public Vector3[] normals;
+        public Mesh Mesh;
+        public Vector3[] Vertices;
+        public Vector3[] Normals;
 
 
         public MeshContainer(Mesh m)
         {
-            mesh = m;
-            vertices = m.vertices;
-            normals = m.normals;
+            Mesh = m;
+            Vertices = m.vertices;
+            Normals = m.normals;
         }
 
 
         public void Update()
         {
-            mesh.vertices = vertices;
-            mesh.normals = normals;
+            Mesh.vertices = Vertices;
+            Mesh.normals = Normals;
         }
     }
 }
