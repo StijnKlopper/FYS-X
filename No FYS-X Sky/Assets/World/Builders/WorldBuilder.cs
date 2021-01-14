@@ -103,7 +103,6 @@ class WorldBuilder
                     
                     tile.LevelOfDetail = levelOfDetail;
                     tileBuilder.Instantiate(newChunkPosition);
-
                 }
             }
         }

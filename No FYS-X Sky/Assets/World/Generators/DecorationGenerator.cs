@@ -4,17 +4,14 @@ using UnityEngine;
 public class DecorationGenerator : MonoBehaviour
 {
     private TerrainGenerator terrainGenerator;
-    private FractalTree fractalTree;
 
     public float PlantThreshold;
     public float TreeThreshold;
-    [Range(0.1f, 1)]
+    [Range(0.01f, 1)]
     public float MarginThreshold;
-
 
     Perlin perlin;
 
-    public GameObject PlantPrefab;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,12 +24,7 @@ public class DecorationGenerator : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    //Generate Decorations based on Perlin noise
     public void Generate(float[,] heightMap, Vector3 position)
     {
         Tile tile = WorldBuilder.GetTile(position);

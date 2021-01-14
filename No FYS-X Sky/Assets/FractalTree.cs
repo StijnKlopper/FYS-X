@@ -19,6 +19,8 @@ public class FractalTree : MonoBehaviour
     List<point> points = new List<point>();
     List<GameObject> branches = new List<GameObject>();
 
+    [Header("THESE ARE STANDARD VALUES NOT CHANGEABLE")]
+    [Tooltip("THESE ARE STANDARD VALUES. NOT CHANGEABLE")]
     public GameObject woodPrefab;
     public GameObject plantLeafPrefab;
     public Material plantLeafMaterial;
@@ -33,8 +35,8 @@ public class FractalTree : MonoBehaviour
     private GameObject trunks;
     private GameObject plants;
     private GameObject stamps;
-    
 
+    [Header("When adding a Biome also add in code!")]
     public biomePref[] biomePref; 
    
     Vector3 newPosition;
@@ -47,12 +49,12 @@ public class FractalTree : MonoBehaviour
         float lacunarity = 2f;
         int octaves = 1;
         perlin = new Perlin(frequency, lacunarity, persistence, octaves, GameObject.Find("Level").GetComponent<TerrainGenerator>().Seed, LibNoise.QualityMode.High);
-    
-
     }
+
     public GameObject GenerateTree(Vector3 startPosition , BiomeType biome)
     {
         (treeMaterial,leafPrefab,leafMaterial,plantColor) = getBiomePrefabs(biome);
+        // Initalize parents for combining meshes
         tree = new GameObject("tree " + startPosition);
         leaves = new GameObject("leaves " + startPosition);
         trunks = new GameObject("trunks " + startPosition);
@@ -65,16 +67,12 @@ public class FractalTree : MonoBehaviour
         leaves.transform.position = startPosition;
         trunks.transform.position = startPosition;
 
-
-      
-
         this.newPosition = startPosition;
         rules.Clear();
         points.Clear();
         branches.Clear();
 
-        //F[*F]F[%F][+F]F[-F][F]
-        //rules.Add('F', "F[*F]F[%F][+F]F[-F][F]");
+        // Add rule to list
         rules.Add('F', "F[+F]F[-F][F]");
         // Apply rules for i interations
         output = input;
@@ -83,15 +81,20 @@ public class FractalTree : MonoBehaviour
             output = applyRules(output);
         }
         result = output;
+
         determinePointsTree(output);
+
         CreateCylinders(startPosition);
+
         combineMeshes(leaves, leafMaterial, false);
         combineMeshes(trunks, treeMaterial, false);
         return tree;
-
     }
     public GameObject GeneratePlants(Vector3 startPosition, BiomeType biome)
     {
+        (treeMaterial, leafPrefab, leafMaterial, plantColor) = getBiomePrefabs(biome);
+
+        // Initalize parents for combining meshes
         plants = new GameObject("Plants" + startPosition);
         plants.transform.parent = this.gameObject.transform;
         plants.transform.position = startPosition;
@@ -109,10 +112,10 @@ public class FractalTree : MonoBehaviour
         points.Clear();
         branches.Clear();
 
-        //F[*F]F[%F][+F]F[-F][F]
-        //rules.Add('F', "F[*F]F[%F][+F]F[-F][F]");
+        // Add Rule to list
         rules.Add('F', "F[+F]F[-F][F]");
-        // Apply rules for i interations
+
+        // Apply rules for 1 iteration 
         output = input;
         output = applyRules(output);
         result = output;
@@ -122,6 +125,8 @@ public class FractalTree : MonoBehaviour
         combineMeshes(stamps, treeMaterial, false);
         return plants;
     }
+
+    // Combine Meshes and add the Material to the mesh to improve performance
     public void combineMeshes(GameObject gameObject, Material material, bool color)
     {
         MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
@@ -141,7 +146,6 @@ public class FractalTree : MonoBehaviour
 
         }
       
-
         gameObject.GetComponent<MeshRenderer>().material = material;
         if (color)
         {
@@ -150,7 +154,6 @@ public class FractalTree : MonoBehaviour
         gameObject.transform.GetComponent<MeshFilter>().mesh = new Mesh();
         gameObject.transform.GetComponent<MeshFilter>().mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         gameObject.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
-
         gameObject.transform.gameObject.SetActive(true);
     }
     string applyRules(string p_input)
@@ -159,7 +162,6 @@ public class FractalTree : MonoBehaviour
         // Loop through characters in the input string
         foreach (char c in p_input)
         {
-
             // If character matches key in rules, then replace character with rhs of rule
             if (rules.ContainsKey(c))
             {
@@ -174,6 +176,7 @@ public class FractalTree : MonoBehaviour
         // Return string with rules applied
         return sb.ToString();
     }
+    // Create Point with a Position, Angle and BranchLength
     struct point
     {
         public point(Vector3 rP, Vector3 rA, float rL) { Point = rP; Angle = rA; BranchLength = rL; }
@@ -181,18 +184,15 @@ public class FractalTree : MonoBehaviour
         public Vector3 Angle;
         public float BranchLength;
     }
+    // Determine Points using a String input
     void determinePointsTree(string p_input)
     {
         float scale = 100.777f;
-   
-
 
         Stack<point> returnValues = new Stack<point>();
         point lastPoint = new point(Vector3.zero, Vector3.zero, 0.7f); 
         returnValues.Push(lastPoint);
 
-        
-    
         foreach (char c in p_input)
         {
             double sampleX = (newPosition.x) / scale;
@@ -230,28 +230,26 @@ public class FractalTree : MonoBehaviour
                 case ']': // Load Saved State
                     lastPoint = returnValues.Pop();
                     break;
-            }
-            
+            }          
         }
     }
+
+
     void determinePointsPlant(string p_input)
     {
         float scale = 100.777f;
         double sampleX = (newPosition.x) / scale;
         double sampleY = (newPosition.y) / scale;
 
+        // Use Perlin to Pseudo Randomize Angles 
         float perlinValue = (float)((perlin.GetValue(sampleY, 0, sampleX) + 1) / 2) * 20f;
-
         float valuetoAdd = (2 % (perlinValue / 20)) / 10f;
-
         float biggerValue = valuetoAdd * 100;
 
         Stack<point> returnValues = new Stack<point>();
         point lastPoint = new point(new Vector3(0, 0, 0), Vector3.zero, 0.2f + valuetoAdd);
         
         returnValues.Push(lastPoint);
-
-
 
         foreach (char c in p_input)
         {
@@ -288,6 +286,9 @@ public class FractalTree : MonoBehaviour
             }
         }
     }
+
+    // Create Cylinders using a startPositiong
+   
     void CreateCylinders(Vector3 startPosition)
     {
 
@@ -296,9 +297,9 @@ public class FractalTree : MonoBehaviour
         float branchSize = 1f;
         float oldBranchSize = 10f;
 
-
         for (int i = 0; i < points.Count; i += 2)
         {
+            // Prevent Branchsize/oldBrancheSize from going under 0
             if (branchSize < 0f)
             {
                 branchSize = 0.01f;
@@ -307,28 +308,25 @@ public class FractalTree : MonoBehaviour
             {
                 oldBranchSize = 0.01f;
             }
+            // If Start Point
             if (points[i].Point.x == 0 && points[i + 1].Point.x == 0)
             {
                 trunkSize = trunkSize - 0.003f;
                 CreateCylinder(points[i], points[i + 1], 3.6f, startPosition, prevTrunkSize, trunkSize, false, false);
                 prevTrunkSize = trunkSize;
                 oldBranchSize = prevTrunkSize;
-                //CreateLeaf(points[i], points[i + 1], branchSize, false);
             }
-
             else if (points[i + 1].Point != points[i + 2].Point)
             {
                 CreateCylinder(points[i], points[i + 1], 0.1f, startPosition, oldBranchSize, oldBranchSize / 2, true, false);
                 CreateLeaf(points[i], points[i + 1], branchSize, false);
             }
-
             else
             {
                 if (oldBranchSize == prevTrunkSize)
                 {
                     oldBranchSize = trunkSize / 2;
                 }
-
                 branchSize = oldBranchSize - 0.01f;
 
                 CreateCylinder(points[i], points[i + 1], 0.1f, startPosition, branchSize, oldBranchSize, false, false);
@@ -337,6 +335,8 @@ public class FractalTree : MonoBehaviour
             }
         }
     }
+
+    // Create Plants using a startPoisition
     void CreatePlants(Vector3 startPosition)
     {
 
@@ -346,10 +346,9 @@ public class FractalTree : MonoBehaviour
         float oldBranchSize = 1f;
         float startSize = 1f;
 
-
         for (int i = 0; i < points.Count; i += 2)
         {
-
+            // Prevent Branchsize/oldBrancheSize from going under 0
             if (branchSize < 0f)
             {
                 branchSize = 0.1f;
@@ -358,6 +357,7 @@ public class FractalTree : MonoBehaviour
             {
                 oldBranchSize = 0.1f;
             }
+            // Start Point
             if (points[i].Point.x == 0 && points[i + 1].Point.x == 0)
             {
                 trunkSize = trunkSize - 0.003f;
@@ -366,20 +366,17 @@ public class FractalTree : MonoBehaviour
                 oldBranchSize = prevTrunkSize;
                 CreateLeaf(points[i], points[i + 1], branchSize, true);
             }
-
             else if (points[i + 1].Point != points[i + 2].Point)
             {
                 CreateCylinder(points[i], points[i + 1], 0.1f, startPosition, oldBranchSize, oldBranchSize / 2, true, true);
                 CreateLeaf(points[i], points[i + 1], branchSize, true);
             }
-
             else
             {
                 if (oldBranchSize == prevTrunkSize)
                 {
                     oldBranchSize = trunkSize / 2;
                 }
-
                 branchSize = oldBranchSize - 0.01f;
 
                 CreateCylinder(points[i], points[i + 1], 0.1f, startPosition, branchSize, oldBranchSize, false, true);
@@ -396,6 +393,8 @@ public class FractalTree : MonoBehaviour
         point1 = dir + point2;
         return point1;
     }
+
+    // Cylinders are being placed between 2 points with variating sizes to create trunks/branches
     void CreateCylinder(point point1, point point2, float radius, Vector3 startPosition, float oldSize, float newSize, bool lastTrunk, bool isPlant)
     {
         GameObject newCylinder = (GameObject)Instantiate(woodPrefab, startPosition, Quaternion.identity);
@@ -426,13 +425,14 @@ public class FractalTree : MonoBehaviour
         }
         
     }
+    // Create a Leaf based on Points position
     void CreateLeaf(point point1, point point2, float scale, bool isPlant)
     {
 
         if (isPlant)
         {
             GameObject leaf = (GameObject)Instantiate(plantLeafPrefab, point2.Point + newPosition, Quaternion.identity);
- 
+            // Scale to variate Leaves sizes
             leaf.transform.localScale = new Vector3(leaf.transform.localScale.x + scale, leaf.transform.localScale.y + scale, leaf.transform.localScale.z + scale);
             leaf.transform.rotation = Quaternion.Euler(point2.Angle);
             leaf.transform.parent = leaves.transform;
@@ -440,33 +440,19 @@ public class FractalTree : MonoBehaviour
         else
         {
             GameObject leaf = (GameObject)Instantiate(leafPrefab, point2.Point + newPosition, Quaternion.identity);
-            //GameObject leaf2 = (GameObject)Instantiate(leafPrefab, point2.Point + newPosition, Quaternion.identity);
-            //GameObject leaf3 = (GameObject)Instantiate(leafPrefab, point2.Point + newPosition, Quaternion.identity);
+            // Scale to variate Leaves sizes
             leaf.transform.localScale = new Vector3(leaf.transform.localScale.x + scale, leaf.transform.localScale.y + scale, leaf.transform.localScale.z + scale);
-            //leaf2.transform.localScale = new Vector3(leaf.transform.localScale.x + scale + 0.5f, leaf.transform.localScale.y + scale + 0.5f, leaf.transform.localScale.z + scale + 0.5f);
-            //leaf3.transform.localScale = new Vector3(leaf.transform.localScale.x + scale - 0.5f, leaf.transform.localScale.y + scale - 0.5f, leaf.transform.localScale.z + scale - 0.5f);
-            //leaf.transform.rotation = Quaternion.Euler(point2.Angle);
-            /*point2.Angle.x = 270;
-            point2.Angle.y = point2.Angle.y + 180;
-            point2.Angle.z = point2.Angle.z + 180;*/
 
+            // Add value to angle to fix a certain bug where the point angle starts rotating around axis
             point2.Angle = Vector3.RotateTowards(point2.Angle, new Vector3(0, 0, 0), 1, 0.0f);
             point2.Angle.y = point2.Angle.y + 180;
             point2.Angle.x = -80;
-
             leaf.transform.rotation = Quaternion.Euler(point2.Angle);
-            //point2.Angle.x = -45;
-            //leaf2.transform.rotation = Quaternion.Euler(point2.Angle);
-            //point2.Angle.x = -45;
-            //leaf3.transform.rotation = Quaternion.Euler(point2.Angle);
-
             leaf.transform.parent = leaves.transform;
-            //leaf2.transform.parent = leaves.transform;
-            //leaf3.transform.parent = leaves.transform;
         }
-
     }
 
+    // Use Values from Editor to get different Tree,Leaves and Plants per biome
     (Material TreeMaterial, GameObject LeavesPrefab, Material LeavesMaterial,Color plantColor) getBiomePrefabs(BiomeType biome)
     {      
         switch (biome)
@@ -494,13 +480,12 @@ public struct biomePref
     public GameObject LeavesPrefab;
     public Material LeavesMaterial;
     public Color plantColor;
-
 }
 
+// Create Dropdown with Biomes
 public enum enumBiome
 {
     DefaultBiomeType,
     PlainsBiomeType,
     ForestBiomeType
-
 }

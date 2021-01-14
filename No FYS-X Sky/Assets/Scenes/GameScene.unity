@@ -367,7 +367,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 2.3509887e-38, z: 2.7107536e-20, w: 7.737127e+25}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -543,7 +543,7 @@ Transform:
   m_Children:
   - {fileID: 87063624}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &615161811
 PrefabInstance:
@@ -706,63 +706,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}
---- !u!1001 &693718625
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-      propertyPath: m_Name
-      value: Leaves
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,7 +780,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 7.93e-43, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -927,7 +870,7 @@ Transform:
   m_Children:
   - {fileID: 1564121594}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &827795476
 MonoBehaviour:
@@ -977,7 +920,7 @@ Transform:
   - {fileID: 705507995}
   - {fileID: 1469793298}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &906747361
 MonoBehaviour:
@@ -1030,8 +973,8 @@ MonoBehaviour:
   biomePref:
   - biomeType: 0
     TreeMaterial: {fileID: 2100000, guid: 7493229f8d6c4cc4db0dc373f9d19ee5, type: 2}
-    LeavesPrefab: {fileID: 919132149155446097, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
-    LeavesMaterial: {fileID: 2100000, guid: 0e76f46f8c2c07c4f834fbfc99483cb0, type: 2}
+    LeavesPrefab: {fileID: 9101575697981451749, guid: fb7b0cfc9c8ab984e89da2c44c7891e1, type: 3}
+    LeavesMaterial: {fileID: 2100000, guid: a5d1958b34e78b047950267eed65a2c0, type: 2}
     plantColor: {r: 0.85882354, g: 0.09906633, b: 0.027450979, a: 0}
   - biomeType: 1
     TreeMaterial: {fileID: 2100000, guid: 7493229f8d6c4cc4db0dc373f9d19ee5, type: 2}
@@ -1055,8 +998,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39d3bf279ec811043a47b1be0b8fe6b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlantThreshold: 0.5
-  TreeThreshold: 0.5
+  PlantThreshold: 0.6
+  TreeThreshold: 0.6
+  MarginThreshold: 0.1
   PlantPrefab: {fileID: 7207660745630262542, guid: dd7768329c2a27a4dbd4f7ff91461678, type: 3}
 --- !u!4 &996418497
 Transform:
@@ -1070,7 +1014,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1029945969
 GameObject:
@@ -1224,7 +1168,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1284178399
 MonoBehaviour:
@@ -1580,7 +1524,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!21 &1994345256
 Material:
