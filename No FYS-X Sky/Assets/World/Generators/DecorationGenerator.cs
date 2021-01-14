@@ -8,6 +8,9 @@ public class DecorationGenerator : MonoBehaviour
 
     public float PlantThreshold;
     public float TreeThreshold;
+    [Range(0.1f, 1)]
+    public float MarginThreshold;
+
 
     Perlin perlin;
 
@@ -32,37 +35,37 @@ public class DecorationGenerator : MonoBehaviour
 
     public void Generate(float[,] heightMap, Vector3 position)
     {
+        Tile tile = WorldBuilder.GetTile(position);
         bool placeTree = true;
         float scale = 50.777f;
-        //if (position.x == -10 && position.z == 370)
-        //{
-            for (int y = 0; y < 11; y++)
+        for (int y = 0; y < 11; y++)
+        {
+            for (int x = 0; x < 11; x++)
             {
-                for (int x = 0; x < 11; x++)
+                double sampleX = (x + position.x) / scale;
+                double sampleY = (y + position.y) / scale;
+                float noiseHeight = (float)(perlin.GetValue(sampleY, 0, sampleX) + 1) / 2;
+                
+                Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(position.x + x, position.z + y));
+                if (biome.BiomeType is DefaultBiomeType || biome.BiomeType is ForestBiomeType || biome.BiomeType is PlainsBiomeType || biome.BiomeType is ShrublandBiomeType)
                 {
-                    double sampleX = (x + position.x) / scale;
-                    double sampleY = (y + position.y) / scale;
-                    float noiseHeight = (float)(perlin.GetValue(sampleY, 0, sampleX) + 1) / 2;
-                    
-                    Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(position.x + x, position.z + y));
-                    if (biome.BiomeType is DefaultBiomeType || biome.BiomeType is ForestBiomeType || biome.BiomeType is PlainsBiomeType || biome.BiomeType is ShrublandBiomeType)
-                    {
                        
-                        if (noiseHeight >= PlantThreshold)
-                        {
-                            Vector3 pos = new Vector3((position.x + x), heightMap[x, y], (position.z + y));
-                            transform.GetComponent<FractalTree>().GeneratePlants(pos, biome.BiomeType);
-                        }
-                        if (noiseHeight >= TreeThreshold && placeTree)
-                        {
-                            Vector3 pos = new Vector3(position.x + 5, heightMap[5, 5], position.z + 5);
-                            transform.GetComponent<FractalTree>().GenerateTree(pos, biome.BiomeType);
-                            placeTree = false;
-                        }
+                    if (noiseHeight >= PlantThreshold && noiseHeight <= PlantThreshold + MarginThreshold)
+                    {
+                        Vector3 pos = new Vector3((position.x + x), heightMap[x, y], (position.z + y));
+                        tile.AddDecoration(transform.GetComponent<FractalTree>().GeneratePlants(pos, biome.BiomeType));
+                        
+                    }
+                    if (noiseHeight >= TreeThreshold && placeTree && noiseHeight <= TreeThreshold + MarginThreshold)
+                    {
+                        int jitterValue = Mathf.RoundToInt((float)(perlin.GetValue(sampleY + terrainGenerator.RandomNumbers[x], 0, sampleX + terrainGenerator.RandomNumbers[y])) * 5);
+                        Vector3 pos = new Vector3(position.x + 5 + jitterValue, heightMap[5 + jitterValue, 5 + jitterValue], position.z + 5 + jitterValue);
+                        tile.AddDecoration(transform.GetComponent<FractalTree>().GenerateTree(pos, biome.BiomeType));
+                        placeTree = false;
                     }
                 }
             }
-        //}
+        }
     }
 }
 

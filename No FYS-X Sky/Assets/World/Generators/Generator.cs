@@ -1,7 +1,6 @@
-﻿namespace Assets.World.Generator
-{
-    public interface Generator
-    {
+using UnityEngine;
 
-    }
+public interface Generator
+{
+    void Generate();
 }

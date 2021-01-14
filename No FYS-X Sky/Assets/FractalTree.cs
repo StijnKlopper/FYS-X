@@ -50,7 +50,7 @@ public class FractalTree : MonoBehaviour
     
 
     }
-    public void GenerateTree(Vector3 startPosition , BiomeType biome)
+    public GameObject GenerateTree(Vector3 startPosition , BiomeType biome)
     {
         (treeMaterial,leafPrefab,leafMaterial,plantColor) = getBiomePrefabs(biome);
         tree = new GameObject("tree " + startPosition);
@@ -87,17 +87,14 @@ public class FractalTree : MonoBehaviour
         CreateCylinders(startPosition);
         combineMeshes(leaves, leafMaterial, false);
         combineMeshes(trunks, treeMaterial, false);
-        combineMeshes(tree, treeMaterial, false);
+        return tree;
 
     }
-    public void GeneratePlants(Vector3 startPosition, BiomeType biome)
+    public GameObject GeneratePlants(Vector3 startPosition, BiomeType biome)
     {
-
-
         plants = new GameObject("Plants" + startPosition);
         plants.transform.parent = this.gameObject.transform;
         plants.transform.position = startPosition;
-
 
         stamps = new GameObject("Stamps" + startPosition);
         stamps.transform.position = startPosition;
@@ -121,8 +118,9 @@ public class FractalTree : MonoBehaviour
         result = output;
         determinePointsPlant(output);
         CreatePlants(startPosition);
-        combineMeshes(leaves, leafMaterial, true);
+        combineMeshes(leaves, plantLeafMaterial, true);
         combineMeshes(stamps, treeMaterial, false);
+        return plants;
     }
     public void combineMeshes(GameObject gameObject, Material material, bool color)
     {
@@ -232,12 +230,6 @@ public class FractalTree : MonoBehaviour
                 case ']': // Load Saved State
                     lastPoint = returnValues.Pop();
                     break;
-                case '%': // Rotate -30
-                    lastPoint.Angle.z += -60.0f + Random.Range(0, 20);
-                    break;
-                case '*': // Rotate -30
-                    lastPoint.Angle.z += 60.0f + Random.Range(0, 20);
-                    break;
             }
             
         }
@@ -292,12 +284,6 @@ public class FractalTree : MonoBehaviour
                     break;
                 case ']': // Load Saved State
                     lastPoint = returnValues.Pop();
-                    break;
-                case '%': // Rotate -30
-                    lastPoint.Angle.z += -60.0f + perlinValue + biggerValue;
-                    break;
-                case '*': // Rotate -30
-                    lastPoint.Angle.z += 60.0f + perlinValue + biggerValue;
                     break;
             }
         }

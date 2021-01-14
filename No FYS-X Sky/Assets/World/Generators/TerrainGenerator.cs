@@ -1,6 +1,5 @@
-﻿using Assets.World.Generator;
+﻿using System.Collections.Generic;
 using LibNoise.Generator;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour, Generator
@@ -76,9 +75,9 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
         return nearestRegion;
     }
-
-    public void DestroyTile(GameObject obj)
+    public void Generate()
     {
-        Destroy(obj);
+        throw new System.NotImplementedException();
     }
 }
+
