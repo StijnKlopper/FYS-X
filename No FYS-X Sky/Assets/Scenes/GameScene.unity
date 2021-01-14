@@ -975,7 +975,7 @@ MonoBehaviour:
     TreeMaterial: {fileID: 2100000, guid: 7493229f8d6c4cc4db0dc373f9d19ee5, type: 2}
     LeavesPrefab: {fileID: 9101575697981451749, guid: fb7b0cfc9c8ab984e89da2c44c7891e1, type: 3}
     LeavesMaterial: {fileID: 2100000, guid: a5d1958b34e78b047950267eed65a2c0, type: 2}
-    plantColor: {r: 0.85882354, g: 0.09906633, b: 0.027450979, a: 0}
+    plantColor: {r: 0.9528302, g: 0.17702022, b: 0, a: 0}
   - biomeType: 1
     TreeMaterial: {fileID: 2100000, guid: 7493229f8d6c4cc4db0dc373f9d19ee5, type: 2}
     LeavesPrefab: {fileID: 9101575697981451749, guid: fb7b0cfc9c8ab984e89da2c44c7891e1, type: 3}
@@ -1001,7 +1001,7 @@ MonoBehaviour:
   PlantThreshold: 0.6
   TreeThreshold: 0.6
   MarginThreshold: 0.1
-  PlantPrefab: {fileID: 7207660745630262542, guid: dd7768329c2a27a4dbd4f7ff91461678, type: 3}
+  interval: 2
 --- !u!4 &996418497
 Transform:
   m_ObjectHideFlags: 0
@@ -1153,7 +1153,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 5520266623367027301, guid: 0c31a200cbf2256439ca13b894b6f98b, type: 3}
-  oceanPrefab: {fileID: 8703873624021677109, guid: b4c854845c276c3409741edef1149a9d, type: 3}
   textureData: {fileID: 11400000, guid: 9850fb257560b7a45a8dc1285bf4881a, type: 2}
   Seed: 69420
 --- !u!4 &1284178398
@@ -1208,7 +1207,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TerrainPrefab: {fileID: 5520266623367027301, guid: 0c31a200cbf2256439ca13b894b6f98b, type: 3}
   CavePrefab: {fileID: 5849594575968623539, guid: 414f10da3431ef44f88a77f5c556f3b2, type: 3}
-  OceanPrefab: {fileID: 8703873624021677109, guid: b4c854845c276c3409741edef1149a9d, type: 3}
+  OceanPrefab: {fileID: 100006, guid: 843740dbe549a4a6ba9556d1b80001f5, type: 3}
 --- !u!1 &1469793297
 GameObject:
   m_ObjectHideFlags: 0

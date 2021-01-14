@@ -9,9 +9,6 @@ public class TerrainGenerator : MonoBehaviour, Generator
     private GameObject tilePrefab;
 
     [SerializeField]
-    private GameObject oceanPrefab;
-
-    [SerializeField]
     private TextureData textureData;
 
     public int Seed;

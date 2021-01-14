@@ -10,6 +10,9 @@ public class DecorationGenerator : MonoBehaviour
     [Range(0.01f, 1)]
     public float MarginThreshold;
 
+    [Range(1,3)]
+    public int interval;
+
     Perlin perlin;
 
     // Start is called before the first frame update
@@ -30,9 +33,9 @@ public class DecorationGenerator : MonoBehaviour
         Tile tile = WorldBuilder.GetTile(position);
         bool placeTree = true;
         float scale = 50.777f;
-        for (int y = 0; y < 11; y++)
+        for (int y = 0; y < 11; y = y + interval)
         {
-            for (int x = 0; x < 11; x++)
+            for (int x = 0; x < 11; x = x + interval)
             {
                 double sampleX = (x + position.x) / scale;
                 double sampleY = (y + position.y) / scale;
@@ -52,8 +55,10 @@ public class DecorationGenerator : MonoBehaviour
                     {
                         int jitterValue = Mathf.RoundToInt((float)(perlin.GetValue(sampleY + terrainGenerator.RandomNumbers[x], 0, sampleX + terrainGenerator.RandomNumbers[y])) * 5);
                         Vector3 pos = new Vector3(position.x + 5 + jitterValue, heightMap[5 + jitterValue, 5 + jitterValue], position.z + 5 + jitterValue);
-                        tile.AddDecoration(transform.GetComponent<FractalTree>().GenerateTree(pos, biome.BiomeType));
-                        placeTree = false;
+                        if (!(terrainGenerator.GetBiomeByCoordinates(new Vector2(pos.x, pos.z)).BiomeType is OceanBiomeType)){
+                            tile.AddDecoration(transform.GetComponent<FractalTree>().GenerateTree(pos, biome.BiomeType));
+                            placeTree = false;
+                        }
                     }
                 }
             }
