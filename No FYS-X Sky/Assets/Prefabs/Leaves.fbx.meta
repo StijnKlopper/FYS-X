@@ -1,9 +1,19 @@
 fileFormatVersion: 2
-guid: 8005f8f29f41b294196f2e957fc7df58
+guid: 692f14bbd218eb4458dbe5f72f507886
 ModelImporter:
   serializedVersion: 20101
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Leaves
+    second: {fileID: 2100000, guid: 0e76f46f8c2c07c4f834fbfc99483cb0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Stamp
+    second: {fileID: 2100000, guid: c17618fa0a1b96343911f13374262f57, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
