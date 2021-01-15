@@ -37,7 +37,7 @@ public class FractalTree : MonoBehaviour
     private GameObject stamps;
 
     [Header("When adding a Biome also add in code!")]
-    public biomePref[] biomePref; 
+    public BiomePref[] biomePref; 
    
     Vector3 newPosition;
 
@@ -82,12 +82,12 @@ public class FractalTree : MonoBehaviour
         }
         result = output;
 
-        determinePointsTree(output);
+        DeterminePointsTree(output);
 
         CreateCylinders(startPosition);
 
-        combineMeshes(leaves, leafMaterial, false);
-        combineMeshes(trunks, treeMaterial, false);
+        CombineMeshes(leaves, leafMaterial, false);
+        CombineMeshes(trunks, treeMaterial, false);
         return tree;
     }
     public GameObject GeneratePlants(Vector3 startPosition, BiomeType biome)
@@ -119,15 +119,15 @@ public class FractalTree : MonoBehaviour
         output = input;
         output = ApplyRules(output);
         result = output;
-        determinePointsPlant(output);
+        DeterminePointsPlant(output);
         CreatePlants(startPosition);
-        combineMeshes(leaves, plantLeafMaterial, true);
-        combineMeshes(stamps, treeMaterial, false);
+        CombineMeshes(leaves, plantLeafMaterial, true);
+        CombineMeshes(stamps, treeMaterial, false);
         return plants;
     }
 
     // Combine Meshes and add the Material to the mesh to improve performance
-    public void combineMeshes(GameObject gameObject, Material material, bool color)
+    public void CombineMeshes(GameObject gameObject, Material material, bool color)
     {
         MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
@@ -144,8 +144,7 @@ public class FractalTree : MonoBehaviour
             meshFilters[i].gameObject.SetActive(false);
             Destroy(meshFilters[i].gameObject);
 
-        }
-      
+        } 
         gameObject.GetComponent<MeshRenderer>().material = material;
         if (color)
         {
@@ -186,7 +185,7 @@ public class FractalTree : MonoBehaviour
         public float BranchLength;
     }
     // Determine Points using a String input
-    private void determinePointsTree(string p_input)
+    private void DeterminePointsTree(string input)
     {
         float scale = 100.777f;
 
@@ -194,7 +193,7 @@ public class FractalTree : MonoBehaviour
         point lastPoint = new point(Vector3.zero, Vector3.zero, 0.7f); 
         returnValues.Push(lastPoint);
 
-        foreach (char c in p_input)
+        foreach (char c in input)
         {
             double sampleX = (newPosition.x) / scale;
             double sampleY = (newPosition.y) / scale;
@@ -234,7 +233,7 @@ public class FractalTree : MonoBehaviour
     }
 
 
-    private void determinePointsPlant(string p_input)
+    private void DeterminePointsPlant(string input)
     {
         float scale = 100.777f;
         double sampleX = (newPosition.x) / scale;
@@ -250,7 +249,7 @@ public class FractalTree : MonoBehaviour
         
         returnValues.Push(lastPoint);
 
-        foreach (char c in p_input)
+        foreach (char c in input)
         {
             switch (c)
             {
@@ -421,8 +420,7 @@ public class FractalTree : MonoBehaviour
             newCylinder.transform.Rotate(point2.Angle);
             branches.Add(newCylinder);
             newCylinder.transform.parent = trunks.transform;
-        }
-        
+        }       
     }
 
     // Create a Leaf based on Points position
@@ -473,9 +471,9 @@ public class FractalTree : MonoBehaviour
 }
 
 [System.Serializable]
-public struct biomePref
+public struct BiomePref
 {
-    public enumBiome biomeType;
+    public EnumBiome biomeType;
     public Material TreeMaterial;
     public GameObject LeavesPrefab;
     public Material LeavesMaterial;
@@ -483,7 +481,7 @@ public struct biomePref
 }
 
 // Create Dropdown with Biomes
-public enum enumBiome
+public enum EnumBiome
 {
     DefaultBiomeType,
     PlainsBiomeType,
