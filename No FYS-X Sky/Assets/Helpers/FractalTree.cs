@@ -50,6 +50,7 @@ public class FractalTree : MonoBehaviour
         perlin = new Perlin(frequency, lacunarity, persistence, octaves, GameObject.Find("Level").GetComponent<TerrainGenerator>().Seed, LibNoise.QualityMode.High);
     }
 
+    //Generate Tree
     public GameObject GenerateTree(Vector3 startPosition, BiomeType biome)
     {
         (treeMaterial, leafPrefab, leafMaterial, plantColor) = GetBiomePrefabs(biome);
@@ -89,6 +90,8 @@ public class FractalTree : MonoBehaviour
         CombineMeshes(trunks, treeMaterial, false);
         return tree;
     }
+
+    // Generate Plant
     public GameObject GeneratePlants(Vector3 startPosition, BiomeType biome)
     {
         (treeMaterial, leafPrefab, leafMaterial, plantColor) = GetBiomePrefabs(biome);
@@ -155,6 +158,7 @@ public class FractalTree : MonoBehaviour
         gameObject.transform.gameObject.SetActive(true);
     }
 
+    // Apply Rules to Input
     private string ApplyRules(string input)
     {
         StringBuilder sb = new StringBuilder();
@@ -175,14 +179,7 @@ public class FractalTree : MonoBehaviour
         // Return string with rules applied
         return sb.ToString();
     }
-    // Create Point with a Position, Angle and BranchLength
-    private struct point
-    {
-        public point(Vector3 rP, Vector3 rA, float rL) { Point = rP; Angle = rA; BranchLength = rL; }
-        public Vector3 Point;
-        public Vector3 Angle;
-        public float BranchLength;
-    }
+
     // Determine Points using a String input
     private void DeterminePointsTree(string input)
     {
@@ -231,7 +228,7 @@ public class FractalTree : MonoBehaviour
         }
     }
 
-
+    // Determine Points for plants based on input
     private void DeterminePointsPlant(string input)
     {
         float scale = 100.777f;
@@ -467,6 +464,14 @@ public class FractalTree : MonoBehaviour
         }
     }
 
+    // Create Point with a Position, Angle and BranchLength
+    private struct point
+    {
+        public point(Vector3 rP, Vector3 rA, float rL) { Point = rP; Angle = rA; BranchLength = rL; }
+        public Vector3 Point;
+        public Vector3 Angle;
+        public float BranchLength;
+    }
 }
 
 [System.Serializable]
