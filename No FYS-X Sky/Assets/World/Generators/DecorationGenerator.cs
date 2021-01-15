@@ -15,15 +15,19 @@ public class DecorationGenerator : MonoBehaviour
 
     private Perlin perlin;
 
+    private FractalTree fractalTree;
+
     // Start is called before the first frame update
     void Start()
     {
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
+
         float frequency = 1f;
         float persistence = 1f;
         float lacunarity = 1f;
         int octaves = 1;
         perlin = new Perlin(frequency, lacunarity, persistence, octaves, terrainGenerator.Seed, LibNoise.QualityMode.High);
+        fractalTree = GetComponent<FractalTree>();
     }
 
     //Generate Decorations based on Perlin noise
@@ -47,7 +51,7 @@ public class DecorationGenerator : MonoBehaviour
                     if (noiseHeight >= PlantThreshold && noiseHeight <= PlantThreshold + MarginThreshold)
                     {
                         Vector3 pos = new Vector3((position.x + x), heightMap[x, y], (position.z + y));
-                        tile.AddDecoration(transform.GetComponent<FractalTree>().GeneratePlants(pos, biome.BiomeType));
+                        tile.AddDecoration(fractalTree.GeneratePlants(pos, biome.BiomeType));
                         
                     }
                     if (noiseHeight >= TreeThreshold && placeTree && noiseHeight <= TreeThreshold + MarginThreshold)
@@ -56,7 +60,7 @@ public class DecorationGenerator : MonoBehaviour
                         Vector3 pos = new Vector3(position.x + 5 + jitterValue, heightMap[5 + jitterValue, 5 + jitterValue], position.z + 5 + jitterValue);
                         if (!(terrainGenerator.GetBiomeByCoordinates(new Vector2(pos.x, pos.z)).BiomeType is OceanBiomeType))
                         {
-                            tile.AddDecoration(transform.GetComponent<FractalTree>().GenerateTree(pos, biome.BiomeType));
+                            tile.AddDecoration(fractalTree.GenerateTree(pos, biome.BiomeType));
                             placeTree = false;
                         }
                     }
