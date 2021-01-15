@@ -9,7 +9,6 @@ using System.Collections.Generic;
 // if either one of the radii is 0, the result will be a cone, otherwise a truncated cone
 public class Cone : MonoBehaviour
 {
-
 	public int numVertices = 10;
 	public float radiusTop = 0f;
 	public float radiusBottom = 1f;
@@ -22,7 +21,6 @@ public class Cone : MonoBehaviour
 	public int CircleIndexCount;
 	public int CircleSegmentCount;
 	public GameObject TreeRing;
-
 
 	public void GenerateCone(float radiusTop, float radiusBottom, bool trunkEnd) 
 	{
@@ -212,6 +210,5 @@ public class Cone : MonoBehaviour
 		mesh.Optimize();
 
 		GetComponentInParent<MeshFilter>().mesh = mesh;
-
 	}
 }
