@@ -10,7 +10,7 @@ public class LightManager : MonoBehaviour
 
     void Start()
     {
-       /* sun = GameObject.Find("Sun").GetComponent<Light>();
+        sun = GameObject.Find("Sun").GetComponent<Light>();
         moon = GameObject.Find("Moon").GetComponent<Light>();
 
         sun = GameObject.Find("Sun").GetComponent<Light>();
@@ -19,17 +19,17 @@ public class LightManager : MonoBehaviour
 
         // Start position for the sun and moond
         xRotationSun = 20f;
-        xRotationMoon = 180f + xRotationSun;*/
+        xRotationMoon = 180f + xRotationSun;
     }
 
     void FixedUpdate()
     {
         // Set new rotations
-        /*xRotationSun += rotationSpeed * Time.deltaTime;
+        xRotationSun += rotationSpeed * Time.deltaTime;
         xRotationMoon += rotationSpeed * Time.deltaTime;
         sun.transform.localEulerAngles = new Vector3(xRotationSun, sun.transform.rotation.y, sun.transform.rotation.z);
 
-        moon.transform.localEulerAngles = new Vector3(xRotationMoon, sun.transform.rotation.y, sun.transform.rotation.z);*/
+        moon.transform.localEulerAngles = new Vector3(xRotationMoon, sun.transform.rotation.y, sun.transform.rotation.z);
 
         //moon.transform.localEulerAngles = new Vector3(xRotationMoon, sun.transform.rotation.y, sun.transform.rotation.z);
     }

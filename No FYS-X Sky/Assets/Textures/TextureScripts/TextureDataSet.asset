@@ -34,5 +34,5 @@ MonoBehaviour:
     textureScale: 1
   - texture: {fileID: 2800000, guid: 23e37a0a32b850d48b6c38daca24085b, type: 3}
     textureScale: 1
-  - texture: {fileID: 2800000, guid: 255016d311012b14baa414fe858a5f7c, type: 3}
+  - texture: {fileID: 2800000, guid: d32feb74a79ba4d4daa6942707c80056, type: 3}
     textureScale: 1
