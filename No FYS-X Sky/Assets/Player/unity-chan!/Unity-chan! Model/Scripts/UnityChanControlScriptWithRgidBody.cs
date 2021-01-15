@@ -106,6 +106,14 @@ namespace UnityChan
                     }
                 }
             }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                transform.localPosition = new Vector3(transform.localPosition.x, -1, transform.localPosition.z);
+            }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                transform.localPosition = new Vector3(transform.localPosition.x, 5, transform.localPosition.z);
+            }
 
 
             // 上下のキー入力でキャラクターを移動させる
