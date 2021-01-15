@@ -43,7 +43,7 @@ public class FractalTree : MonoBehaviour
     {
         float frequency = 1f;
         float persistence = 1f;
-        float lacunarity = 2f;
+        float lacunarity = 1f;
         int octaves = 1;
         perlin = new Perlin(frequency, lacunarity, persistence, octaves, GameObject.Find("Level").GetComponent<TerrainGenerator>().Seed, LibNoise.QualityMode.High);
     }
@@ -179,7 +179,7 @@ public class FractalTree : MonoBehaviour
     // Determine Points using a String input
     private void DeterminePointsTree(string input)
     {
-        float scale = 100.777f;
+        float scale = 0.17777f;
 
         Stack<point> returnValues = new Stack<point>();
         point lastPoint = new point(Vector3.zero, Vector3.zero, 0.7f); 
@@ -187,10 +187,11 @@ public class FractalTree : MonoBehaviour
 
         foreach (char c in input)
         {
-            double sampleX = (newPosition.x) / scale;
-            double sampleY = (newPosition.y) / scale;
+            double sampleX = (newPosition.x ) / scale;
+            double sampleY = (newPosition.z ) / scale;
 
-            float perlinValue = (float)(perlin.GetValue(sampleY + lastPoint.Angle.y, 0, sampleX + lastPoint.Angle.y) + 1) / 2 * 100;
+            //float perlinValue = 
+            //Debug.Log(perlinValue);
             switch (c)
             {
                 case 'F': // Draw line of length lastBranchLength, in direction of lastAngle
@@ -200,7 +201,8 @@ public class FractalTree : MonoBehaviour
                     newPoint.BranchLength = lastPoint.BranchLength - 0.02f;
                     if (newPoint.BranchLength <= 0.0f) newPoint.BranchLength = 0.1f;
 
-                    newPoint.Angle.y = lastPoint.Angle.y + UnityEngine.Random.Range(-30, 30);
+                    newPoint.Angle.y = lastPoint.Angle.y + (float)(perlin.GetValue(sampleY + lastPoint.Angle.y, 0, sampleX + lastPoint.Angle.y)) * 30; ;
+
                     newPoint.Point = Pivot(newPoint.Point, lastPoint.Point, new Vector3(newPoint.Angle.x, 0, 0));
                     newPoint.Point = Pivot(newPoint.Point, lastPoint.Point, new Vector3(0, 0, newPoint.Angle.z));
                     newPoint.Point = Pivot(newPoint.Point, lastPoint.Point, new Vector3(0, newPoint.Angle.y, 0));
@@ -209,13 +211,13 @@ public class FractalTree : MonoBehaviour
                     lastPoint = newPoint;
                     break;
                 case '+': // Rotate +30
-                    lastPoint.Angle.x += 60.0f + Random.Range(0, 40);
+                    lastPoint.Angle.x += 60.0f + (float)(perlin.GetValue(sampleY + lastPoint.Angle.y, 0, sampleX + lastPoint.Angle.y)) * 30; ;
                     break;
                 case '[': // Save State
                     returnValues.Push(lastPoint);
                     break;
                 case '-': // Rotate -30
-                    lastPoint.Angle.x += -60.0f + Random.Range(0, 40);
+                    lastPoint.Angle.x += -60.0f + (float)(perlin.GetValue(sampleY + lastPoint.Angle.y, 0, sampleX + lastPoint.Angle.y)) * 30; ;
                     break;
                 case ']': // Load Saved State
                     lastPoint = returnValues.Pop();
@@ -453,6 +455,8 @@ public class FractalTree : MonoBehaviour
                 return (biomePref[1].TreeMaterial, biomePref[1].LeavesPrefab, biomePref[1].LeavesMaterial, biomePref[1].PlantColor);
             case ForestBiomeType f:
                 return (biomePref[2].TreeMaterial, biomePref[2].LeavesPrefab, biomePref[2].LeavesMaterial, biomePref[2].PlantColor);
+            case ShrublandBiomeType s:
+                return (biomePref[3].TreeMaterial, biomePref[2].LeavesPrefab, biomePref[3].LeavesMaterial, biomePref[3].PlantColor);
             default:
                 return (biomePref[0].TreeMaterial, biomePref[0].LeavesPrefab, biomePref[0].LeavesMaterial, biomePref[0].PlantColor);
             case null:
@@ -485,5 +489,6 @@ public enum EnumBiome
 {
     DefaultBiomeType,
     PlainsBiomeType,
-    ForestBiomeType
+    ForestBiomeType,
+    ShrubLandBiomeType
 }

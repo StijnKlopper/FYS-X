@@ -964,9 +964,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55408d8a6dcd7d446809b047482ebc93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Iterations: 0
+  Iterations: 3
   Input: F
-  Result: 
   WoodPrefab: {fileID: 4076727355480017967, guid: 8479a5970baba7e4481c617dddf13a97, type: 3}
   PlantLeafPrefab: {fileID: 919132149155446097, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
   PlantLeafMaterial: {fileID: 2100000, guid: 0e76f46f8c2c07c4f834fbfc99483cb0, type: 2}
@@ -986,6 +985,11 @@ MonoBehaviour:
     LeavesPrefab: {fileID: 9101575697981451749, guid: fb7b0cfc9c8ab984e89da2c44c7891e1, type: 3}
     LeavesMaterial: {fileID: 2100000, guid: a5d1958b34e78b047950267eed65a2c0, type: 2}
     PlantColor: {r: 0.35978103, g: 0.990566, b: 0.9563456, a: 0}
+  - BiomeType: 3
+    TreeMaterial: {fileID: 2100000, guid: 7493229f8d6c4cc4db0dc373f9d19ee5, type: 2}
+    LeavesPrefab: {fileID: 9101575697981451749, guid: fb7b0cfc9c8ab984e89da2c44c7891e1, type: 3}
+    LeavesMaterial: {fileID: 2100000, guid: 6c55f7163f34aea43924b2a214003664, type: 2}
+    PlantColor: {r: 0.35978103, g: 0.990566, b: 0.9563456, a: 0}
 --- !u!114 &996418496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -999,8 +1003,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlantThreshold: 0.6
-  TreeThreshold: 0.6
-  MarginThreshold: 0.1
+  TreeThreshold: 0.9
+  MarginThreshold: 0.01
   interval: 2
 --- !u!4 &996418497
 Transform:

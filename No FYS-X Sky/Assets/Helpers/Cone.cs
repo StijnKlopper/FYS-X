@@ -31,7 +31,7 @@ public class Cone : MonoBehaviour
 		float bottomRadius = radiusTop;
 		float topRadius = radiusBottom;
 		int nbSides = 18;
-		int nbHeightSeg = 1; // Not implemented yet
+		int nbHeightSeg = 1; 
 
 		int nbVerticesCap = nbSides + 1;
 		#region Vertices

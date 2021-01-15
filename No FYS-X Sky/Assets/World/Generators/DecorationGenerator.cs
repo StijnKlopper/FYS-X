@@ -52,13 +52,19 @@ public class DecorationGenerator : MonoBehaviour
                     {
                         Vector3 pos = new Vector3((position.x + x), heightMap[x, y], (position.z + y));
                         tile.AddDecoration(fractalTree.GeneratePlants(pos, biome.BiomeType));
-                        
                     }
                     if (noiseHeight >= TreeThreshold && placeTree && noiseHeight <= TreeThreshold + MarginThreshold)
                     {
                         int jitterValue = Mathf.RoundToInt((float)(perlin.GetValue(sampleY + terrainGenerator.RandomNumbers[x], 0, sampleX + terrainGenerator.RandomNumbers[y])) * 5);
+                        // Prevent jitterValue to exceed index elemends
+                        if(jitterValue > 5 || jitterValue < -5)
+                        {
+                            jitterValue = 5;
+                        }
                         Vector3 pos = new Vector3(position.x + 5 + jitterValue, heightMap[5 + jitterValue, 5 + jitterValue], position.z + 5 + jitterValue);
-                        if (!(terrainGenerator.GetBiomeByCoordinates(new Vector2(pos.x, pos.z)).BiomeType is OceanBiomeType))
+                        // Check Biome again for Tree Placement
+                        Biome biome2 = terrainGenerator.GetBiomeByCoordinates(new Vector2(pos.x, pos.z));
+                        if (biome2.BiomeType is DefaultBiomeType || biome2.BiomeType is ForestBiomeType || biome2.BiomeType is PlainsBiomeType || biome2.BiomeType is ShrublandBiomeType)
                         {
                             tile.AddDecoration(fractalTree.GenerateTree(pos, biome.BiomeType));
                             placeTree = false;
