@@ -384,7 +384,7 @@ public class FractalTree : MonoBehaviour
     }
 
     // Pivot point1 around point2 by angles
-    private Vector3 pivot(Vector3 point1, Vector3 point2, Vector3 angles)
+    private Vector3 Pivot(Vector3 point1, Vector3 point2, Vector3 angles)
     {
         Vector3 dir = point1 - point2;
         dir = Quaternion.Euler(angles) * dir;
