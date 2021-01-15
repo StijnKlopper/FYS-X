@@ -322,7 +322,6 @@ public class FractalTree : MonoBehaviour
 
                 CreateCylinder(points[i], points[i + 1], 0.1f, startPosition, branchSize, oldBranchSize, false, false);
                 oldBranchSize = branchSize;
-                CreateLeaf(points[i], points[i + 1], branchSize, false);
             }
         }
     }
@@ -436,7 +435,6 @@ public class FractalTree : MonoBehaviour
             leaf.transform.localScale = new Vector3(leaf.transform.localScale.x + scale, leaf.transform.localScale.y + scale, leaf.transform.localScale.z + scale);
 
             // Add value to angle to fix a certain bug where the point angle starts rotating around axis
-            point2.Angle = Vector3.RotateTowards(point2.Angle, new Vector3(0, 0, 0), 1, 0.0f);
             point2.Angle.y = point2.Angle.y + 180;
             point2.Angle.x = -80;
             leaf.transform.rotation = Quaternion.Euler(point2.Angle);

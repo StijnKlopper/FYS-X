@@ -1,7 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
-using System.Collections;
-using System.Collections.Generic;
 
 // an Editor method to create a cone primitive
 // the top center is placed at (0/0/0)
