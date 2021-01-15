@@ -6,7 +6,7 @@ using UnityEngine;
 public class FractalTree : MonoBehaviour
 {
 
-    public Dictionary<char, string> rules = new Dictionary<char, string>();
+    private Dictionary<char, string> rules = new Dictionary<char, string>();
     [Range(0, 4)]
     public int iterations;
     public string input = "F";
@@ -14,7 +14,7 @@ public class FractalTree : MonoBehaviour
 
     public string result;
 
-    Perlin perlin;
+    private Perlin perlin;
 
     List<point> points = new List<point>();
     List<GameObject> branches = new List<GameObject>();
@@ -51,9 +51,9 @@ public class FractalTree : MonoBehaviour
         perlin = new Perlin(frequency, lacunarity, persistence, octaves, GameObject.Find("Level").GetComponent<TerrainGenerator>().Seed, LibNoise.QualityMode.High);
     }
 
-    public GameObject GenerateTree(Vector3 startPosition , BiomeType biome)
+    public GameObject GenerateTree(Vector3 startPosition, BiomeType biome)
     {
-        (treeMaterial,leafPrefab,leafMaterial,plantColor) = getBiomePrefabs(biome);
+        (treeMaterial, leafPrefab, leafMaterial, plantColor) = GetBiomePrefabs(biome);
         // Initalize parents for combining meshes
         tree = new GameObject("tree " + startPosition);
         leaves = new GameObject("leaves " + startPosition);
@@ -78,7 +78,7 @@ public class FractalTree : MonoBehaviour
         output = input;
         for (int i = 0; i < iterations; i++)
         {
-            output = applyRules(output);
+            output = ApplyRules(output);
         }
         result = output;
 
@@ -92,7 +92,7 @@ public class FractalTree : MonoBehaviour
     }
     public GameObject GeneratePlants(Vector3 startPosition, BiomeType biome)
     {
-        (treeMaterial, leafPrefab, leafMaterial, plantColor) = getBiomePrefabs(biome);
+        (treeMaterial, leafPrefab, leafMaterial, plantColor) = GetBiomePrefabs(biome);
 
         // Initalize parents for combining meshes
         plants = new GameObject("Plants" + startPosition);
@@ -117,7 +117,7 @@ public class FractalTree : MonoBehaviour
 
         // Apply rules for 1 iteration 
         output = input;
-        output = applyRules(output);
+        output = ApplyRules(output);
         result = output;
         determinePointsPlant(output);
         CreatePlants(startPosition);
@@ -156,11 +156,12 @@ public class FractalTree : MonoBehaviour
         gameObject.transform.GetComponent<MeshFilter>().mesh.CombineMeshes(combine);
         gameObject.transform.gameObject.SetActive(true);
     }
-    string applyRules(string p_input)
+
+    private string ApplyRules(string input)
     {
         StringBuilder sb = new StringBuilder();
         // Loop through characters in the input string
-        foreach (char c in p_input)
+        foreach (char c in input)
         {
             // If character matches key in rules, then replace character with rhs of rule
             if (rules.ContainsKey(c))
@@ -177,7 +178,7 @@ public class FractalTree : MonoBehaviour
         return sb.ToString();
     }
     // Create Point with a Position, Angle and BranchLength
-    struct point
+    private struct point
     {
         public point(Vector3 rP, Vector3 rA, float rL) { Point = rP; Angle = rA; BranchLength = rL; }
         public Vector3 Point;
@@ -185,7 +186,7 @@ public class FractalTree : MonoBehaviour
         public float BranchLength;
     }
     // Determine Points using a String input
-    void determinePointsTree(string p_input)
+    private void determinePointsTree(string p_input)
     {
         float scale = 100.777f;
 
@@ -199,8 +200,6 @@ public class FractalTree : MonoBehaviour
             double sampleY = (newPosition.y) / scale;
 
             float perlinValue = (float)(perlin.GetValue(sampleY + lastPoint.Angle.y, 0, sampleX + lastPoint.Angle.y) + 1) / 2 * 100;
-            //perlinValue = perlinValue * 10f;
-            //Debug.Log(perlinValue);
             switch (c)
             {
                 case 'F': // Draw line of length lastBranchLength, in direction of lastAngle
@@ -235,7 +234,7 @@ public class FractalTree : MonoBehaviour
     }
 
 
-    void determinePointsPlant(string p_input)
+    private void determinePointsPlant(string p_input)
     {
         float scale = 100.777f;
         double sampleX = (newPosition.x) / scale;
@@ -287,9 +286,8 @@ public class FractalTree : MonoBehaviour
         }
     }
 
-    // Create Cylinders using a startPositiong
-   
-    void CreateCylinders(Vector3 startPosition)
+    // Create Cylinders using a startPosition
+    private void CreateCylinders(Vector3 startPosition)
     {
 
         float trunkSize = 0.3f;
@@ -299,7 +297,7 @@ public class FractalTree : MonoBehaviour
 
         for (int i = 0; i < points.Count; i += 2)
         {
-            // Prevent Branchsize/oldBrancheSize from going under 0
+            // Prevent Branchsize/oldBranchSize from going under 0
             if (branchSize < 0f)
             {
                 branchSize = 0.01f;
@@ -336,8 +334,8 @@ public class FractalTree : MonoBehaviour
         }
     }
 
-    // Create Plants using a startPoisition
-    void CreatePlants(Vector3 startPosition)
+    // Create Plants using a startPosition
+    private void CreatePlants(Vector3 startPosition)
     {
 
         float trunkSize = 0.1f;
@@ -385,8 +383,9 @@ public class FractalTree : MonoBehaviour
             }
         }
     }
+
     // Pivot point1 around point2 by angles
-    Vector3 pivot(Vector3 point1, Vector3 point2, Vector3 angles)
+    private Vector3 pivot(Vector3 point1, Vector3 point2, Vector3 angles)
     {
         Vector3 dir = point1 - point2;
         dir = Quaternion.Euler(angles) * dir;
@@ -395,7 +394,7 @@ public class FractalTree : MonoBehaviour
     }
 
     // Cylinders are being placed between 2 points with variating sizes to create trunks/branches
-    void CreateCylinder(point point1, point point2, float radius, Vector3 startPosition, float oldSize, float newSize, bool lastTrunk, bool isPlant)
+    private void CreateCylinder(point point1, point point2, float radius, Vector3 startPosition, float oldSize, float newSize, bool lastTrunk, bool isPlant)
     {
         GameObject newCylinder = (GameObject)Instantiate(woodPrefab, startPosition, Quaternion.identity);
         newCylinder.name = "point 1 " + point1.Point + "point 2" + point2.Point;
@@ -425,8 +424,9 @@ public class FractalTree : MonoBehaviour
         }
         
     }
+
     // Create a Leaf based on Points position
-    void CreateLeaf(point point1, point point2, float scale, bool isPlant)
+    private void CreateLeaf(point point1, point point2, float scale, bool isPlant)
     {
 
         if (isPlant)
@@ -453,7 +453,7 @@ public class FractalTree : MonoBehaviour
     }
 
     // Use Values from Editor to get different Tree,Leaves and Plants per biome
-    (Material TreeMaterial, GameObject LeavesPrefab, Material LeavesMaterial,Color plantColor) getBiomePrefabs(BiomeType biome)
+    private (Material TreeMaterial, GameObject LeavesPrefab, Material LeavesMaterial, Color plantColor) GetBiomePrefabs(BiomeType biome)
     {      
         switch (biome)
         {

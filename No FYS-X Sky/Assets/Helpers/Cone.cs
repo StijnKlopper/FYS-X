@@ -3,13 +3,10 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 
-// an Editor method to create a cone primitive (so far no end caps)
+// an Editor method to create a cone primitive
 // the top center is placed at (0/0/0)
 // the bottom center is placed at (0/0/length)
 // if either one of the radii is 0, the result will be a cone, otherwise a truncated cone
-// note you will get inevitable breaks in the smooth shading at cone tips
-// note the resulting mesh will be created as an asset in Assets/Editor
-// Author: Wolfram Kresse
 public class Cone : MonoBehaviour
 {
 
@@ -27,27 +24,10 @@ public class Cone : MonoBehaviour
 	public GameObject TreeRing;
 
 
-
-	public void Start()
-	{
-		//GenerateCone(radiusTop, radiusBottom, false);
-		
-	}
-
 	public void GenerateCone(float radiusTop, float radiusBottom, bool trunkEnd) 
 	{
 
 		Mesh mesh = new Mesh();
-
-/*		if (trunkEnd)
-		{
-			GameObject treeRing = GameObject.Instantiate(TreeRing);
-			treeRing.transform.localScale = new Vector3(radiusBottom / 5, 1, radiusBottom / 5);
-			treeRing.transform.position = new Vector3(0, 0, length);
-			treeRing.transform.rotation = Quaternion.Euler(new Vector3(90, 0, 0));
-			treeRing.transform.parent = this.transform;
-		}*/
-
 
 		float height = 1f;
 		float bottomRadius = radiusTop;

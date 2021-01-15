@@ -16,8 +16,6 @@ class WorldBuilder
 
     private int regionRenderDistance;
 
-    private DecorationGenerator decorationGenerator;
-
     private static Dictionary<Vector3, Tile> tileDict = new Dictionary<Vector3, Tile>();
 
     private ObjectPool objectPool;
@@ -30,7 +28,6 @@ class WorldBuilder
         this.objectPool = GameObject.Find("Level").GetComponent<ObjectPool>();
         this.tileBuilder = GameObject.Find("Level").GetComponent<TileBuilder>();
         this.cityPoints = GameObject.Find("CityPoints/Buildings");
-        decorationGenerator = GameObject.Find("Decorations").GetComponent<DecorationGenerator>();
     }
 
     public void LoadRegions(Vector3 position)

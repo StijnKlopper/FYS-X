@@ -21,7 +21,7 @@ public class DecorationGenerator : MonoBehaviour
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         float frequency = 1f;
         float persistence = 1f;
-        float lacunarity = 2f;
+        float lacunarity = 1f;
         int octaves = 1;
         perlin = new Perlin(frequency, lacunarity, persistence, octaves, terrainGenerator.Seed, LibNoise.QualityMode.High);
 
@@ -32,13 +32,16 @@ public class DecorationGenerator : MonoBehaviour
     {
         Tile tile = WorldBuilder.GetTile(position);
         bool placeTree = true;
-        float scale = 50.777f;
+        float scale = 0.17777f;
+
+        
         for (int y = 0; y < 11; y = y + interval)
         {
             for (int x = 0; x < 11; x = x + interval)
             {
                 double sampleX = (x + position.x) / scale;
-                double sampleY = (y + position.y) / scale;
+                double sampleY = (y + position.z) / scale;
+                
                 float noiseHeight = (float)(perlin.GetValue(sampleY, 0, sampleX) + 1) / 2;
                 
                 Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(position.x + x, position.z + y));
@@ -55,7 +58,8 @@ public class DecorationGenerator : MonoBehaviour
                     {
                         int jitterValue = Mathf.RoundToInt((float)(perlin.GetValue(sampleY + terrainGenerator.RandomNumbers[x], 0, sampleX + terrainGenerator.RandomNumbers[y])) * 5);
                         Vector3 pos = new Vector3(position.x + 5 + jitterValue, heightMap[5 + jitterValue, 5 + jitterValue], position.z + 5 + jitterValue);
-                        if (!(terrainGenerator.GetBiomeByCoordinates(new Vector2(pos.x, pos.z)).BiomeType is OceanBiomeType)){
+                        if (!(terrainGenerator.GetBiomeByCoordinates(new Vector2(pos.x, pos.z)).BiomeType is OceanBiomeType))
+                        {
                             tile.AddDecoration(transform.GetComponent<FractalTree>().GenerateTree(pos, biome.BiomeType));
                             placeTree = false;
                         }
@@ -63,6 +67,7 @@ public class DecorationGenerator : MonoBehaviour
                 }
             }
         }
+        
     }
 }
 

@@ -7,7 +7,7 @@ public class Tile
     public TileInfo Cave;
     public TileInfo Ocean;
     public List<GameObject> BuildingObjects;
-    public List<GameObject> DecoObjects;
+    public List<GameObject> DecorationObjects;
     public bool Active;
     public int LevelOfDetail;
     public float[,] HeightMap;
@@ -31,7 +31,7 @@ public class Tile
     public Tile(GameObject terrain, GameObject cave, GameObject ocean)
     {
         BuildingObjects = new List<GameObject>();
-        DecoObjects = new List<GameObject>();
+        DecorationObjects = new List<GameObject>();
 
         this.Terrain = new TileInfo(terrain);
         this.Cave = new TileInfo(cave);
@@ -47,7 +47,7 @@ public class Tile
 
     public void AddDecoration(GameObject go)
     {
-        DecoObjects.Add(go);
+        DecorationObjects.Add(go);
     }
 
     public void disableTile()
@@ -65,7 +65,7 @@ public class Tile
             }  
         }
 
-        foreach(GameObject go in DecoObjects)
+        foreach(GameObject go in DecorationObjects)
         {
             if(go != null)
             {
