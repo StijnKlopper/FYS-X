@@ -5,25 +5,24 @@ using UnityEngine;
 
 public class FractalTree : MonoBehaviour
 {
-
     private Dictionary<char, string> rules = new Dictionary<char, string>();
     [Range(0, 4)]
-    public int iterations;
-    public string input = "F";
+    public int Iterations;
+    public string Input = "F";
     private string output;
 
-    public string result;
+    public string Result;
 
     private Perlin perlin;
 
-    List<point> points = new List<point>();
-    List<GameObject> branches = new List<GameObject>();
+    private List<point> points = new List<point>();
+    private List<GameObject> branches = new List<GameObject>();
 
     [Header("THESE ARE STANDARD VALUES NOT CHANGEABLE")]
     [Tooltip("THESE ARE STANDARD VALUES. NOT CHANGEABLE")]
-    public GameObject woodPrefab;
-    public GameObject plantLeafPrefab;
-    public Material plantLeafMaterial;
+    public GameObject WoodPrefab;
+    public GameObject PlantLeafPrefab;
+    public Material PlantLeafMaterial;
 
     private Material treeMaterial;
     private Material leafMaterial;
@@ -75,12 +74,12 @@ public class FractalTree : MonoBehaviour
         // Add rule to list
         rules.Add('F', "F[+F]F[-F][F]");
         // Apply rules for i interations
-        output = input;
-        for (int i = 0; i < iterations; i++)
+        output = Input;
+        for (int i = 0; i < Iterations; i++)
         {
             output = ApplyRules(output);
         }
-        result = output;
+        Result = output;
 
         DeterminePointsTree(output);
 
@@ -116,12 +115,12 @@ public class FractalTree : MonoBehaviour
         rules.Add('F', "F[+F]F[-F][F]");
 
         // Apply rules for 1 iteration 
-        output = input;
+        output = Input;
         output = ApplyRules(output);
-        result = output;
+        Result = output;
         DeterminePointsPlant(output);
         CreatePlants(startPosition);
-        CombineMeshes(leaves, plantLeafMaterial, true);
+        CombineMeshes(leaves, PlantLeafMaterial, true);
         CombineMeshes(stamps, treeMaterial, false);
         return plants;
     }
@@ -395,7 +394,7 @@ public class FractalTree : MonoBehaviour
     // Cylinders are being placed between 2 points with variating sizes to create trunks/branches
     private void CreateCylinder(point point1, point point2, float radius, Vector3 startPosition, float oldSize, float newSize, bool lastTrunk, bool isPlant)
     {
-        GameObject newCylinder = (GameObject)Instantiate(woodPrefab, startPosition, Quaternion.identity);
+        GameObject newCylinder = (GameObject)Instantiate(WoodPrefab, startPosition, Quaternion.identity);
         newCylinder.name = "point 1 " + point1.Point + "point 2" + point2.Point;
         newCylinder.GetComponent<Cone>().GenerateCone(oldSize, newSize, lastTrunk);
         newCylinder.SetActive(true);
@@ -429,7 +428,7 @@ public class FractalTree : MonoBehaviour
 
         if (isPlant)
         {
-            GameObject leaf = (GameObject)Instantiate(plantLeafPrefab, point2.Point + newPosition, Quaternion.identity);
+            GameObject leaf = (GameObject)Instantiate(PlantLeafPrefab, point2.Point + newPosition, Quaternion.identity);
             // Scale to variate Leaves sizes
             leaf.transform.localScale = new Vector3(leaf.transform.localScale.x + scale, leaf.transform.localScale.y + scale, leaf.transform.localScale.z + scale);
             leaf.transform.rotation = Quaternion.Euler(point2.Angle);
