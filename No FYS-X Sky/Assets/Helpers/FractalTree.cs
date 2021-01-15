@@ -11,8 +11,6 @@ public class FractalTree : MonoBehaviour
     public string Input = "F";
     private string output;
 
-    public string Result;
-
     private Perlin perlin;
 
     private List<point> points = new List<point>();
@@ -80,7 +78,6 @@ public class FractalTree : MonoBehaviour
         {
             output = ApplyRules(output);
         }
-        Result = output;
 
         DeterminePointsTree(output);
 
@@ -120,7 +117,6 @@ public class FractalTree : MonoBehaviour
         // Apply rules for 1 iteration 
         output = Input;
         output = ApplyRules(output);
-        Result = output;
         DeterminePointsPlant(output);
         CreatePlants(startPosition);
         CombineMeshes(leaves, PlantLeafMaterial, true);

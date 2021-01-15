@@ -47,7 +47,7 @@ public class DecorationGenerator : MonoBehaviour
                 
                 Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(position.x + x, position.z + y));
                 if (biome.BiomeType is DefaultBiomeType || biome.BiomeType is ForestBiomeType || biome.BiomeType is PlainsBiomeType || biome.BiomeType is ShrublandBiomeType)
-                {                      
+                {
                     if (noiseHeight >= PlantThreshold && noiseHeight <= PlantThreshold + MarginThreshold)
                     {
                         Vector3 pos = new Vector3((position.x + x), heightMap[x, y], (position.z + y));
