@@ -205,9 +205,9 @@ public class FractalTree : MonoBehaviour
                     if (newPoint.BranchLength <= 0.0f) newPoint.BranchLength = 0.1f;
 
                     newPoint.Angle.y = lastPoint.Angle.y + UnityEngine.Random.Range(-30, 30);
-                    newPoint.Point = pivot(newPoint.Point, lastPoint.Point, new Vector3(newPoint.Angle.x, 0, 0));
-                    newPoint.Point = pivot(newPoint.Point, lastPoint.Point, new Vector3(0, 0, newPoint.Angle.z));
-                    newPoint.Point = pivot(newPoint.Point, lastPoint.Point, new Vector3(0, newPoint.Angle.y, 0));
+                    newPoint.Point = Pivot(newPoint.Point, lastPoint.Point, new Vector3(newPoint.Angle.x, 0, 0));
+                    newPoint.Point = Pivot(newPoint.Point, lastPoint.Point, new Vector3(0, 0, newPoint.Angle.z));
+                    newPoint.Point = Pivot(newPoint.Point, lastPoint.Point, new Vector3(0, newPoint.Angle.y, 0));
 
                     points.Add(newPoint);
                     lastPoint = newPoint;
@@ -258,9 +258,9 @@ public class FractalTree : MonoBehaviour
            
                     newPoint.Angle.y = lastPoint.Angle.y + perlinValue - biggerValue;
     
-                    newPoint.Point = pivot(newPoint.Point, lastPoint.Point, new Vector3(newPoint.Angle.x, 0, 0));
-                    newPoint.Point = pivot(newPoint.Point, lastPoint.Point, new Vector3(0, 0, newPoint.Angle.z));
-                    newPoint.Point = pivot(newPoint.Point, lastPoint.Point, new Vector3(0, newPoint.Angle.y, 0));
+                    newPoint.Point = Pivot(newPoint.Point, lastPoint.Point, new Vector3(newPoint.Angle.x, 0, 0));
+                    newPoint.Point = Pivot(newPoint.Point, lastPoint.Point, new Vector3(0, 0, newPoint.Angle.z));
+                    newPoint.Point = Pivot(newPoint.Point, lastPoint.Point, new Vector3(0, newPoint.Angle.y, 0));
 
                     points.Add(newPoint);
                     lastPoint = newPoint;
@@ -452,15 +452,15 @@ public class FractalTree : MonoBehaviour
         switch (biome)
         {
             case DefaultBiomeType r:
-                return (biomePref[0].TreeMaterial, biomePref[0].LeavesPrefab, biomePref[0].LeavesMaterial, biomePref[0].plantColor);
+                return (biomePref[0].TreeMaterial, biomePref[0].LeavesPrefab, biomePref[0].LeavesMaterial, biomePref[0].PlantColor);
             case PlainsBiomeType p:
-                return (biomePref[1].TreeMaterial, biomePref[1].LeavesPrefab, biomePref[1].LeavesMaterial, biomePref[1].plantColor);
+                return (biomePref[1].TreeMaterial, biomePref[1].LeavesPrefab, biomePref[1].LeavesMaterial, biomePref[1].PlantColor);
             case ForestBiomeType f:
-                return (biomePref[2].TreeMaterial, biomePref[2].LeavesPrefab, biomePref[2].LeavesMaterial, biomePref[2].plantColor);
+                return (biomePref[2].TreeMaterial, biomePref[2].LeavesPrefab, biomePref[2].LeavesMaterial, biomePref[2].PlantColor);
             default:
-                return (biomePref[0].TreeMaterial, biomePref[0].LeavesPrefab, biomePref[0].LeavesMaterial, biomePref[0].plantColor);
+                return (biomePref[0].TreeMaterial, biomePref[0].LeavesPrefab, biomePref[0].LeavesMaterial, biomePref[0].PlantColor);
             case null:
-                return (biomePref[0].TreeMaterial, biomePref[0].LeavesPrefab, biomePref[0].LeavesMaterial, biomePref[0].plantColor);
+                return (biomePref[0].TreeMaterial, biomePref[0].LeavesPrefab, biomePref[0].LeavesMaterial, biomePref[0].PlantColor);
         }
     }
 
@@ -477,11 +477,11 @@ public class FractalTree : MonoBehaviour
 [System.Serializable]
 public struct BiomePref
 {
-    public EnumBiome biomeType;
+    public EnumBiome BiomeType;
     public Material TreeMaterial;
     public GameObject LeavesPrefab;
     public Material LeavesMaterial;
-    public Color plantColor;
+    public Color PlantColor;
 }
 
 // Create Dropdown with Biomes
