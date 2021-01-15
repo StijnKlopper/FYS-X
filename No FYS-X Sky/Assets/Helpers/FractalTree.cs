@@ -39,7 +39,7 @@ public class FractalTree : MonoBehaviour
     [Header("When adding a Biome also add in code!")]
     public BiomePref[] biomePref; 
    
-    Vector3 newPosition;
+    private Vector3 newPosition;
 
     // Use this for initialization
     void Start()
