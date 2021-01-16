@@ -56,7 +56,7 @@ public class FractalTree : MonoBehaviour
         float persistence = 1f;
         float lacunarity = 1f;
         int octaves = 1;
-        perlin = new Perlin(frequency, lacunarity, persistence, octaves, GameObject.Find("Level").GetComponent<TerrainGenerator>().Seed, LibNoise.QualityMode.High);
+        perlin = new Perlin(frequency, lacunarity, persistence, octaves, TerrainGenerator.Seed, LibNoise.QualityMode.High);
     }
 
     //Generate Tree

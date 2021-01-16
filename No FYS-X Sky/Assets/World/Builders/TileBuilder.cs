@@ -65,7 +65,7 @@ public class TileBuilder : MonoBehaviour
         float scale = 50.777f;
         int heightMultiplier = 15;
 
-        Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, terrainGenerator.Seed, LibNoise.QualityMode.High);
+        Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, TerrainGenerator.Seed, LibNoise.QualityMode.High);
 
         for (int i = 0; i < octaves; i++)
         {

@@ -36,7 +36,7 @@ public static class MarchingCubes
         List<int> nums = new List<int>();
         float[] singleArray = new float[8];
         Vector3[] vector3Array = new Vector3[12];
-        // Loop through every voxel in the 3d space
+        // Iterate aka march through every voxel in the 3d space
         for (int i = 0; i < voxels.GetLength(0) - 1; i++)
         {
             for (int j = 0; j < voxels.GetLength(1) - 1; j++)
@@ -48,6 +48,8 @@ public static class MarchingCubes
                 }
             }
         }
+
+        // Build mesh
         SafeMesh safeMesh = new SafeMesh()
         {
             Vertices = vector3s.ToArray(),
@@ -65,6 +67,7 @@ public static class MarchingCubes
         }
     }
 
+    // Calculate offset
     private static float GetOffset(float v1, float v2)
     {
         float single = v2 - v1;
@@ -93,6 +96,7 @@ public static class MarchingCubes
             return;
         }
 
+        // For every edge perform lookup in the edge table
         for (i = 0; i < edges; i++)
         {
             if ((num1 & 1 << (i & 31)) != 0)
@@ -108,7 +112,7 @@ public static class MarchingCubes
 
         while (i < 5)
         {
-            // Look up corresponding edges in the triangle table and add to list of vertices
+            // Look up corresponding values in the triangle table and add to list of vertices
             if (triangleConnectionTable[num, 3 * i] >= 0)
             {
                 int count = vertList.Count;

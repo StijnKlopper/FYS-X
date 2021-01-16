@@ -26,7 +26,7 @@ public class DecorationGenerator : MonoBehaviour
         float persistence = 1f;
         float lacunarity = 1f;
         int octaves = 1;
-        perlin = new Perlin(frequency, lacunarity, persistence, octaves, terrainGenerator.Seed, LibNoise.QualityMode.High);
+        perlin = new Perlin(frequency, lacunarity, persistence, octaves, TerrainGenerator.Seed, LibNoise.QualityMode.High);
         fractalTree = GetComponent<FractalTree>();
     }
 
