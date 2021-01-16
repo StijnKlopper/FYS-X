@@ -6,22 +6,8 @@
 // if either one of the radii is 0, the result will be a cone, otherwise a truncated cone
 public class Cone : MonoBehaviour
 {
-	public int NumVertices = 10;
-	public float RadiusTop = 0f;
-	public float RadiusBottom = 1f;
-	public float Length = 1f;
-	public float OpeningAngle = 0f; // if >0, create a cone with this angle by setting radiusTop to 0, and adjust radiusBottom according to length;
-	public bool Outside = true;
-	public bool Inside = false;
-	public bool AddCollider = false;
-	public int CircleVertexCount;
-	public int CircleIndexCount;
-	public int CircleSegmentCount;
-	public GameObject TreeRing;
-
 	public void GenerateCone(float radiusTop, float radiusBottom, bool trunkEnd) 
 	{
-
 		Mesh mesh = new Mesh();
 
 		float height = 1f;

@@ -964,10 +964,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55408d8a6dcd7d446809b047482ebc93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Iterations: 3
-  Input: F
-  WoodPrefab: {fileID: 4076727355480017967, guid: 8479a5970baba7e4481c617dddf13a97, type: 3}
-  PlantLeafPrefab: {fileID: 919132149155446097, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
+  iterations: 3
+  input: F
+  woodPrefab: {fileID: 4076727355480017967, guid: 8479a5970baba7e4481c617dddf13a97, type: 3}
+  plantLeafPrefab: {fileID: 919132149155446097, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
   PlantLeafMaterial: {fileID: 2100000, guid: 0e76f46f8c2c07c4f834fbfc99483cb0, type: 2}
   biomePref:
   - BiomeType: 0
