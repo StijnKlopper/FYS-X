@@ -4,6 +4,7 @@
 // 2014/03/13 N.Kobyasahi
 //
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace UnityChan
 {
@@ -106,7 +107,19 @@ namespace UnityChan
                     }
                 }
             }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y - 1, transform.localPosition.z);
+            }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y + 5, transform.localPosition.z);
+            }
 
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
 
             // 上下のキー入力でキャラクターを移動させる
             transform.localPosition += velocity * Time.fixedDeltaTime;
@@ -196,11 +209,6 @@ namespace UnityChan
                 }
             }
 
-
-            //if (transform.position.y < -10)
-            //{
-            //	transform.position = new Vector3(transform.position.x, 20, transform.position.z);
-            //}
         }
 
         void OnGUI()

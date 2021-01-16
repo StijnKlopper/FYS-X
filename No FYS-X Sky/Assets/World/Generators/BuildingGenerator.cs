@@ -56,8 +56,7 @@ public class BuildingGenerator : MonoBehaviour
     private void Start()
     {
         // Set seed
-        TerrainGenerator terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        seed = terrainGenerator.Seed;
+        seed = TerrainGenerator.Seed;
 
         // Set parent object for buildings to be placed in
         parentObject = GameObject.Find("Buildings");
@@ -411,8 +410,7 @@ public class BuildingGenerator : MonoBehaviour
     public void GeneratePreviewHouse()
     {
         // Set values to be able to generate a house
-        TerrainGenerator terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
-        this.random = new System.Random(terrainGenerator.Seed);
+        this.random = new System.Random(TerrainGenerator.Seed);
         parentObject = GameObject.Find("Buildings");
         Vector3 position = Vector3.zero;
 

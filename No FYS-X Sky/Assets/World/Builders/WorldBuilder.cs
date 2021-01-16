@@ -97,6 +97,7 @@ class WorldBuilder
                     tile.Cave.GameObject.transform.position = cavePosition;
 
                     tileDict.Add(newChunkPosition, tile);
+                    
                     tile.LevelOfDetail = levelOfDetail;
                     tileBuilder.Instantiate(newChunkPosition);
                 }

@@ -7,6 +7,7 @@ public class Tile
     public TileInfo Cave;
     public TileInfo Ocean;
     public List<GameObject> BuildingObjects;
+    public List<GameObject> DecorationObjects;
     public bool Active;
     public int LevelOfDetail;
     public float[,] HeightMap;
@@ -30,6 +31,7 @@ public class Tile
     public Tile(GameObject terrain, GameObject cave, GameObject ocean)
     {
         BuildingObjects = new List<GameObject>();
+        DecorationObjects = new List<GameObject>();
 
         this.Terrain = new TileInfo(terrain);
         this.Cave = new TileInfo(cave);
@@ -41,6 +43,11 @@ public class Tile
     public void AddBuilding(GameObject building) 
     {
         BuildingObjects.Add(building);
+    }
+
+    public void AddDecoration(GameObject go)
+    {
+        DecorationObjects.Add(go);
     }
 
     public void disableTile()
@@ -56,6 +63,14 @@ public class Tile
             {
                 building.SetActive(false);
             }  
+        }
+
+        foreach(GameObject go in DecorationObjects)
+        {
+            if(go != null)
+            {
+                UnityEngine.MonoBehaviour.Destroy(go);
+            }
         }
     }
 

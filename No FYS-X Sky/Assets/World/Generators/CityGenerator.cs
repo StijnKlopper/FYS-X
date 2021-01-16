@@ -162,7 +162,7 @@ public class CityGenerator : MonoBehaviour, Generator
         int octaves = 1;
         float scale = 100.777f;
 
-        Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, terrainGenerator.Seed, LibNoise.QualityMode.High);
+        Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, TerrainGenerator.Seed, LibNoise.QualityMode.High);
 
         for (int y = 0; y < mapHeight; y++)
         {

@@ -11,7 +11,7 @@ public class TerrainGenerator : MonoBehaviour, Generator
     [SerializeField]
     private TextureData textureData;
 
-    public int Seed;
+    public static int Seed;
 
     [System.NonSerialized]
     public int[] RandomNumbers;
@@ -72,14 +72,9 @@ public class TerrainGenerator : MonoBehaviour, Generator
 
         return nearestRegion;
     }
-
-    public void DestroyTile(GameObject obj)
-    {
-        Destroy(obj);
-    }
-
     public void Generate()
     {
         throw new System.NotImplementedException();
     }
 }
+

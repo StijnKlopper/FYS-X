@@ -20,6 +20,7 @@ public static class MarchingCubes
 
     static MarchingCubes()
     {
+        // Static variables including the triangulation table
         target = 0.5f;
         windingOrder = new int[] { 0, 1, 2 };
         vertexOffset = new int[,] { { 0, 0, 0 }, { 1, 0, 0 }, { 1, 1, 0 }, { 0, 1, 0 }, { 0, 0, 1 }, { 1, 0, 1 }, { 1, 1, 1 }, { 0, 1, 1 } };
@@ -35,6 +36,7 @@ public static class MarchingCubes
         List<int> nums = new List<int>();
         float[] singleArray = new float[8];
         Vector3[] vector3Array = new Vector3[12];
+        // Iterate aka march through every voxel in the 3d space
         for (int i = 0; i < voxels.GetLength(0) - 1; i++)
         {
             for (int j = 0; j < voxels.GetLength(1) - 1; j++)
@@ -46,6 +48,8 @@ public static class MarchingCubes
                 }
             }
         }
+
+        // Build mesh
         SafeMesh safeMesh = new SafeMesh()
         {
             Vertices = vector3s.ToArray(),
@@ -56,12 +60,14 @@ public static class MarchingCubes
 
     private static void FillCube(int x, int y, int z, float[,,] voxels, float[] cube)
     {
+        // Assign values to each voxel 
         for (int i = 0; i < 8; i++)
         {
             cube[i] = voxels[x + vertexOffset[i, 0], y + vertexOffset[i, 1], z + vertexOffset[i, 2]];
         }
     }
 
+    // Calculate offset
     private static float GetOffset(float v1, float v2)
     {
         float single = v2 - v1;
@@ -90,6 +96,7 @@ public static class MarchingCubes
             return;
         }
 
+        // For every edge perform lookup in the edge table
         for (i = 0; i < edges; i++)
         {
             if ((num1 & 1 << (i & 31)) != 0)
@@ -105,6 +112,7 @@ public static class MarchingCubes
 
         while (i < 5)
         {
+            // Look up corresponding values in the triangle table and add to list of vertices
             if (triangleConnectionTable[num, 3 * i] >= 0)
             {
                 int count = vertList.Count;

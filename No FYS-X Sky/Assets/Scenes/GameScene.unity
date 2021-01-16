@@ -367,7 +367,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 2.3509887e-38, z: 2.7107536e-20, w: 7.737127e+25}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -741,7 +741,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 0.954
@@ -774,13 +774,13 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 1
+  m_Lightmapping: 2
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 7.93e-43, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -934,6 +934,92 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f9bbdef35dffc74492b3ab294016de6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &996418494
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 996418497}
+  - component: {fileID: 996418496}
+  - component: {fileID: 996418495}
+  m_Layer: 0
+  m_Name: Decorations
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &996418495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996418494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55408d8a6dcd7d446809b047482ebc93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iterations: 3
+  input: F
+  woodPrefab: {fileID: 4076727355480017967, guid: 8479a5970baba7e4481c617dddf13a97, type: 3}
+  plantLeafPrefab: {fileID: 919132149155446097, guid: 692f14bbd218eb4458dbe5f72f507886, type: 3}
+  plantLeafMaterial: {fileID: 0}
+  biomePref:
+  - BiomeType: 0
+    TreeMaterial: {fileID: 2100000, guid: 7493229f8d6c4cc4db0dc373f9d19ee5, type: 2}
+    LeavesPrefab: {fileID: 9101575697981451749, guid: fb7b0cfc9c8ab984e89da2c44c7891e1, type: 3}
+    LeavesMaterial: {fileID: 2100000, guid: a5d1958b34e78b047950267eed65a2c0, type: 2}
+    PlantColor: {r: 0.8858224, g: 0.9150943, b: 0.19424175, a: 0}
+  - BiomeType: 1
+    TreeMaterial: {fileID: 2100000, guid: 7493229f8d6c4cc4db0dc373f9d19ee5, type: 2}
+    LeavesPrefab: {fileID: 9101575697981451749, guid: fb7b0cfc9c8ab984e89da2c44c7891e1, type: 3}
+    LeavesMaterial: {fileID: 2100000, guid: a5d1958b34e78b047950267eed65a2c0, type: 2}
+    PlantColor: {r: 1, g: 0, b: 0, a: 0}
+  - BiomeType: 2
+    TreeMaterial: {fileID: 2100000, guid: 7493229f8d6c4cc4db0dc373f9d19ee5, type: 2}
+    LeavesPrefab: {fileID: 9101575697981451749, guid: fb7b0cfc9c8ab984e89da2c44c7891e1, type: 3}
+    LeavesMaterial: {fileID: 2100000, guid: a5d1958b34e78b047950267eed65a2c0, type: 2}
+    PlantColor: {r: 0.35978103, g: 0.990566, b: 0.9563456, a: 0}
+  - BiomeType: 3
+    TreeMaterial: {fileID: 2100000, guid: 7493229f8d6c4cc4db0dc373f9d19ee5, type: 2}
+    LeavesPrefab: {fileID: 9101575697981451749, guid: fb7b0cfc9c8ab984e89da2c44c7891e1, type: 3}
+    LeavesMaterial: {fileID: 2100000, guid: 6c55f7163f34aea43924b2a214003664, type: 2}
+    PlantColor: {r: 0.35978103, g: 0.990566, b: 0.9563456, a: 0}
+--- !u!114 &996418496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996418494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39d3bf279ec811043a47b1be0b8fe6b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlantThreshold: 0.6
+  TreeThreshold: 0.9
+  MarginThreshold: 0.01
+  interval: 2
+--- !u!4 &996418497
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996418494}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1029945969
 GameObject:
   m_ObjectHideFlags: 0
@@ -1072,7 +1158,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 5520266623367027301, guid: 0c31a200cbf2256439ca13b894b6f98b, type: 3}
   textureData: {fileID: 11400000, guid: 9850fb257560b7a45a8dc1285bf4881a, type: 2}
-  Seed: 0
 --- !u!4 &1284178398
 Transform:
   m_ObjectHideFlags: 0
@@ -1142,7 +1227,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1469793298
 Transform:
   m_ObjectHideFlags: 0
@@ -1175,7 +1260,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -1298,7 +1383,7 @@ MonoBehaviour:
   lookSmoother: 3
   useCurves: 1
   useCurvesHeight: 0.5
-  forwardSpeed: 20
+  forwardSpeed: 12
   backwardSpeed: 2
   rotateSpeed: 2
   jumpPower: 3

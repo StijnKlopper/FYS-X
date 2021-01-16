@@ -8,8 +8,10 @@ public class TileBuilder : MonoBehaviour
 {
     public const int TILE_DIMENSION = 11;
     private TerrainGenerator terrainGenerator;
+    private DecorationGenerator decorationGenerator;
     private CityGenerator cityGenerator;
     private Texture2DArray splatmapsArray;
+    private Texture2D grassMap;
     private CaveBuilder caveBuilder;
     private ConcurrentQueue<MapThreadInfo<TileData>> terrainDataThreadInfoQueue;
 
@@ -19,6 +21,7 @@ public class TileBuilder : MonoBehaviour
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         caveBuilder = GameObject.Find("Level").GetComponent<CaveBuilder>();
         cityGenerator = GameObject.Find("CityPoints").GetComponent<CityGenerator>();
+        decorationGenerator = GameObject.Find("Decorations").GetComponent<DecorationGenerator>();
     }
 
     public void Instantiate(Vector3 position)
@@ -46,6 +49,7 @@ public class TileBuilder : MonoBehaviour
         Color[] splatMap1 = new Color[splatmapSize];
         Color[] splatMap2 = new Color[splatmapSize];
         Color[] splatMap3 = new Color[splatmapSize];
+        Color[] grassMap = new Color[splatmapSize];
 
         float[,] heightMap = new float[width, height];
 
@@ -61,7 +65,7 @@ public class TileBuilder : MonoBehaviour
         float scale = 50.777f;
         int heightMultiplier = 15;
 
-        Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, terrainGenerator.Seed, LibNoise.QualityMode.High);
+        Perlin perlin = new Perlin(frequency, lacunarity, persistance, octaves, TerrainGenerator.Seed, LibNoise.QualityMode.High);
 
         for (int i = 0; i < octaves; i++)
         {
@@ -95,6 +99,12 @@ public class TileBuilder : MonoBehaviour
                     hasOcean = true;
                 }
 
+                if (biome.BiomeType is ForestBiomeType ||
+                    biome.BiomeType is PlainsBiomeType ||
+                    biome.BiomeType is ShrublandBiomeType)
+                { grassMap[colorIndex] = new Color(1, 0, 0); }
+                else { grassMap[colorIndex] = new Color(0, 1, 0); }
+
                 noiseHeight = biome.BiomeType.HeightCurve.Evaluate(noiseHeight) * heightMultiplier;
                 heightMap[x, y] = noiseHeight;
             }
@@ -107,6 +117,7 @@ public class TileBuilder : MonoBehaviour
             splatMap3 = splatMap3,
             offsets = offsets,
             hasOcean = hasOcean,
+            grassMap = grassMap,
             heightMap = heightMap
         };
         return tileData;
@@ -157,17 +168,27 @@ public class TileBuilder : MonoBehaviour
             currentTile.HeightMap = tileData.heightMap;
             caveBuilder.Instantiate(tileData.offsets);
 
+            grassMap = new Texture2D(TILE_DIMENSION, TILE_DIMENSION);
             splatmapsArray = new Texture2DArray(TILE_DIMENSION, TILE_DIMENSION, 3, TextureFormat.RGBA32, true);
             int levelOfDetail = WorldBuilder.GetTile(tileData.offsets).LevelOfDetail;
 
             splatmapsArray.SetPixels(tileData.splatMap1, 0);
             splatmapsArray.SetPixels(tileData.splatMap2, 1);
             splatmapsArray.SetPixels(tileData.splatMap3, 2);
+            grassMap.SetPixels(tileData.grassMap);
 
             splatmapsArray.wrapMode = TextureWrapMode.Clamp;
             splatmapsArray.Apply();
 
-            currentTile.Terrain.MeshRenderer.material.SetTexture("_SplatMaps", splatmapsArray);
+            grassMap.wrapMode = TextureWrapMode.Clamp;
+            grassMap.Apply();
+
+            Material[] matArray = currentTile.Terrain.MeshRenderer.materials;
+            matArray[0].SetTexture("_SplatMaps", splatmapsArray);
+            matArray[1].SetTexture("_GrassSplatMap", grassMap);
+            currentTile.Terrain.MeshRenderer.materials = matArray;
+
+
 
             GameObject ocean = currentTile.Ocean.GameObject;
             ocean.SetActive(tileData.hasOcean);
@@ -176,6 +197,8 @@ public class TileBuilder : MonoBehaviour
             currentTile.Terrain.GameObject.SetActive(true);
 
             cityGenerator.Generate(cityOffsets);
+
+            decorationGenerator.Generate(tileData.heightMap, tileData.offsets);
         }
     }
 
@@ -216,16 +239,18 @@ public class TileBuilder : MonoBehaviour
         public Color[] splatMap1;
         public Color[] splatMap2;
         public Color[] splatMap3;
+        public Color[] grassMap;
         public Vector3 offsets;
         public bool hasOcean;
 
-        TileData(float[,] heightMap, Color[] splatMap1, Color[] splatMap2, Color[] splatMap3, Vector2 offsets, bool hasOcean)
+        TileData(float[,] heightMap, Color[] splatMap1, Color[] splatMap2, Color[] splatMap3, Vector2 offsets, Color[] grassMap, bool hasOcean)
         {
             this.heightMap = heightMap;
             this.splatMap1 = splatMap1;
             this.splatMap2 = splatMap2;
             this.splatMap3 = splatMap3;
             this.offsets = offsets;
+            this.grassMap = grassMap;
             this.hasOcean = hasOcean;
         }
     }
