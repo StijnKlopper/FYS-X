@@ -50,7 +50,7 @@ public class ObjectPool : MonoBehaviour
         {
             if (!TileObjectList[i].Active)
             {
-                TileObjectList[i].enableTile();
+                TileObjectList[i].EnableTile();
                 return TileObjectList[i];
             }
         }

@@ -74,7 +74,7 @@ public class Tile
         }
     }
 
-    public void enableTile() 
+    public void EnableTile() 
     {
         this.Active = true;
     }

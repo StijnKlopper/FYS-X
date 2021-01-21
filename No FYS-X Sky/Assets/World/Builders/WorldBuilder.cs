@@ -169,7 +169,7 @@ class WorldBuilder
         else { return null; }
     }
 
-        private int CalculateLevelOfDetail(float distance)
+    private int CalculateLevelOfDetail(float distance)
     {
         // Calculate the level of detail by taking the distance from the player to the chunk and dividing it over the different LOD levels
         int levels = levelsOfDetail.Length;
