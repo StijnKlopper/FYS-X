@@ -50,7 +50,7 @@ public class Tile
         DecorationObjects.Add(go);
     }
 
-    public void disableTile()
+    public void DisableTile()
     {
         this.Terrain.GameObject.SetActive(false);
         this.Cave.GameObject.SetActive(false);

@@ -124,7 +124,7 @@ class WorldBuilder
         {
             if (tile.Key.x < xMin || tile.Key.x > xMax || tile.Key.z < zMin || tile.Key.z > zMax)
             {
-                tile.Value.disableTile();
+                tile.Value.DisableTile();
                 tileDict.Remove(tile.Key);
             }
         }
