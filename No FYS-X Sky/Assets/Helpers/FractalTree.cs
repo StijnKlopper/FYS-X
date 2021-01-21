@@ -49,7 +49,6 @@ public class FractalTree : MonoBehaviour
    
     private Vector3 newPosition;
 
-    // Use this for initialization
     void Start()
     {
         float frequency = 1f;
@@ -59,7 +58,6 @@ public class FractalTree : MonoBehaviour
         perlin = new Perlin(frequency, lacunarity, persistence, octaves, TerrainGenerator.Seed, LibNoise.QualityMode.High);
     }
 
-    //Generate Tree
     public GameObject GenerateTree(Vector3 startPosition, BiomeType biome)
     {
         (treeMaterial, leafPrefab, leafMaterial, plantColor) = GetBiomePrefabs(biome);
@@ -99,7 +97,6 @@ public class FractalTree : MonoBehaviour
         return tree;
     }
 
-    // Generate Plant
     public GameObject GeneratePlants(Vector3 startPosition, BiomeType biome)
     {
         (treeMaterial, leafPrefab, leafMaterial, plantColor) = GetBiomePrefabs(biome);
@@ -165,7 +162,6 @@ public class FractalTree : MonoBehaviour
         gameObject.transform.gameObject.SetActive(true);
     }
 
-    // Apply Rules to Input
     private string ApplyRules(string input)
     {
         StringBuilder sb = new StringBuilder();
@@ -187,7 +183,6 @@ public class FractalTree : MonoBehaviour
         return sb.ToString();
     }
 
-    // Determine Points using a String input
     private void DeterminePointsTree(string input)
     {
         float scale = 0.17777f;
@@ -201,8 +196,6 @@ public class FractalTree : MonoBehaviour
             double sampleX = (newPosition.x ) / scale;
             double sampleY = (newPosition.z ) / scale;
 
-            //float perlinValue = 
-            //Debug.Log(perlinValue);
             switch (c)
             {
                 case 'F': // Draw line of length lastBranchLength, in direction of lastAngle
@@ -237,7 +230,6 @@ public class FractalTree : MonoBehaviour
         }
     }
 
-    // Determine Points for plants based on input
     private void DeterminePointsPlant(string input)
     {
         float scale = 100.777f;
@@ -274,13 +266,13 @@ public class FractalTree : MonoBehaviour
                     points.Add(newPoint);
                     lastPoint = newPoint;
                     break;
-                case '+': // Rotate +30
+                case '+': // Rotate
                     lastPoint.Angle.x += 60.0f + perlinValue + biggerValue;
                     break;
                 case '[': // Save State
                     returnValues.Push(lastPoint);
                     break;
-                case '-': // Rotate -30
+                case '-': // Rotate
                     lastPoint.Angle.x += -60.0f + perlinValue + biggerValue;
                     break;
                 case ']': // Load Saved State
@@ -290,7 +282,6 @@ public class FractalTree : MonoBehaviour
         }
     }
 
-    // Create Cylinders using a startPosition
     private void CreateCylinders(Vector3 startPosition)
     {
 
@@ -321,7 +312,7 @@ public class FractalTree : MonoBehaviour
             else if (points[i + 1].Point != points[i + 2].Point)
             {
                 CreateCylinder(points[i], points[i + 1], 0.1f, startPosition, oldBranchSize, oldBranchSize / 2, true, false);
-                CreateLeaf(points[i], points[i + 1], branchSize, false);
+                CreateLeaf(points[i + 1], branchSize, false);
             }
             else
             {
@@ -337,7 +328,6 @@ public class FractalTree : MonoBehaviour
         }
     }
 
-    // Create Plants using a startPosition
     private void CreatePlants(Vector3 startPosition)
     {
 
@@ -365,12 +355,12 @@ public class FractalTree : MonoBehaviour
                 CreateCylinder(points[i], points[i + 1], startSize, startPosition, prevTrunkSize, trunkSize, false, true);
                 prevTrunkSize = trunkSize;
                 oldBranchSize = prevTrunkSize;
-                CreateLeaf(points[i], points[i + 1], branchSize, true);
+                CreateLeaf(points[i + 1], branchSize, true);
             }
             else if (points[i + 1].Point != points[i + 2].Point)
             {
                 CreateCylinder(points[i], points[i + 1], 0.1f, startPosition, oldBranchSize, oldBranchSize / 2, true, true);
-                CreateLeaf(points[i], points[i + 1], branchSize, true);
+                CreateLeaf(points[i + 1], branchSize, true);
             }
             else
             {
@@ -382,7 +372,7 @@ public class FractalTree : MonoBehaviour
 
                 CreateCylinder(points[i], points[i + 1], 0.1f, startPosition, branchSize, oldBranchSize, false, true);
                 oldBranchSize = branchSize;
-                CreateLeaf(points[i], points[i + 1], branchSize, true);
+                CreateLeaf(points[i + 1], branchSize, true);
             }
         }
     }
@@ -428,7 +418,7 @@ public class FractalTree : MonoBehaviour
     }
 
     // Create a Leaf based on Points position
-    private void CreateLeaf(point point1, point point2, float scale, bool isPlant)
+    private void CreateLeaf(point point2, float scale, bool isPlant)
     {
 
         if (isPlant)

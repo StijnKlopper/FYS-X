@@ -2,7 +2,7 @@
 using LibNoise.Generator;
 using UnityEngine;
 
-public class TerrainGenerator : MonoBehaviour, Generator
+public class TerrainGenerator : MonoBehaviour
 {
     [Header("Tile settings")]
     [SerializeField]
@@ -34,13 +34,13 @@ public class TerrainGenerator : MonoBehaviour, Generator
             this.RandomNumbers[i] = random.Next(10000, 100000);
         }
 
-        //set shared texture array for all tiles to use to preserve loading and unloading too many textures
+        // Set shared texture array for all tiles to use to preserve loading and unloading too many textures
         textureData.ApplyToMaterial(tilePrefab.GetComponent<Renderer>().sharedMaterial);
     }
 
     public Biome GetBiomeByCoordinates(Vector2 coordinates)
     {
-        //Using coordinates, determine region / continent, then determine biome based on the continent and position
+        // Using coordinates, determine region / continent, then determine biome based on the continent and position
         float scale = 0.17777f;
         float x = coordinates.x * scale;
         float z = coordinates.y * scale;
@@ -65,16 +65,11 @@ public class TerrainGenerator : MonoBehaviour, Generator
             {
                 nearestRegion = region.Value;
                 // The lower regionRatio is, the nearer the coordinates are to the center of the region (range of [0,1])
-                //regionRatio = distanceToSeed / distance;
                 distance = distanceToSeed;
             }
         }
 
         return nearestRegion;
-    }
-    public void Generate()
-    {
-        throw new System.NotImplementedException();
     }
 }
 

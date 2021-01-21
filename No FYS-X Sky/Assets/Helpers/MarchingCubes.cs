@@ -60,7 +60,7 @@ public static class MarchingCubes
 
     private static void FillCube(int x, int y, int z, float[,,] voxels, float[] cube)
     {
-        // Assign values to each voxel 
+        // Build a cube from the cave map by checking if the sides are 1s or 0s in the cavemap
         for (int i = 0; i < 8; i++)
         {
             cube[i] = voxels[x + vertexOffset[i, 0], y + vertexOffset[i, 1], z + vertexOffset[i, 2]];

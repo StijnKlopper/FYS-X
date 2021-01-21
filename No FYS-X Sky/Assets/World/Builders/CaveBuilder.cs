@@ -51,8 +51,6 @@ public class CaveBuilder : MonoBehaviour
             mesh.uv = GenerateUV.CalculateUVs(safeMesh.Vertices, 1);
             mesh.RecalculateNormals();
 
-            // Find out what this does
-            currentTile.Cave.MeshCollider.sharedMesh = null;
             currentTile.Cave.MeshCollider.sharedMesh = mesh;
             currentTile.Cave.GameObject.SetActive(true);
         }

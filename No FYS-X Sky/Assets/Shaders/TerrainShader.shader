@@ -2,7 +2,7 @@
 {
     Properties
     {
-        //Biome textures and Biome splat map
+        // Biome textures and Biome splat map
         _BaseTextures("Terrain Textures", 2DArray) = "" {}
         _SplatMaps("Splat Maps", 2DArray) = "" {}
     }
@@ -27,7 +27,7 @@
 
             float4 _SplatMaps_ST;
             
-            //Amount of current textures used for terrain: Update in case more texture are added to the terrain
+            // Amount of current textures used for terrain: Update in case more texture are added to the terrain
             const static int layerCount = 12;
             const static int rgbaChannels = 4;
 
@@ -79,7 +79,7 @@
 
                 float rgba[layerCount];
                 
-                //Map the various splatmaps RGBA channels to a array for
+                // Map the various splatmaps RGBA channels to an array for
                 for (int index = 0; index < layerCount / rgbaChannels; index++) {
                     float4 splat = UNITY_SAMPLE_TEX2DARRAY(_SplatMaps, float3(i.uvSplat, index));
 
@@ -94,10 +94,10 @@
                 half3 blendWeights = pow(abs(i.normal), 1);
                 blendWeights = blendWeights / (blendWeights.x + blendWeights.y + blendWeights.z);
 
-                //Loop through every texture in array and determine the draw power via the RGBA channels of the splatmapArray
+                // Loop through every texture in array and determine the draw power via the RGBA channels of the splatmapArray
                 for (float index = 0; index < layerCount; index++) {
 
-                    //Triplanar mapping to prevent textures from stretching across xyz surfaces
+                    // Triplanar mapping to prevent textures from stretching across xyz surfaces
                     float4 AlbedoY = UNITY_SAMPLE_TEX2DARRAY(_BaseTextures, float3 (i.worldPos.xz / baseTextureScales[index], index)) * rgba[index];
                     float4 AlbedoX = UNITY_SAMPLE_TEX2DARRAY(_BaseTextures, float3 (i.worldPos.zy / baseTextureScales[index], index)) * rgba[index];
                     float4 AlbedoZ = UNITY_SAMPLE_TEX2DARRAY(_BaseTextures, float3 (i.worldPos.xy / baseTextureScales[index], index)) * rgba[index];

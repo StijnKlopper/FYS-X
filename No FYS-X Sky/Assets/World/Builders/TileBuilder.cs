@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class TileBuilder : MonoBehaviour
 {
-    public const int TILE_DIMENSION = 11;
+    public const int TILE_DIMENSION = WorldBuilder.CHUNK_SIZE + 1;
     private TerrainGenerator terrainGenerator;
     private DecorationGenerator decorationGenerator;
     private CityGenerator cityGenerator;
@@ -188,8 +188,6 @@ public class TileBuilder : MonoBehaviour
             matArray[1].SetTexture("_GrassSplatMap", grassMap);
             currentTile.Terrain.MeshRenderer.materials = matArray;
 
-
-
             GameObject ocean = currentTile.Ocean.GameObject;
             ocean.SetActive(tileData.hasOcean);
             MeshData meshData = GenerateMesh(levelOfDetail, tileData.heightMap, false);
@@ -242,17 +240,6 @@ public class TileBuilder : MonoBehaviour
         public Color[] grassMap;
         public Vector3 offsets;
         public bool hasOcean;
-
-        TileData(float[,] heightMap, Color[] splatMap1, Color[] splatMap2, Color[] splatMap3, Vector2 offsets, Color[] grassMap, bool hasOcean)
-        {
-            this.heightMap = heightMap;
-            this.splatMap1 = splatMap1;
-            this.splatMap2 = splatMap2;
-            this.splatMap3 = splatMap3;
-            this.offsets = offsets;
-            this.grassMap = grassMap;
-            this.hasOcean = hasOcean;
-        }
     }
 
     void Update()
