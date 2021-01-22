@@ -12,11 +12,6 @@ public class CityGenerator : MonoBehaviour, Generator
     private TerrainGenerator terrainGenerator;
     private BuildingGenerator buildingGenerator;
     
-    [SerializeField]
-    public List<GameObject> houses;
-
-    private GameObject parentObject;
-
     void Start()
     {
         this.mapWidth = WorldBuilder.CHUNK_SIZE + 1;
@@ -24,8 +19,6 @@ public class CityGenerator : MonoBehaviour, Generator
 
         terrainGenerator = GameObject.Find("Level").GetComponent<TerrainGenerator>();
         buildingGenerator = GameObject.Find("Buildings").GetComponent<BuildingGenerator>();
-
-        parentObject = GameObject.Find("CityPoints");
     }
 
     public void Generate()
@@ -94,7 +87,7 @@ public class CityGenerator : MonoBehaviour, Generator
                 {
                     Vector3 position = new Vector3(x + this.offsets.x, aboveGroundPlaceholderY, y + this.offsets.y);
 
-                    // Get random building index from thhe list of buildings 
+                    // Get random building index from the list of buildings 
                     GameObject building = buildingGenerator.Generate(position);
                     building.SetActive(false);
 
@@ -106,10 +99,10 @@ public class CityGenerator : MonoBehaviour, Generator
 
                     // Get tile and check if it exists before making a house
                     Tile tile = WorldBuilder.GetTile(tilePosition);
+
                     // Check if valid position
                     if (tile != null && ValidHousePosition(housePosition, houseBounds))
                     {
-
                         building.transform.position = housePosition;
                         building.SetActive(true);
 
@@ -173,7 +166,6 @@ public class CityGenerator : MonoBehaviour, Generator
 
                 float noiseHeight = (float)(perlin.GetValue(sampleY, 0, sampleX) + 1) / 2;
 
-                // Change height based on height curve and heightMultiplier
                 Biome biome = terrainGenerator.GetBiomeByCoordinates(new Vector2(x + offsets.x, y + offsets.y));
 
                 // Exclude some biomes from noisemap 
