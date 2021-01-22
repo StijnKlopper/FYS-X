@@ -4,7 +4,7 @@ public class LightManager : MonoBehaviour
 {
     private Light sun, moon;
 
-    private float rotationSpeed = 1f;  // 1f = 6min per cycle
+    private float rotationSpeed = 2f;  // 1f = 6min per cycle
 
     private float xRotationSun, xRotationMoon;
 
