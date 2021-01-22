@@ -163,7 +163,6 @@ public class TileBuilder : MonoBehaviour
         // Check to see if the current tile is not already unloaded
         if (currentTile != null) 
         {
-            Vector2 offsets = new Vector2(tileData.offsets.x, tileData.offsets.z);
             Vector2 cityOffsets = new Vector2(tileData.offsets.x - 5, tileData.offsets.z - 5);
             currentTile.HeightMap = tileData.heightMap;
             caveBuilder.Instantiate(tileData.offsets);
