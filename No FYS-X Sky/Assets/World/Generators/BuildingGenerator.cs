@@ -4,16 +4,14 @@ using UnityEngine;
 
 public class BuildingGenerator : MonoBehaviour
 {
-    private int seed;
-
-    protected float roomWidthHeight;
-    protected float roomWidthHeightRadius;
+    private float roomWidthHeight;
+    private float roomWidthHeightRadius;
 
     [Range(1, 10)]
-    public int maxDepth;
+    public int MaxDepth;
 
     [Range(1, 10)]
-    public int maxFloors;
+    public int MaxFloors;
 
     [SerializeField]
     private List<GameObject> floors;
@@ -27,7 +25,6 @@ public class BuildingGenerator : MonoBehaviour
     [SerializeField]
     private List<GameObject> roofs;
 
-    [System.NonSerialized]
     private GameObject parentObject;
 
     private System.Random random; 
@@ -55,13 +52,10 @@ public class BuildingGenerator : MonoBehaviour
 
     private void Start()
     {
-        // Set seed
-        seed = TerrainGenerator.Seed;
-
         // Set parent object for buildings to be placed in
         parentObject = GameObject.Find("Buildings");
 
-        random = new System.Random(seed);
+        random = new System.Random(TerrainGenerator.Seed);
         roomWidthHeight = 4f;
         roomWidthHeightRadius = roomWidthHeight / 2;
     }
@@ -79,8 +73,8 @@ public class BuildingGenerator : MonoBehaviour
 
     private GridTypes[,,] GenerateGrid()
     {
-        int floors = GetRandomNumberTo(2, maxFloors);
-        int depth = GetRandomNumberTo(2, maxDepth);
+        int floors = GetRandomNumberTo(2, MaxFloors);
+        int depth = GetRandomNumberTo(2, MaxDepth);
 
         // Add extra fields for wall margin
         depth += 2;
@@ -176,12 +170,10 @@ public class BuildingGenerator : MonoBehaviour
                     // Add doors, only one per Y level 
                     if (grid[y, x, z] == GridTypes.WallFloor || (grid[y, x, z] == GridTypes.Wall && y == 0))
                     {
-                        if (!doorsOnFloor.ContainsKey(y)) doorsOnFloor[y] = false;
-                        if (!doorsOnFloor[y])
+                        if (!doorsOnFloor.ContainsKey(y))
                         {
                             grid[y, x, z] = grid[y, x, z] == GridTypes.WallFloor ? GridTypes.DoorFloor : GridTypes.Door;
                             doorsOnFloor[y] = true;
-
                         }
                     }
                     
